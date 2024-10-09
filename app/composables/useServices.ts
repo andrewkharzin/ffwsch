@@ -18,11 +18,16 @@ interface ServiceStatus {
   status: string
 }
 
+interface OrderNumber {
+  serial_number: string
+}
+
 // Combine service with related fields
 type ServiceWithRelations = Service & {
   servicetype?: ServiceType
   customers?: Customer
   servicestatuses?: ServiceStatus
+  service_orders?: OrderNumber
 }
 
 export const useServices = () => {
@@ -46,8 +51,9 @@ export const useServices = () => {
           status_id,
           description,
           servicetype (type_name),
-          customers (full_name, email, company_id:customer_company(company_name, logo)),
-          servicestatuses (status)
+          customers (full_name, number_id, department, position, email, company_id:customer_company(company_name, logo)),
+          servicestatuses (status),
+          service_orders (service_id, serial_number)
         `)
 
       if (fetchError) {
@@ -63,7 +69,8 @@ export const useServices = () => {
         ...service,
         type_name: service.servicetype?.type_name || 'N/A', // Service type name
         full_name: service.customers?.full_name || 'N/A', // Customer full name
-        status: service.servicestatuses?.status || 'N/A' // Service status
+        status: service.servicestatuses?.status || 'N/A', // Service status
+        serial_number: service.service_orders?.serial_number || 'N/A' // Service status
       }))
     } catch (fetchError) {
       error.value = fetchError.message

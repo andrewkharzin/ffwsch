@@ -71,8 +71,8 @@ const links = [
         to: "/services/orders",
       },
       {
-        label: "Accountings",
-        to: "/services/accountings",
+        label: "Accounting",
+        to: "/services/accounting",
       },
       {
         label: "Services",
@@ -173,13 +173,6 @@ const colors = computed(() =>
         <UDashboardSidebarLinks :links="links" />
 
         <UDivider />
-
-        <UDashboardSidebarLinks
-          :links="[{ label: 'Colors', draggable: true, children: colors }]"
-          @update:links="(colors) => (defaultColors = colors)"
-        />
-
-        <div class="flex-1" />
 
         <UDashboardSidebarLinks :links="footerLinks" />
 
