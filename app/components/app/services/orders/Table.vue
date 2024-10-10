@@ -84,7 +84,7 @@
   <!-- Slide-over for service details -->
   <USlideover v-model="isOpen">
     <UCard
-      class="flex flex-col flex-1 w-[700px]"
+      class="flex flex-col flex-1 w-[100%] max-w-[700px]"
       :ui="{
         body: { base: 'flex-1' },
         ring: '',
@@ -105,24 +105,45 @@
         />
       </template>
 
-      <div class="p-1 text-md font-light">
-        <p>{{ selectedService?.description }}</p>
-        <div class="flex flex-col">
-          <p class="mt-2 text-sm text-gray-300">
-            REQ: {{ selectedService?.customers?.full_name }}
+      <div class="p-2 text-md font-light space-y-4">
+        <div>
+          <!-- Service Date -->
+          <time class="text-sm text-gray-500">{{
+            selectedService?.service_date
+          }}</time>
+        </div>
+        <div>
+          <!-- Service Description with line clamp to prevent overflow -->
+          <p class="line-clamp-4 leading-relaxed">
+            {{ selectedService?.description }}
           </p>
-          <span class="text-xs text-gray-400">{{
-            selectedService?.customers?.company_id?.company_name
-          }}</span>
+        </div>
+        <div class="mt-4 flex items-center gap-3">
+          <UAvatar
+            v-if="
+              selectedService.customers.profile &&
+              selectedService.customers.profile.avatar_url
+            "
+            :src="selectedService.customers.profile.avatar_url"
+            size="lg"
+          />
+          <div class="flex flex-col">
+            <p class="mt-2 text-sm text-gray-300">
+              REQ: {{ selectedService?.customers?.full_name }}
+            </p>
+            <span class="text-xs text-gray-400">{{
+              selectedService?.customers?.company_id?.company_name
+            }}</span>
+          </div>
         </div>
         <!-- Display the serial number -->
-        <div v-if="selectedService?.service_orders?.length">
+        <!-- <div v-if="selectedService?.service_orders?.length">
           <span class="uppercase text-sm font-mono">
             {{ selectedService?.service_orders[0]?.serial_number }}
           </span>
         </div>
-        <div v-else>NOORDES</div>
-        <div>
+        <div v-else>NOORDES</div> -->
+        <!-- <div>
           <img
             v-if="
               selectedService.customers.profile &&
@@ -133,7 +154,7 @@
             class="profile-avatar"
           />
           <p v-else>No profile image available</p>
-        </div>
+        </div> -->
       </div>
 
       <template #footer>
@@ -271,3 +292,25 @@ const openSlideover = async (service: any) => {
   }
 };
 </script>
+<style scoped>
+/* Custom styles for readability */
+.line-clamp-4 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  overflow: hidden;
+}
+
+.line-clamp-10 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 10;
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  .max-w-[700px] {
+    max-width: 100%;
+  }
+}
+</style>
