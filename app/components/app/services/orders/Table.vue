@@ -68,6 +68,23 @@
       <div @click="openSlideover(row)" class="flex flex-col cursor-pointer">
         <span class="hover:text-teal-500">{{ row.type_name }}</span>
       </div>
+      <div class="flex flex-col">
+        <div>
+          <span class="text-sm font-bold text-white">
+            {{ new Date(row.service_date).toLocaleDateString() }}
+          </span>
+          <span
+            class="p-[0.2rem] ml-2 text-sm text-white border-l border-gray-400"
+          >
+            {{
+              new Date(row.service_date).toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })
+            }}
+          </span>
+        </div>
+      </div>
     </template>
 
     <!-- Status Column -->
@@ -109,14 +126,16 @@
         <div>
           <!-- Service Date -->
           <time class="text-sm text-gray-500">{{
-            selectedService?.service_date
+            formatDate(selectedService?.service_date)
           }}</time>
         </div>
         <div>
           <!-- Service Description with line clamp to prevent overflow -->
-          <p class="line-clamp-4 leading-relaxed">
-            {{ selectedService?.description }}
-          </p>
+          <div style="max-height: 160px; overflow-y: auto">
+            <p style="white-space: pre-line; line-height: 1.5">
+              {{ selectedService?.description }}
+            </p>
+          </div>
         </div>
         <div class="mt-4 flex items-center gap-3">
           <UAvatar
@@ -189,7 +208,6 @@ const selectedCompany = ref(null);
 const selectedColumns = ref([
   { key: "select", label: "", width: "30px" },
   { key: "full_name", label: "Customer", sortable: true },
-  { key: "service_date", label: "Service Date", sortable: true },
   { key: "type_name", label: "Type", sortable: true },
   { key: "service_status", label: "Status" },
 ]);
@@ -241,9 +259,10 @@ const openSlideover = async (service: any) => {
       .select(
         `
         id,
+        service_type_id,
+        servicetype (type_name),
         description,
         service_date,
-        servicetype (type_name),
         customers (
           full_name,
           company_id:customer_company(company_name, logo),
@@ -290,6 +309,19 @@ const openSlideover = async (service: any) => {
   } catch (err) {
     console.error("Error fetching service details:", err);
   }
+};
+
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+  const formattedDate = new Intl.DateTimeFormat("en-GB", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date);
+
+  return formattedDate.replace(",", ""); // to remove the comma between date and time
 };
 </script>
 <style scoped>

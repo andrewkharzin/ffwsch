@@ -5,13 +5,7 @@ export default defineNuxtConfig({
     redirect: false
   },
 
-  modules: [
-    '@nuxtjs/supabase',
-    '@nuxt/eslint',
-    '@nuxt/fonts',
-    '@nuxt/ui',
-    '@vueuse/nuxt'
-  ],
+  modules: ['@nuxtjs/supabase', '@nuxt/eslint', '@nuxt/fonts', '@nuxt/ui', '@vueuse/nuxt', '@nuxt/image'],
 
   ui: {
     safelistColors: ['primary', 'red', 'orange', 'green']
