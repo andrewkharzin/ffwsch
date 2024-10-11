@@ -11,9 +11,12 @@
     <!-- Full Name and Company Column -->
     <template #full_name-data="{ row }">
       <div class="flex items-center gap-3">
-        <UAvatar :src="row.customers.company_id.logo" size="lg" />
+        <!-- <UAvatar :src="row.customers.company_id.logo" size="lg" /> -->
+        <UAvatar :src="row.customers.company_id.logo" :size="avatarSize" />
         <div class="flex flex-col">
-          <p class="text-sm text-cyan-400">{{ row.customers.full_name }}</p>
+          <p :style="{ fontSize: textSize }">{{ row.customers.full_name }}</p>
+          <p :style="{ fontSize: textSize }">Company Name</p>
+          <!-- <p :style="{ fontSize: textSize }"></p>{{ row.customers.full_name }}</p> -->
           <p class="font-light text-xs">{{ row.customers.position }}</p>
           <span class="text-xs dark:text-gray-400 text-gray-800">
             {{ row.customers.company_id.company_name }}
@@ -190,6 +193,15 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from "vue";
+import { useMediaQuery } from "@vueuse/core";
+
+// Define media query for iPhone sizes (example: max-width of 768px for mobile)
+const isMobile = useMediaQuery("(max-width: 768px)");
+
+// Set the avatar size based on screen size
+const avatarSize = computed(() => (isMobile.value ? "xs" : "lg"));
+// Set the text size based on screen size
+const textSize = computed(() => (isMobile.value ? '0.6rem' : 'sm'))
 
 const supabase = useSupabaseClient();
 // Props for the data passed from the parent component
