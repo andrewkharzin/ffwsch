@@ -44,7 +44,7 @@ const links = [
       to: `/`,
     },
     {
-      label: "Services",
+      label: "Requests",
       icon: "i-heroicons-queue-list",
       component: "NuxtLink",
       to: `/services`,

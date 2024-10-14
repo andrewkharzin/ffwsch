@@ -75,8 +75,8 @@ const links = [
         to: "/services/accounting",
       },
       {
-        label: "Services",
-        to: "/services/services",
+        label: "Requests",
+        to: "/services",
       },
       {
         label: "Types",
