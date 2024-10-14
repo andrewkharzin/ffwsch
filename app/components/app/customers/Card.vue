@@ -36,7 +36,7 @@
     <!-- Customer Number ID -->
     <div class="grid grid-cols-2 gap-4">
       <div class="flex flex-col">
-        <p class="mt-2 text-xs">Customer ID:</p>
+        <p class="mt-2 text-[0.6rem]">Customer ID:</p>
         <span class="mt-2 text-xs dark:text-teal-600">
           #{{ customer.number_id || "N/A" }}
         </span>
