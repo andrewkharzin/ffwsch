@@ -26,7 +26,7 @@
       <!-- Order Date Column with Serial Number Truncated -->
       <template #order_date-data="{ row }">
         <div class="flex flex-col">
-          <p>{{ formatDate(row.order_date) }}</p>
+          <p>{{ row.order_date }}</p>
           <div class="overflow-hidden">
             <NuxtLink to="/services/orders/${row.service_id}">
               <span

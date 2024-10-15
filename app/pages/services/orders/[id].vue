@@ -40,26 +40,25 @@
             v-if="!loading && serviceOrderDetail"
             class="flex flex-col space-y-2"
           >
-            <UDashboardCard>
-              <div class="flex flex-col">
-                <UDashboardSection
-                  icon="i-heroicons-sparkles"
-                  title="Order №"
-                  :description="serviceOrderDetail.serial_number"
-                  orientation="vertical"
-                  class="px-4 mt-6"
-                  size="sm"
-                />
-                <UDashboardSection
-                  icon="i-heroicons-calendar"
-                  title="Date"
-                  :description="serviceOrderDetail.order_date"
-                  orientation="vertical"
-                  class="px-4 mt-6"
-                  size="sm"
-                />
+            <UDashboardCard
+              title="Order details"
+              :description="serviceOrderDetail.serial_number"
+              icon="i-heroicons-document-magnifying-glass"
+            >
+              <div class="text-sm flex-1">
+                <div>
+                  <p class="text-gray-900 dark:text-white font-medium">
+                    {{ serviceOrderDetail.order_date }}
+                  </p>
+                  <p class="mt-2 text-gray-500 dark:text-gray-400">
+                    <UBadge color="gray" variant="solid">{{
+                      serviceOrderDetail.status
+                    }}</UBadge>
+                  </p>
+                </div>
               </div>
             </UDashboardCard>
+
             <!-- Related Service Info -->
             <h4 class="text-md font-medium text-gray-600">Service Info</h4>
           </div>

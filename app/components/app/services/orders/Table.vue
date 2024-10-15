@@ -11,15 +11,17 @@
     <!-- Full Name and Company Column -->
     <template #full_name-data="{ row }">
       <div class="flex items-center gap-3">
-        <!-- <UAvatar :src="row.customers.company_id.logo" size="lg" /> -->
-        <UAvatar :src="row.customers.company_id.logo" :size="avatarSize" />
+        <UAvatar :src="row.customers?.company_id.logo" :size="avatarSize" />
         <div class="flex flex-col">
-          <p :style="{ fontSize: textSize }">{{ row.customers.full_name }}</p>
-          <p :style="{ fontSize: textSize }">Company Name</p>
-          <!-- <p :style="{ fontSize: textSize }"></p>{{ row.customers.full_name }}</p> -->
-          <p class="font-light text-xs">{{ row.customers.position }}</p>
+          <p :style="{ fontSize: textSize }">
+            {{ row.customers?.full_name }}
+          </p>
+
+          <p class="font-light text-xs">
+            {{ row.customers?.position }}
+          </p>
           <span class="text-xs dark:text-gray-400 text-gray-800">
-            {{ row.customers.company_id.company_name }}
+            {{ row.customers?.company_id.company_name }}
           </span>
         </div>
       </div>
@@ -30,8 +32,8 @@
       <div class="flex items-center gap-3">
         <div class="flex flex-col">
           <p
-            @click="isOpen = true"
             class="text-md font-bold cursor-pointer hover:text-teal-500"
+            @click="isOpen = true"
           >
             #{{ row.customers.number_id }}
           </p>
@@ -68,34 +70,37 @@
 
     <!-- Type Name Column -->
     <template #type_name-data="{ row }">
-      <div @click="openSlideover(row)" class="flex flex-col cursor-pointer">
-        <span class="hover:text-teal-500">{{ row.type_name }}</span>
-      </div>
-      <div class="flex flex-col">
-        <div>
-          <span class="text-sm font-bold text-white">
-            {{ new Date(row.service_date).toLocaleDateString() }}
-          </span>
-          <span
-            class="p-[0.2rem] ml-2 text-sm text-white border-l border-gray-400"
+      <div class="flex flex-col cursor-pointer" @click="openSlideover(row)">
+        <span class="hover:text-teal-500">
+          <!-- Условие для отображения иконки вместо текста -->
+          <template
+            v-if="row.servicetype.type_name === 'Погрузка/Разгрузка техаптечек'"
           >
-            {{
-              new Date(row.service_date).toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
-              })
-            }}
-          </span>
-        </div>
+            <Icon icon="mdi:airplane-alert" width="25px" />
+          </template>
+          <template v-else>
+            {{ row.servicetype.type_name }}
+          </template>
+        </span>
       </div>
     </template>
 
     <!-- Status Column -->
     <template #service_status-data="{ row }">
       <UBadge
-        :label="row.status"
-        :color="row.status === 'New' ? 'green' : 'red'"
-        variant="subtle"
+        :label="row.servicestatuses.status"
+        :color="
+          row.status === 'New'
+            ? 'green'
+            : row.status === 'Confirmed'
+            ? 'sky'
+            : row.status === 'Accounted'
+            ? 'orange'
+            : row.status === 'Pending'
+            ? 'gray'
+            : 'red'
+        "
+        :variant="row.status === 'Confirmed' ? 'solid' : 'outline'"
         class="capitalize"
       />
     </template>
@@ -105,14 +110,12 @@
   <USlideover v-model="isOpen">
     <UCard
       class="flex flex-col flex-1 w-[100%] max-w-[700px]"
-      :ui="{
-        body: { base: 'flex-1' },
-        ring: '',
-        divide: 'divide-y divide-gray-100 dark:divide-gray-800',
-      }"
+      :ui="{ body: { base: 'flex-1' } }"
     >
       <template #header>
-        <h3 class="p-1 text-sm font-bold">{{ selectedService?.type_name }}</h3>
+        <h3 class="p-1 text-sm font-bold">
+          {{ selectedService?.type_name }}
+        </h3>
         <UButton
           color="gray"
           variant="ghost"
@@ -127,13 +130,11 @@
 
       <div class="p-2 text-md font-light space-y-4">
         <div>
-          <!-- Service Date -->
           <time class="text-sm text-gray-500">{{
             formatDate(selectedService?.service_date)
           }}</time>
         </div>
         <div>
-          <!-- Service Description with line clamp to prevent overflow -->
           <div style="max-height: 160px; overflow-y: auto">
             <p style="white-space: pre-line; line-height: 1.5">
               {{ selectedService?.description }}
@@ -142,10 +143,7 @@
         </div>
         <div class="mt-4 flex items-center gap-3">
           <UAvatar
-            v-if="
-              selectedService.customers.profile &&
-              selectedService.customers.profile.avatar_url
-            "
+            v-if="selectedService.customers.profile?.avatar_url"
             :src="selectedService.customers.profile.avatar_url"
             size="lg"
           />
@@ -158,25 +156,6 @@
             }}</span>
           </div>
         </div>
-        <!-- Display the serial number -->
-        <!-- <div v-if="selectedService?.service_orders?.length">
-          <span class="uppercase text-sm font-mono">
-            {{ selectedService?.service_orders[0]?.serial_number }}
-          </span>
-        </div>
-        <div v-else>NOORDES</div> -->
-        <!-- <div>
-          <img
-            v-if="
-              selectedService.customers.profile &&
-              selectedService.customers.profile.avatar_url
-            "
-            :src="selectedService.customers.profile.avatar_url"
-            alt="Profile Image"
-            class="profile-avatar"
-          />
-          <p v-else>No profile image available</p>
-        </div> -->
       </div>
 
       <template #footer>
@@ -185,36 +164,31 @@
     </UCard>
   </USlideover>
 
-  <!-- Error Handling -->
   <template v-if="error">
     <p>Error: {{ error }}</p>
   </template>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
+import { ref, computed, watchEffect } from "vue";
 import { useMediaQuery } from "@vueuse/core";
+import { Icon } from "@iconify/vue";
 
-// Define media query for iPhone sizes (example: max-width of 768px for mobile)
 const isMobile = useMediaQuery("(max-width: 768px)");
 
-// Set the avatar size based on screen size
 const avatarSize = computed(() => (isMobile.value ? "xs" : "lg"));
-// Set the text size based on screen size
-const textSize = computed(() => (isMobile.value ? '0.6rem' : 'sm'))
+const textSize = computed(() => (isMobile.value ? "0.6rem" : "sm"));
 
 const supabase = useSupabaseClient();
-// Props for the data passed from the parent component
+
 const props = defineProps({
-  services: Array, // All service data passed from the parent
+  services: Array,
   loading: Boolean,
   error: String,
 });
 
-// Emit events for sort and row selection
-const emits = defineEmits(["sort-change", "select-row", "filter-change"]);
+const emits = defineEmits(["sort-change", "filter-change"]);
 
-// State for filtering and sorting
 const sort = ref({ column: "service_date", direction: "asc" as const });
 const selectedCompany = ref(null);
 const selectedColumns = ref([
@@ -224,98 +198,71 @@ const selectedColumns = ref([
   { key: "service_status", label: "Status" },
 ]);
 
-// Available company names for filtering
 const companyNames = computed(() => {
-  const names = props.services
-    .map((service) => service.customers?.company_id?.company_name)
-    .filter((name) => name !== undefined);
-  return [...new Set(names)];
+  return [
+    ...new Set(
+      props.services
+        .map((s) => s.customers?.company_id?.company_name)
+        .filter(Boolean)
+    ),
+  ];
 });
 
-// Filtered services
 const filteredServices = computed(() => {
-  if (!selectedCompany.value) {
-    return props.services;
-  }
-  return props.services.filter(
-    (service) =>
-      service.customers?.company_id?.company_name === selectedCompany.value
-  );
+  return selectedCompany.value
+    ? props.services.filter(
+        (s) => s.customers?.company_id?.company_name === selectedCompany.value
+      )
+    : props.services;
 });
 
-// Handle sorting changes
-watch(sort, (newVal) => {
-  emits("sort-change", newVal);
+watchEffect(() => {
+  emits("sort-change", sort.value);
 });
 
-// Handle company filter changes
-watch(selectedCompany, (newVal) => {
-  emits("filter-change", newVal);
+watchEffect(() => {
+  emits("filter-change", selectedCompany.value);
 });
 
-// Slide-over state
 const isOpen = ref(false);
-const selectedService = ref<any>(null); // Holds the selected service for the slide-over
-
-// Function to open the slide-over with selected row data
-// const openSlideover = (service: any) => {
-//   selectedService.value = service;
-//   isOpen.value = true;
-// };
+const selectedService = ref([]);
 
 const openSlideover = async (service: any) => {
   try {
-    // Fetch the service by ID, including related customer and company data
     const { data: serviceData, error: serviceError } = await supabase
       .from("services")
       .select(
         `
-        id,
-        service_type_id,
-        servicetype (type_name),
-        description,
-        service_date,
-        customers (
-          full_name,
-          company_id:customer_company(company_name, logo),
-          user_id
-        ),
-        service_orders (serial_number)
+        id, service_type_id, servicetype(type_name), description, service_date,
+        customers(full_name, company_id:customer_company(company_name, logo), user_id),
+        service_orders(serial_number)
       `
       )
       .eq("id", service.id)
       .single();
-
-    console.log("Service data:", serviceData); // Log service data to check if it's being fetched correctly
 
     if (serviceError) {
       console.error("Error fetching service details:", serviceError.message);
       return;
     }
 
-    // Fetch the customer's profile based on the user_id
     const { data: profileData, error: profileError } = await supabase
       .from("profiles")
       .select("avatar_url")
       .eq("id", serviceData.customers.user_id)
       .single();
 
-    console.log("Profile data:", profileData); // Log profile data to ensure the avatar_url is present
-
     if (profileError) {
       console.error("Error fetching customer profile:", profileError.message);
     }
 
-    // Combine service data with profile data
     selectedService.value = {
       ...serviceData,
       customers: {
         ...serviceData.customers,
-        profile: profileData, // Attach profile data to the customer
+        profile: profileData,
       },
     };
-
-    console.log("Selected service with profile:", selectedService.value); // Log final combined data
 
     isOpen.value = true;
   } catch (err) {
@@ -325,36 +272,12 @@ const openSlideover = async (service: any) => {
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
-  const formattedDate = new Intl.DateTimeFormat("en-GB", {
+  return new Intl.DateTimeFormat("en-GB", {
     day: "2-digit",
     month: "2-digit",
     year: "2-digit",
     hour: "2-digit",
     minute: "2-digit",
   }).format(date);
-
-  return formattedDate.replace(",", ""); // to remove the comma between date and time
 };
 </script>
-<style scoped>
-/* Custom styles for readability */
-.line-clamp-4 {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 4;
-  overflow: hidden;
-}
-
-.line-clamp-10 {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 10;
-  overflow: hidden;
-}
-
-@media (max-width: 768px) {
-  .max-w-[700px] {
-    max-width: 100%;
-  }
-}
-</style>
