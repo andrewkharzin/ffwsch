@@ -76,7 +76,15 @@
           <template
             v-if="row.servicetype.type_name === 'Погрузка/Разгрузка техаптечек'"
           >
-            <Icon icon="mdi:airplane-alert" width="25px" />
+            <div class="flex flex-wrap">
+              <UTooltip
+                :text="row.servicetype.type_name"
+                :popper="{ offsetDistance: 16 }"
+              >
+                <Icon icon="mdi:airplane-alert" width="25px" />
+              </UTooltip>
+              <span class="ml-4 mt-1 font-bold font-mono">FKT</span>
+            </div>
           </template>
           <template v-else>
             {{ row.servicetype.type_name }}
@@ -87,22 +95,13 @@
 
     <!-- Status Column -->
     <template #service_status-data="{ row }">
-      <UBadge
-        :label="row.servicestatuses.status"
-        :color="
-          row.status === 'New'
-            ? 'green'
-            : row.status === 'Confirmed'
-            ? 'sky'
-            : row.status === 'Accounted'
-            ? 'orange'
-            : row.status === 'Pending'
-            ? 'gray'
-            : 'red'
-        "
-        :variant="row.status === 'Confirmed' ? 'solid' : 'outline'"
-        class="capitalize"
-      />
+      <div>
+        <AppServicesOrdersUiStatusBadge
+          :status="row.servicestatuses.status"
+          size="sm"
+          variant="soft"
+        />
+      </div>
     </template>
   </UTable>
 
@@ -197,6 +196,20 @@ const selectedColumns = ref([
   { key: "type_name", label: "Type", sortable: true },
   { key: "service_status", label: "Status" },
 ]);
+
+const statusColors = {
+  New: "green", // зелёный
+  Confirmed: "white", // голубой
+  Accounted: "orange", // оранжевый
+  Pending: "#9CA3AF", // серый
+  Default: "black", // красный
+};
+
+const row = ref({}); // Динамически наполняем
+
+const getStatusColor = (status) => {
+  return statusColors[status] || statusColors.Default;
+};
 
 const companyNames = computed(() => {
   return [
