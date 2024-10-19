@@ -1,5 +1,5 @@
 <template>
-  <div class="customer-card p-4 bg-white dark:bg-gray-800 shadow-md rounded-lg">
+  <div class="customer-card p-4 dark:bg-gray-800/35 shadow-md rounded-lg">
     <div class="flex items-center gap-4">
       <!-- Company Logo -->
       <!-- <UAvatar :src="customer.company_id?.logo" size="lg" /> -->

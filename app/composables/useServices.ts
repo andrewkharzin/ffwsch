@@ -202,7 +202,8 @@ export const useServices = () => {
           servicetype (type_name),
           customers (full_name, number_id, department, position, email, company_id, company_id:customer_company(id, company_name, logo)),
           servicestatuses (status),
-          service_orders (service_id, serial_number)
+          service_orders (service_id, serial_number),
+          service_equipment (service_id, type, number, date_in, date_out, time_in, time_out, descriptions)
         `)
 
       console.log('Fetch full data', data)

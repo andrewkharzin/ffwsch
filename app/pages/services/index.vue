@@ -2,6 +2,14 @@
 import { ref, computed } from "vue";
 import { Database } from "@/types/supabase";
 
+// Определяем тип для элементов в массиве ссылок
+interface LinkItem {
+  label: string;
+  icon: string;
+  component: string;
+  to: string;
+  flashing?: boolean | Ref<boolean>;
+}
 // Types for Service and CustomerCompany from Supabase types
 type Service = Database["public"]["Tables"]["services"]["Row"];
 type CustomerCompany = Database["public"]["Tables"]["customer_company"]["Row"];
@@ -15,6 +23,8 @@ const selectedCompany = ref<CustomerCompany | null>(null); // Selected company f
 const sort = ref({ column: "service_date", direction: "asc" as const }); // Sorting configuration
 
 // Use the useServices composable
+// Use the useOrders composable
+const { newOrderAlert } = useOrders();
 const { services, loading, error } = useServices();
 const {
   companies: companyNames,
@@ -70,6 +80,12 @@ const links = [
       component: "NuxtLink",
       to: `/`,
     },
+    // {
+    //   label: "Orders",
+    //   icon: "i-heroicons-queue-list",
+    //   component: "NuxtLink",
+    //   to: `/services/orders`,
+    // },
     {
       label: "Orders",
       icon: "i-heroicons-queue-list",
@@ -151,3 +167,23 @@ const links = [
     </UDashboardPanel>
   </UDashboardPage>
 </template>
+
+<style scope>
+/* Определение анимации мигания */
+@keyframes flash {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Класс для мигания */
+.flash-animation {
+  animation: flash 1s ease-in-out infinite;
+}
+</style>

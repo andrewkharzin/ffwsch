@@ -14,12 +14,12 @@
         <UAvatar :src="row.customers?.company_id.logo" :size="avatarSize" />
         <div class="flex flex-col">
           <p :style="{ fontSize: textSize }">
-            {{ row.customers?.full_name }}
+            {{ shortenFullName(row.customers?.full_name) }}
           </p>
 
-          <p class="font-light text-xs">
+          <!-- <p class="font-light text-xs">
             {{ row.customers?.position }}
-          </p>
+          </p> -->
           <span class="text-xs dark:text-gray-400 text-gray-800">
             {{ row.customers?.company_id.company_name }}
           </span>
@@ -72,23 +72,9 @@
     <template #type_name-data="{ row }">
       <div class="flex flex-col cursor-pointer" @click="openSlideover(row)">
         <span class="hover:text-teal-500">
-          <!-- Условие для отображения иконки вместо текста -->
-          <template
-            v-if="row.servicetype.type_name === 'Погрузка/Разгрузка техаптечек'"
-          >
-            <div class="flex flex-wrap">
-              <UTooltip
-                :text="row.servicetype.type_name"
-                :popper="{ offsetDistance: 16 }"
-              >
-                <Icon icon="mdi:airplane-alert" width="25px" />
-              </UTooltip>
-              <span class="ml-4 mt-1 font-bold font-mono">FKT</span>
-            </div>
-          </template>
-          <template v-else>
+          <div class="flex flex-wrap">
             {{ row.servicetype.type_name }}
-          </template>
+          </div>
         </span>
       </div>
     </template>
@@ -134,17 +120,18 @@
           }}</time>
         </div>
         <div>
-          <div style="max-height: 160px; overflow-y: auto">
-            <p style="white-space: pre-line; line-height: 1.5">
-              {{ selectedService?.description }}
-            </p>
+          <div style="max-height: 180px; overflow-y: auto">
+            <AppServicesOrdersUiHighlightedText
+              :text="selectedService?.description || ''"
+            />
+            <span>{{ selectedService?.context_tags }}</span>
           </div>
         </div>
         <div class="mt-4 flex items-center gap-3">
           <UAvatar
             v-if="selectedService.customers.profile?.avatar_url"
             :src="selectedService.customers.profile.avatar_url"
-            size="lg"
+            size="sm"
           />
           <div class="flex flex-col">
             <p class="mt-2 text-sm text-gray-300">
@@ -154,6 +141,32 @@
               selectedService?.customers?.company_id?.company_name
             }}</span>
           </div>
+        </div>
+        <p class="text-sm dark:text-gray-600">Service equipments</p>
+        <div class="flex flex-col space-y-4">
+          <template v-if="selectedService.service_equipment?.length">
+            <UCard
+              v-for="equipment in selectedService.service_equipment"
+              :key="equipment.number"
+              class="pb-2"
+            >
+              <div class="flex">
+                <div class="flex-none w-8">
+                  <Icon
+                    icon="material-symbols-light:conveyor-belt-rounded"
+                    style="font-size: 24px"
+                  />
+                </div>
+                <span class="mt-0 text-sm dark:text-gray-100">{{
+                  equipment.type
+                }}</span>
+              </div>
+              <div></div>
+            </UCard>
+          </template>
+          <template v-else>
+            <p>No service equipment available.</p>
+          </template>
         </div>
       </div>
 
@@ -175,7 +188,7 @@ import { Icon } from "@iconify/vue";
 
 const isMobile = useMediaQuery("(max-width: 768px)");
 
-const avatarSize = computed(() => (isMobile.value ? "xs" : "lg"));
+const avatarSize = computed(() => (isMobile.value ? "xs" : "sm"));
 const textSize = computed(() => (isMobile.value ? "0.6rem" : "sm"));
 
 const supabase = useSupabaseClient();
@@ -246,14 +259,16 @@ const openSlideover = async (service: any) => {
       .from("services")
       .select(
         `
-        id, service_type_id, servicetype(type_name), description, service_date,
+        id, service_type_id, servicetype(type_name), description, service_date, context_tags,
         customers(full_name, company_id:customer_company(company_name, logo), user_id),
-        service_orders(serial_number)
+        service_orders(serial_number),
+        service_equipment (service_id, type, number, date_in, date_out, time_in, time_out, descriptions)
       `
       )
       .eq("id", service.id)
       .single();
 
+    console.log("SelectedService", serviceData);
     if (serviceError) {
       console.error("Error fetching service details:", serviceError.message);
       return;
@@ -293,4 +308,46 @@ const formatDate = (dateString: string) => {
     minute: "2-digit",
   }).format(date);
 };
+
+// Add this method in your <script setup> block
+const shortenFullName = (fullName: string) => {
+  if (!fullName) return "";
+
+  const parts = fullName.split(" ");
+
+  if (parts.length >= 3) {
+    const lastName = parts[0]; // Full last name
+    const firstNameInitial = parts[1][0] + "."; // First name initial
+    const middleNameInitial = parts[2][0] + "."; // Middle name initial
+    return `${lastName} ${firstNameInitial}${middleNameInitial}`;
+  } else if (parts.length === 2) {
+    const lastName = parts[0];
+    const firstNameInitial = parts[1][0] + ".";
+    return `${lastName} ${firstNameInitial}`;
+  }
+
+  return fullName; // Return full name if there's only one part
+};
+
+// function removeVerticalSpaces(text) {
+//   return text.replace(/^\s*[\r\n]/gm, "").trim();
+// }
+// // Подсветка данных в описании
+// const highlightText = (text: string) => {
+//   return text
+//     .replace(
+//       /\b(\d+x\d+x\d+)\b/g,
+//       '<span class="highlight-dimension">$1</span>'
+//     )
+//     .replace(/\b(\d+\s?(кг|kg))\b/g, '<span class="highlight-weight">$1</span>')
+//     .replace(
+//       /\b(\d{2}.\d{2}.\d{4})\b/g,
+//       '<span class="highlight-date">$1</span>'
+//     )
+//     .replace(/\b(\d{2}:\d{2})\b/g, '<span class="highlight-time">$1</span>')
+//     .replace(
+//       /(\+?\d{1,3}[-\s]?\d{1,3}[-\s]?\d{2,3}[-\s]?\d{2,3}[-\s]?\d{2,3})/g,
+//       '<span class="highlight-phone">$1</span>'
+//     );
+// };
 </script>
