@@ -2,7 +2,7 @@
 export default defineNuxtConfig({
   extends: ['@nuxt/ui-pro'],
   supabase: {
-    redirect: false
+    redirect: true
   },
 
   modules: ['@nuxtjs/supabase', '@nuxt/eslint', '@nuxt/fonts', '@nuxt/ui', '@vueuse/nuxt', '@nuxt/image'],

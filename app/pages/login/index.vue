@@ -1,83 +1,101 @@
 <template>
-  <div class="login-page">
-    <h1>Login with Telegram</h1>
-    <!-- Container where Telegram login widget will be rendered -->
-    <div ref="telegramButton" class="telegram-login-button"></div>
+  <div>
+    <UCard class="max-w-[480px]">
+      <template #header>
+        <h1 class="text-2xl font-bold">Sign in</h1>
+      </template>
+      <template #default>
+        <form @submit.prevent="login">
+          <!-- <ErrorAlert :error-msg="authError" @clearError="clearError" /> -->
+          <div class="mt-4 flex flex-col space-y-6">
+            <UFormGroup label="Email" size="xl" required>
+              <UInput
+                v-model="email"
+                type="email"
+                placeholder="Email"
+                icon="i-heroicons-envelope"
+              />
+            </UFormGroup>
+
+            <UFormGroup label="Password" size="xl" required>
+              <UInput
+                v-model="password"
+                placeholder="password"
+                icon="i-heroicons-envelope"
+              />
+            </UFormGroup>
+          </div>
+          <div class="">
+            <UButton
+              class="mt-5"
+              color="primary"
+              variant="solid"
+              type="submit"
+              block
+              :loading="loading"
+              loading-icon="i-heroicons-arrow-path-20-solid"
+            >
+              Sign in
+            </UButton>
+            <!-- <NuxtLink to="/forgot-password" class="">Forgot your password?</NuxtLink> -->
+          </div>
+        </form>
+      </template>
+      <template #footer>
+        <div class="">
+          <p class="text-sm dark:text-gray-500">
+            Don’t have a SupaAuth account?
+          </p>
+          <NuxtLink to="/register">
+            <button class="">
+              <div class="text-sm dark:text-gray-400">Create new account</div>
+            </button>
+          </NuxtLink>
+        </div>
+      </template>
+    </UCard>
   </div>
 </template>
 
-<script setup>
-import { ref, onMounted } from "vue";
-
-// Declare refs and Supabase client
-const telegramButton = ref(null);
-
-onMounted(() => {
-  // Load the Telegram login widget script
-  const script = document.createElement("script");
-  script.src = "https://telegram.org/js/telegram-widget.js?7"; // Ensure this URL is correct
-  script.async = true;
-  const supabase = useSupabaseClient();
-
-  // Add an onload event listener to check if the script loads
-  script.onload = () => {
-    console.log("Telegram widget script loaded successfully.");
-
-    if (window.TelegramLoginWidget) {
-      // Initialize the Telegram Login Widget
-      window.TelegramLoginWidget.create({
-        botName: useRuntimeConfig().TELEGRAM_BOT_NAME, // Use the bot name from the environment variables
-        dataHash: useRuntimeConfig().TELEGRAM_DATA_HASH, // Use the data hash from the environment variables
-        requestAccess: "write",
-        container: telegramButton.value, // Reference to the container div
-        onAuth: async (data) => {
-          // Handle Telegram authentication response
-          console.log("Authenticated with Telegram:", data);
-
-          // Send the data to the backend for verification and login
-          const response = await fetch("/api/auth/telegram", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(data),
-          });
-
-          const result = await response.json();
-
-          if (result.status === "success") {
-            // Redirect to the dashboard or another protected route
-            window.location.href = "/dashboard"; // Change to your desired route
-          } else {
-            console.error("Login failed:", result.message);
-          }
-        },
-      });
-    } else {
-      console.error("TelegramLoginWidget is not defined");
-    }
-  };
-
-  // Handle script load error
-  script.onerror = () => {
-    console.error("Failed to load Telegram widget script");
-  };
-
-  // Append the script to the document
-  document.body.appendChild(script);
+<script setup lang="ts">
+definePageMeta({
+  layout: "login",
 });
+useHead({
+  title: "Login | supaAuth",
+});
+const user = useSupabaseUser();
+const loading = ref(false);
+const authError = ref("");
+const email = ref("");
+const password = ref("");
+const client = useSupabaseClient();
+
+watchEffect(async () => {
+  if (user.value) {
+    await navigateTo("/");
+  }
+});
+
+const login = async () => {
+  loading.value = true;
+  const { error } = await client.auth.signInWithPassword({
+    email: email.value,
+    password: password.value,
+  });
+  if (error) {
+    loading.value = false;
+    authError.value = "Invalid login credentials";
+    setTimeout(() => {
+      authError.value = "";
+    }, 5000);
+  } else {
+    // Navigate to a different page on successful login or handle success case
+    loading.value = false;
+  }
+};
+
+const clearError = () => {
+  authError.value = "";
+};
 </script>
-
-<style scoped>
-.login-page {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-}
-
-.telegram-login-button {
-  margin-top: 20px;
-}
-</style>

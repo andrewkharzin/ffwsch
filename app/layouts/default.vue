@@ -1,9 +1,18 @@
 <script setup lang="ts">
+// Import role-based link configurations
+import { customerLinks } from "../components/links/customersLinks";
+import { managerLinks } from "../components/links/managersLinks";
+import { staffLinks } from "../components/links/staffLinks";
+import { accounterLinks } from "../components/links/accountersLinks";
+
 const route = useRoute();
 const appConfig = useAppConfig();
 const { isHelpSlideoverOpen } = useDashboard();
 
-const links = [
+const { user } = useSupabaseUserrito(); // Call your composable here
+const supabase = useSupabaseClient();
+// Define all links
+const allLinks = [
   {
     id: "home",
     label: "Home",
@@ -14,52 +23,6 @@ const links = [
       shortcuts: ["G", "H"],
     },
   },
-  // {
-  //   id: "inbox",
-  //   label: "Inbox",
-  //   icon: "i-heroicons-inbox",
-  //   to: "/inbox",
-  //   badge: "4",
-  //   tooltip: {
-  //     text: "Inbox",
-  //     shortcuts: ["G", "I"],
-  //   },
-  // },
-  // {
-  //   id: "users",
-  //   label: "Users",
-  //   icon: "i-heroicons-user-group",
-  //   to: "/users",
-  //   tooltip: {
-  //     text: "Users",
-  //     shortcuts: ["G", "U"],
-  //   },
-  // },
-  // {
-  //   id: "settings",
-  //   label: "Settings",
-  //   to: "/settings",
-  //   icon: "i-heroicons-cog-8-tooth",
-  //   children: [
-  //     {
-  //       label: "General",
-  //       to: "/settings",
-  //       exact: true,
-  //     },
-  //     {
-  //       label: "Members",
-  //       to: "/settings/members",
-  //     },
-  //     {
-  //       label: "Notifications",
-  //       to: "/settings/notifications",
-  //     },
-  //   ],
-  //   tooltip: {
-  //     text: "Settings",
-  //     shortcuts: ["G", "S"],
-  //   },
-  // },
   {
     id: "services",
     label: "Services",
@@ -70,18 +33,18 @@ const links = [
         label: "Orders",
         to: "/services/orders",
       },
-      {
-        label: "Accounting",
-        to: "/services/accounting",
-      },
+      // {
+      //   label: "Accounting",
+      //   to: "/services/accounting",
+      // },
       {
         label: "Requests",
         to: "/services",
       },
-      {
-        label: "Types",
-        to: "/services/types",
-      },
+      // {
+      //   label: "Types",
+      //   to: "/services/types",
+      // },
       {
         label: "Customers",
         to: "/services/customers",
@@ -94,6 +57,20 @@ const links = [
   },
 ];
 
+// const customerLinks = [
+//   {
+//     id: "home",
+//     label: "Home",
+//     icon: "i-heroicons-home",
+//     to: "/",
+//     tooltip: {
+//       text: "Home",
+//       shortcuts: ["G", "H"],
+//     },
+//   },
+// ];
+
+// Define footer links
 const footerLinks = [
   {
     label: "Invite people",
@@ -107,11 +84,54 @@ const footerLinks = [
   },
 ];
 
+// const filteredLinks = computed(() => {
+//   // Log the user object for debugging
+//   console.log("User raw", user.value);
+
+//   // Access the user's role from app_metadata
+//   const userRole = user.value?.app_metadata?.role;
+
+//   // Debugging to see the role extracted
+//   console.log("User Role:", userRole);
+
+//   // Check the user's role and filter links accordingly
+//   if (userRole === "customer") {
+//     return []; // Hide links for 'customer' role
+//   } else if (userRole === "staff") {
+//     return allLinks; // Show all links for 'staff' role
+//   }
+
+//   // If role is neither customer nor staff, you might want to return an empty array or some default links
+//   return []; // Adjust as needed for other roles
+// });
+
+// Filter links based on user role
+const filteredLinks = computed(() => {
+  console.log("User raw", user.value);
+
+  const userRole = user.value?.app_metadata?.role;
+  console.log("User Role:", userRole);
+
+  switch (userRole) {
+    case "customer":
+      return customerLinks;
+    case "staff":
+      return staffLinks;
+    case "manager":
+      return managerLinks;
+    case "accounter":
+      return accounterLinks;
+    default:
+      return []; // If the role doesn't match any, return an empty array or default links
+  }
+});
+
+// Define other dashboard groups like "code" commands
 const groups = [
   {
     key: "links",
     label: "Go to",
-    commands: links.map((link) => ({
+    commands: filteredLinks.value.map((link) => ({
       ...link,
       shortcuts: link.tooltip?.shortcuts,
     })),
@@ -137,6 +157,7 @@ const groups = [
   },
 ];
 
+// Customize primary color options
 const defaultColors = ref(
   ["green", "teal", "cyan", "sky", "blue", "indigo", "violet"].map((color) => ({
     label: color,
@@ -170,7 +191,8 @@ const colors = computed(() =>
           <UDashboardSearchButton />
         </template>
 
-        <UDashboardSidebarLinks :links="links" />
+        <!-- Render filtered links based on user role -->
+        <UDashboardSidebarLinks :links="filteredLinks" />
 
         <UDivider />
 
