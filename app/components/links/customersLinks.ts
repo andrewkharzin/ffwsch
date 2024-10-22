@@ -15,4 +15,8 @@ export const customerLinks = [
     icon: "i-heroicons-shopping-cart",
     to: "/orders",
   },
+  {
+    label: 'Test New Req',
+    to: '/services/requests/new'
+  }
 ];

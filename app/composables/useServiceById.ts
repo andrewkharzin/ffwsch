@@ -14,6 +14,7 @@ export const useServiceById = (serviceId: string) => {
           id,
           description,
           service_date,
+          service_time,
           customers(full_name, company_id(company_name), profiles(avatar_url)),
           service_orders(serial_number)
         `)

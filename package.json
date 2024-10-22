@@ -33,7 +33,8 @@
     "node-telegram-bot-api": "^0.66.0",
     "nuxt": "^3.13.2",
     "pinia": "^2.2.4",
-    "v-calendar": "^3.1.2"
+    "v-calendar": "^3.1.2",
+    "vue3-timepicker": "1.0.0-beta.2"
   },
   "devDependencies": {
     "@nuxt/eslint": "^0.5.7",

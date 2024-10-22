@@ -44,6 +44,7 @@ export function useServiceOrder() {
             id,
             service_type_id,
             service_date,
+            service_time,
             created_at,
             description,
             status_id,
