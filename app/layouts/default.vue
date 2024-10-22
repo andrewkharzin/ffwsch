@@ -4,6 +4,7 @@ import { customerLinks } from "../components/links/customersLinks";
 import { managerLinks } from "../components/links/managersLinks";
 import { staffLinks } from "../components/links/staffLinks";
 import { accounterLinks } from "../components/links/accountersLinks";
+import { useUserStore } from "../../stores/userStore";
 
 const route = useRoute();
 const appConfig = useAppConfig();
@@ -84,35 +85,19 @@ const footerLinks = [
   },
 ];
 
-// const filteredLinks = computed(() => {
-//   // Log the user object for debugging
-//   console.log("User raw", user.value);
+// Initialize user store
+const userStore = useUserStore();
 
-//   // Access the user's role from app_metadata
-//   const userRole = user.value?.app_metadata?.role;
+// Fetch user role when the component is mounted
+onMounted(() => {
+  if (!userStore.role) {
+    userStore.fetchUserRole();
+  }
+});
 
-//   // Debugging to see the role extracted
-//   console.log("User Role:", userRole);
-
-//   // Check the user's role and filter links accordingly
-//   if (userRole === "customer") {
-//     return []; // Hide links for 'customer' role
-//   } else if (userRole === "staff") {
-//     return allLinks; // Show all links for 'staff' role
-//   }
-
-//   // If role is neither customer nor staff, you might want to return an empty array or some default links
-//   return []; // Adjust as needed for other roles
-// });
-
-// Filter links based on user role
-const filteredLinks = computed(() => {
-  console.log("User raw", user.value);
-
-  const userRole = user.value?.app_metadata?.role;
-  console.log("User Role:", userRole);
-
-  switch (userRole) {
+// Get links based on user role
+const getLinksByRole = (role: string) => {
+  switch (role) {
     case "customer":
       return customerLinks;
     case "staff":
@@ -122,8 +107,17 @@ const filteredLinks = computed(() => {
     case "accounter":
       return accounterLinks;
     default:
-      return []; // If the role doesn't match any, return an empty array or default links
+      return [];
   }
+};
+
+// Compute filtered links based on the role
+const filteredLinks = computed(() => {
+  if (userStore.isLoading) {
+    return []; // Return empty while loading
+  }
+
+  return userStore.role ? getLinksByRole(userStore.role) : [];
 });
 
 // Define other dashboard groups like "code" commands
@@ -191,8 +185,13 @@ const colors = computed(() =>
           <UDashboardSearchButton />
         </template>
 
-        <!-- Render filtered links based on user role -->
-        <UDashboardSidebarLinks :links="filteredLinks" />
+        <!-- Render a loader or placeholder while role is being fetched -->
+        <template v-if="userStore.isLoading">
+          <p>Loading...</p>
+        </template>
+
+        <!-- Render filtered links after role is fetched -->
+        <UDashboardSidebarLinks v-else :links="filteredLinks" />
 
         <UDivider />
 

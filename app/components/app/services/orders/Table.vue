@@ -55,7 +55,7 @@
             {{ new Date(row.service_date).toLocaleDateString() }}
           </span>
           <span
-            class="p-[0.2rem] ml-2 text-sm text-white border-l border-gray-400"
+            class="p-[0.2rem] ml-2 text-xs text-white border rounded-md border-gray-400"
           >
             {{
               new Date(row.service_date).toLocaleTimeString([], {
@@ -205,7 +205,9 @@ const sort = ref({ column: "service_date", direction: "asc" as const });
 const selectedCompany = ref(null);
 const selectedColumns = ref([
   { key: "select", label: "", width: "30px" },
+
   { key: "full_name", label: "Customer", sortable: true },
+  { key: "service_date", label: "Date", width: "30px" },
   { key: "type_name", label: "Type", sortable: true },
   { key: "service_status", label: "Status" },
 ]);
