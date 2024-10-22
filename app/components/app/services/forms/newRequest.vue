@@ -57,15 +57,13 @@
           />
         </UFormGroup>
 
-        <UFormGroup label="Status">
-          <!-- <USelect
+        <UFormGroup label="Status" required>
+          <UInput
             v-model="form.status_id"
             color="primary"
             variant="outline"
-            :options="formattedStatuses"
-            placeholder="Select Status"
-            required
-          /> -->
+            :disabled="true"
+          />
         </UFormGroup>
 
         <div class="w-full">
@@ -75,7 +73,8 @@
             variant="soft"
             class="w-full sm:w-auto"
           >
-            Submit
+            {{ isEditMode ? 'Send' : 'Submit' }}
+            <!-- Dynamic button label -->
           </UButton>
         </div>
       </div>
@@ -83,9 +82,11 @@
   </form>
 </template>
 
+
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { format } from 'date-fns'
+import { useServiceStore } from '../../../../stores/serviceStore' // Ensure correct path
 
 const props = defineProps({
   serviceTypes: {
@@ -100,32 +101,40 @@ const props = defineProps({
 
 const emit = defineEmits(['serviceCreated'])
 const date = ref(new Date())
+const serviceStore = useServiceStore() // Using Pinia store
 
 const form = ref({
   service_type_id: '',
-  service_date: new Date().toISOString().split('T')[0], // Set default date
+  service_date: new Date().toISOString().split('T')[0],
   service_time: '',
   description: '',
-  status_id: '',
+  status_id: 'Draft', // Default status for new entries
   user_id: ''
 })
 
-const { createService } = useNewService()
 const user = useSupabaseUser()
 
+// Computed property to determine if in edit mode
+const isEditMode = computed(() => serviceStore.isEditMode)
+
+// Watch the service store to update the form when in edit mode
+watch(
+  () => serviceStore.service,
+  (newService) => {
+    if (newService) {
+      form.value = { ...newService }
+      date.value = newService.service_date // Update date
+    }
+  },
+  { immediate: true }
+)
+
 // Format the service types for USelect component
-const formattedServiceTypes = computed(() => {
-  return props.serviceTypes
-})
+const formattedServiceTypes = computed(() => props.serviceTypes)
 
-// Format the statuses for USelect component
-const formattedStatuses = computed(() => {
-  return props.statuses
-})
-
+// Handle time changes
 const handleTimeChange = (selectedTime) => {
   if (selectedTime instanceof Date && !isNaN(selectedTime.getTime())) {
-    // Format the selected time to 'HH:mm:ss'
     form.value.service_time = selectedTime.toLocaleTimeString('en-GB', {
       hour12: false
     })
@@ -135,16 +144,13 @@ const handleTimeChange = (selectedTime) => {
   }
 }
 
+// Submit form logic
 const submitForm = async () => {
-  console.log('Submitting form...')
-
   if (!user.value) {
-    console.error('User not logged in.')
     alert('You must be logged in to create a service request.')
     return
   }
 
-  // Check if the time is valid before submission
   if (!form.value.service_time || form.value.service_time === 'Invalid Date') {
     alert('Please select a valid time.')
     return
@@ -153,19 +159,30 @@ const submitForm = async () => {
   const newService = {
     ...form.value,
     user_id: user.value.id,
-    service_date: date.value // Ensure this is correctly se
+    service_date: date.value
   }
-  console.log('User ID', newService)
 
   try {
-    const response = await createService(newService)
+    if (!isEditMode.value) {
+      // Creating a new service
+      newService.status_id = 'Draft' // Set status to Draft for new services
+    } else {
+      // Editing an existing service
+      newService.status_id = 'New' // Set status to New for edited services
+    }
 
-    if (response && response.error) {
-      console.error('Error from createService:', response.error.message)
+    const response = await serviceStore.submitService(newService)
+
+    if (response.error) {
       alert('Error creating service: ' + response.error.message)
     } else {
-      alert('Service request created successfully!')
-      emit('serviceCreated', response.data[0].id)
+      alert(
+        'Service request ' +
+          (isEditMode.value ? 'updated' : 'created') +
+          ' successfully!'
+      )
+      emit('serviceCreated', response.data.id) // Emit event with new service ID
+      serviceStore.resetService() // Reset the store for new entries
     }
   } catch (error) {
     console.error('Unexpected error:', error)
@@ -174,5 +191,3 @@ const submitForm = async () => {
 }
 </script>
 
-<style scoped>
-</style>
