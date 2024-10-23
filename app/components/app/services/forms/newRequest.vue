@@ -27,11 +27,12 @@
           </div>
 
           <div class="flex-auto w-full">
-            <UFormGroup label="Time" required>
-              <UiTimePicker
+            <UFormGroup label="Time">
+              <!-- <UiTimePicker
                 v-model="form.service_time"
                 @change="handleTimeChange"
-              />
+              /> -->
+              <UInput v-model="form.service_time" />
             </UFormGroup>
           </div>
         </div>
@@ -82,7 +83,6 @@
   </form>
 </template>
 
-
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import { format } from 'date-fns'
@@ -99,6 +99,8 @@ const props = defineProps({
   }
 })
 
+const { customer, error, loading, fetchCustomerByUserId } =
+  useCustomerByUserId()
 const emit = defineEmits(['serviceCreated'])
 const date = ref(new Date())
 const serviceStore = useServiceStore() // Using Pinia store
@@ -108,7 +110,7 @@ const form = ref({
   service_date: new Date().toISOString().split('T')[0],
   service_time: '',
   description: '',
-  status_id: 'Draft', // Default status for new entries
+  status_id: 'a2b67304-0593-4eb7-96b8-97e05a198597', // Default status for new entries
   user_id: ''
 })
 
@@ -132,18 +134,6 @@ watch(
 // Format the service types for USelect component
 const formattedServiceTypes = computed(() => props.serviceTypes)
 
-// Handle time changes
-const handleTimeChange = (selectedTime) => {
-  if (selectedTime instanceof Date && !isNaN(selectedTime.getTime())) {
-    form.value.service_time = selectedTime.toLocaleTimeString('en-GB', {
-      hour12: false
-    })
-  } else {
-    console.error('Invalid time selected:', selectedTime)
-    form.value.service_time = null
-  }
-}
-
 // Submit form logic
 const submitForm = async () => {
   if (!user.value) {
@@ -151,26 +141,45 @@ const submitForm = async () => {
     return
   }
 
-  if (!form.value.service_time || form.value.service_time === 'Invalid Date') {
-    alert('Please select a valid time.')
+  const customerData = await fetchCustomerByUserId()
+
+  if (!customerData || !customerData.id) {
+    alert('Customer not found. Please ensure your account is set up correctly.')
     return
   }
 
   const newService = {
     ...form.value,
     user_id: user.value.id,
-    service_date: date.value
+    customer_id: customerData.id,
+    service_date: new Date(date.value).toISOString().split('T')[0] // Convert date to 'YYYY-MM-DD'
   }
 
-  try {
-    if (!isEditMode.value) {
-      // Creating a new service
-      newService.status_id = 'Draft' // Set status to Draft for new services
-    } else {
-      // Editing an existing service
-      newService.status_id = 'New' // Set status to New for edited services
-    }
+  // Validate UUID fields
+  if (
+    !newService.customer_id ||
+    !newService.service_type_id ||
+    !newService.user_id
+  ) {
+    console.error('Invalid UUIDs:', {
+      customer_id: newService.customer_id,
+      service_type_id: newService.service_type_id,
+      user_id: newService.user_id
+    })
+    return // Exit if there are invalid UUIDs
+  }
 
+  // Assign the status_id based on edit mode
+  if (!isEditMode.value) {
+    newService.status_id = serviceStore.statusIds.draft // Ensure this is a valid UUID
+  } else {
+    newService.status_id = serviceStore.statusIds.new // Ensure this is a valid UUID
+  }
+
+  // Log the newService object before submission
+  console.log('newService object', newService)
+
+  try {
     const response = await serviceStore.submitService(newService)
 
     if (response.error) {
@@ -181,7 +190,7 @@ const submitForm = async () => {
           (isEditMode.value ? 'updated' : 'created') +
           ' successfully!'
       )
-      emit('serviceCreated', response.data.id) // Emit event with new service ID
+      emit('serviceCreated', response.id) // Emit event with new service ID
       serviceStore.resetService() // Reset the store for new entries
     }
   } catch (error) {
@@ -190,4 +199,3 @@ const submitForm = async () => {
   }
 }
 </script>
-
