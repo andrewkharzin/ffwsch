@@ -1,189 +1,107 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
-import { Database } from "@/types/supabase";
+import { ref, computed } from 'vue'
 
-// Определяем тип для элементов в массиве ссылок
-interface LinkItem {
-  label: string;
-  icon: string;
-  component: string;
-  to: string;
-  flashing?: boolean | Ref<boolean>;
-}
-// Types for Service and CustomerCompany from Supabase types
-type Service = Database["public"]["Tables"]["services"]["Row"];
-type CustomerCompany = Database["public"]["Tables"]["customer_company"]["Row"];
-
-// State variables
-const q = ref(""); // Query string for filtering services
-const selected = ref<Service[]>([]); // Selected rows
-const selectedStatuses = ref<string[]>([]); // Selected statuses filter
-const selectedLocations = ref<string[]>([]); // Selected locations filter
-const selectedCompany = ref<CustomerCompany | null>(null); // Selected company filter
-const sort = ref({ column: "service_date", direction: "asc" as const }); // Sorting configuration
-
-// Use the useServices composable
-// Use the useOrders composable
-const { newOrderAlert } = useOrders();
-const { services, loading, error } = useServices();
+// Получаем данные сервисов и компаний
+const { services, loading, error } = useServices()
 const {
   companies: companyNames,
   loading: loadingCompanies,
-  error: companyError,
-} = useCompany();
+  error: companyError
+} = useCompany()
 
-// Computed property for generating the query based on filters
-const query = computed(() => {
-  console.log("Query updated:", {
-    q: q.value,
-    statuses: selectedStatuses.value,
-    locations: selectedLocations.value,
-    company: selectedCompany?.company_name || null,
-    sort: sort.value.column,
-    order: sort.value.direction,
-  });
-  return {
-    q: q.value,
-    statuses: selectedStatuses.value,
-    locations: selectedLocations.value,
-    company: selectedCompany?.company_name || null, // Company filter
-    sort: sort.value.column,
-    order: sort.value.direction,
-  };
-});
+// Переменная для ID выбранной компании
+const selectedCompanyId = ref(null)
 
-// Handle sorting changes
-type SortOrder = { column: string; direction: "asc" | "desc" };
-const handleSortChange = (newSort: SortOrder) => {
-  sort.value = newSort;
-};
+console.log('Company Names:', companyNames)
+console.log('Services:', services)
 
-// Handle company filter changes
-const handleFilterChange = (companyName: string | null) => {
-  selectedCompany.value =
-    companyNames.value?.find(
-      (company) => company.company_name === companyName
-    ) || null;
-};
+// Фильтрация сервисов по выбранной компании
+const filteredServices = computed(() => {
+  console.log('Selected Company ID:', selectedCompanyId.value)
 
-// Handle row selection
-const handleRowSelect = (selectedRows: Service[]) => {
-  selected.value = selectedRows;
-  console.log("Selected rows: ", selectedRows);
-};
+  // Получаем название выбранной компании
+  const selectedCompanyName = companyNames.value.find(
+    (company) => company.id === selectedCompanyId.value
+  )?.company_name
 
-const links = [
-  [
-    {
-      label: "home",
-      icon: "i-heroicons-home",
-      component: "NuxtLink",
-      to: `/`,
-    },
-    // {
-    //   label: "Orders",
-    //   icon: "i-heroicons-queue-list",
-    //   component: "NuxtLink",
-    //   to: `/services/orders`,
-    // },
-    {
-      label: "Orders",
-      icon: "i-heroicons-queue-list",
-      component: "NuxtLink",
-      to: `/services/orders`,
-    },
-  ],
-  [
-    {
-      label: "Documentation",
-      icon: "i-heroicons-book-open",
-      to: "https://ui.nuxt.com/pro",
-      target: "_blank",
-    },
-  ],
-];
+  console.log('Selected Company Name:', selectedCompanyName) // Логируем имя выбранной компании
+
+  const filtered = services.value.filter((service) => {
+    console.log('Service:', service) // Логируем каждый сервис
+
+    // Получаем имя компании из объекта service.customers
+    const companyName = service.customers?.company_id.company_name // Используем опциональную цепочку, чтобы избежать ошибок
+    console.log(
+      'companyName Fetched from service.customers?.company_id.company_name :',
+      companyName
+    ) // Логируем каждый сервис
+
+    // Если companyName не определено, то это значит, что сервис не привязан к компании
+    if (!companyName) {
+      console.warn(`Company name is undefined for service ID: ${service.id}`)
+    }
+
+    const match = selectedCompanyName
+      ? companyName === selectedCompanyName // Сравнение по имени компании
+      : true
+
+    console.log(
+      `Comparing service.company_name ${companyName} with selectedCompanyName ${selectedCompanyName}: ${match}`
+    )
+    return match
+  })
+
+  console.log('Filtered Services:', filtered) // Лог результатов фильтрации
+  return filtered
+})
 </script>
 
 <template>
   <UDashboardPage>
     <UDashboardPanel grow>
-      <UDashboardNavbar title="Services" :badge="services.length">
-        <template #right>
-          <UInput
-            v-model="q"
-            icon="i-heroicons-funnel"
-            autocomplete="off"
-            placeholder="Filter services..."
-            class="hidden lg:block"
-          />
-        </template>
-      </UDashboardNavbar>
-      <UDashboardToolbar class="ml-4 py-0 px-1.5 overflow-x-auto">
-        <UHorizontalNavigation :links="links" />
-      </UDashboardToolbar>
+      <UDashboardNavbar title="Services" :badge="services.length" />
 
-      <!-- Toolbar with columns selection and company filter -->
+      <!-- Toolbar with company filter -->
       <UDashboardToolbar>
-        <template #left>
-          <USelectMenu
-            v-model="selectedColumns"
-            icon="i-heroicons-adjustments-horizontal-solid"
-            :options="defaultColumns"
-            multiple
-          >
-            <template #label> Display </template>
-          </USelectMenu>
-        </template>
-
-        <!-- Add the company filter to the toolbar, aligned to the right -->
         <template #right>
-          <AppServicesOrdersUiCompanyFilter
-            :companyNames="
-              companyNames?.length ? companyNames : ['No companies available']
+          <!-- <USelect
+            v-model="selectedCompanyId"
+            :options="
+              companyNames.map((company) => ({
+                label: company.company_name,
+                value: company.id
+              }))
             "
-            @update-company="handleFilterChange"
+            placeholder="Select Company"
+          /> -->
+          <USelect
+            v-model="selectedCompanyId"
+            :options="[
+              { label: 'All', value: null }, // Adding the 'All' option
+              ...companyNames.map((company) => ({
+                label: company.company_name,
+                value: company.id
+              }))
+            ]"
+            placeholder="Select Company"
           />
         </template>
       </UDashboardToolbar>
 
-      <!-- Display services table with sorting, filtering, and selection -->
+      <!-- Таблица сервисов -->
       <AppServicesOrdersTable
-        :services="services"
+        :services="filteredServices"
         :loading="loading"
         :error="error"
-        @sort-change="handleSortChange"
-        @filter-change="handleFilterChange"
-        @select-row="handleRowSelect"
       />
 
-      <!-- Error Handling for Services -->
+      <!-- Ошибки -->
       <template v-if="error">
         <p>Error: {{ error }}</p>
       </template>
-      <!-- Error Handling for Companies -->
       <template v-if="companyError">
         <p>Error fetching companies: {{ companyError }}</p>
       </template>
     </UDashboardPanel>
   </UDashboardPage>
 </template>
-
-<style scope>
-/* Определение анимации мигания */
-@keyframes flash {
-  0% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
-/* Класс для мигания */
-.flash-animation {
-  animation: flash 1s ease-in-out infinite;
-}
-</style>

@@ -55,10 +55,11 @@
             :options="formattedServiceTypes"
             placeholder="Select Service Type"
             required
+            @change="(value) => console.log('Selected Service Type ID:', value)"
           />
         </UFormGroup>
 
-        <UFormGroup label="Status" required>
+        <UFormGroup label="Status">
           <UInput
             v-model="form.status_id"
             color="primary"
@@ -88,6 +89,7 @@ import { ref, computed, watch } from 'vue'
 import { format } from 'date-fns'
 import { useServiceStore } from '../../../../stores/serviceStore' // Ensure correct path
 
+
 const props = defineProps({
   serviceTypes: {
     type: Array,
@@ -99,8 +101,11 @@ const props = defineProps({
   }
 })
 
+
 const { customer, error, loading, fetchCustomerByUserId } =
   useCustomerByUserId()
+
+
 const emit = defineEmits(['serviceCreated'])
 const date = ref(new Date())
 const serviceStore = useServiceStore() // Using Pinia store
@@ -113,6 +118,8 @@ const form = ref({
   status_id: 'a2b67304-0593-4eb7-96b8-97e05a198597', // Default status for new entries
   user_id: ''
 })
+
+
 
 const user = useSupabaseUser()
 
@@ -134,6 +141,22 @@ watch(
 // Format the service types for USelect component
 const formattedServiceTypes = computed(() => props.serviceTypes)
 
+watch(
+  () => props.serviceTypes,
+  (newServiceTypes) => {
+    formattedServiceTypes.value = newServiceTypes.map(type => ({
+      label: type.type_name,
+      value: type.id
+    }));
+  },
+  { immediate: true } // Ensure it runs immediately on the initial render
+);
+
+watch(() => form.value.service_type_id, (newValue) => {
+  console.log('Updated Service Type ID:', newValue);
+});
+
+
 // Submit form logic
 const submitForm = async () => {
   if (!user.value) {
@@ -148,13 +171,32 @@ const submitForm = async () => {
     return
   }
 
-  const newService = {
-    ...form.value,
-    user_id: user.value.id,
-    customer_id: customerData.id,
-    service_date: new Date(date.value).toISOString().split('T')[0] // Convert date to 'YYYY-MM-DD'
+  // Check service_type_id specifically
+  console.log('Service Type ID before submission:', form.value.service_type_id);
+  // Проверка перед отправкой
+  if (!form.value.service_type_id) {
+    console.warn("Service Type ID is required."); // Вывод предупреждения
+    return; // Прекращаем выполнение, если значение отсутствует
   }
 
+  const newService = {
+    service_type_id: form.value.service_type_id || null, // Убедитесь, что это не пустая строка
+    user_id: user.value.id,
+    customer_id: customerData.id,
+    service_date: new Date(date.value).toISOString().split('T')[0],
+    service_time: form.value.service_time || null, // Убедитесь, что это не пустая строка
+    description: form.value.description || '', // Это может быть пустой строкой
+    status_id: form.value.status_id || null // Убедитесь, что это не пустая строка
+  };
+
+  console.log("New Service before submission:", newService); // Логирование объекта
+
+  try {
+    // Отправка данных в useCrudService
+    await serviceStore.insertService(newService); // Вставка данных
+  } catch (error) {
+    console.error('Ошибка при отправке услуги:', error);
+  }
   // Validate UUID fields
   if (
     !newService.customer_id ||
@@ -168,6 +210,8 @@ const submitForm = async () => {
     })
     return // Exit if there are invalid UUIDs
   }
+  // Ensure service_type_id is correctly set
+  console.log('New Service before submission:', newService); // Log newService object before use
 
   // Assign the status_id based on edit mode
   if (!isEditMode.value) {
@@ -198,4 +242,21 @@ const submitForm = async () => {
     alert('An unexpected error occurred. Please try again later.')
   }
 }
+
+watch(
+  () => form.value.service_type_id,
+  (newServiceTypeId) => {
+    console.log('Service type ID updated to:', newServiceTypeId);
+  }
+);
+watch(
+  () => serviceStore.service,
+  (newService) => {
+    if (newService) {
+      form.value = { ...newService }
+      date.value = newService.service_date // Update date
+    }
+  },
+  { immediate: true }
+)
 </script>

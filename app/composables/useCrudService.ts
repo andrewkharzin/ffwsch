@@ -1,5 +1,5 @@
-import { ref } from 'vue';
-import type { Database } from '~/types/database';
+import { ref, toRaw } from 'vue';
+import type { Database } from '@/types/database';
 
 type ServiceInsert = Database['public']['Tables']['services']['Insert'];
 type ServiceUpdate = Database['public']['Tables']['services']['Update'];
@@ -9,11 +9,15 @@ export const useCrudService = () => {
 
   // Insert service
   const insertService = async (serviceData: ServiceInsert) => {
+    const rawServiceData = toRaw(serviceData); // Убираем реактивность
+    console.log('Preparing to insert service with data:', rawServiceData); // Log the data to be inserted
+
     try {
       const { data, error } = await supabase
         .from('services')
-        .insert([serviceData]);
+        .insert([rawServiceData]); // Используем rawServiceData
 
+      console.log('Inserting service with data:', rawServiceData);
       if (error) {
         throw new Error(`Failed to insert service: ${error.message}`);
       }
@@ -28,10 +32,13 @@ export const useCrudService = () => {
 
   // Update service
   const updateService = async (id: string, serviceData: ServiceUpdate) => {
+    const rawServiceData = toRaw(serviceData); // Убираем реактивность
+    console.log('Preparing to update service with data:', rawServiceData);
+
     try {
       const { data, error } = await supabase
         .from('services')
-        .update(serviceData)
+        .update(rawServiceData) // Используем rawServiceData
         .eq('id', id);
 
       if (error) {

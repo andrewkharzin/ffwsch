@@ -42,7 +42,8 @@ export default defineNuxtConfig({
   },
   alias: {
     '@': '/types',
-    '~': '/assets'
+    '~': '/assets',
+    '@@/': '/'
   },
 
   compatibilityDate: '2024-07-11'

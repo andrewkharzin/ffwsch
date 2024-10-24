@@ -4,7 +4,7 @@ import { customerLinks } from "../components/links/customersLinks";
 import { managerLinks } from "../components/links/managersLinks";
 import { staffLinks } from "../components/links/staffLinks";
 import { accounterLinks } from "../components/links/accountersLinks";
-import { useUserStore } from "../../stores/userStore";
+import { useUserStore } from "../stores/userStore";
 
 const route = useRoute();
 const appConfig = useAppConfig();

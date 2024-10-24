@@ -238,11 +238,14 @@ const companyNames = computed(() => {
 })
 
 const filteredServices = computed(() => {
-  return selectedCompany.value
-    ? props.services.filter(
-        (s) => s.customers?.company_id?.company_name === selectedCompany.value
-      )
-    : props.services
+  return props.services.filter((service) => {
+    const matchesCompany = selectedCompany.value
+      ? service.customers?.company_id?.company_name ===
+        selectedCompany.value.company_name
+      : true
+    // Apply other filters (statuses, locations, etc.) as needed
+    return matchesCompany
+  })
 })
 
 watchEffect(() => {
