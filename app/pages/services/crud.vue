@@ -6,29 +6,44 @@
     <form @submit.prevent="isEditing ? handleUpdateService() : handleInsertService()">
       <div class="form-group">
         <label for="service-type">Service Type</label>
-        <select v-model="serviceData.service_type_id" required>
+        <!-- <select v-model="serviceData.service_type_id" required>
           <option v-for="type in serviceTypes" :key="type.id" :value="type.id">
             {{ type.type_name }}
           </option>
-        </select>
+        </select> -->
+        <USelect
+            v-model="serviceData.service_type_id"
+            :options="serviceTypes.map(type => ({ value: type.id, label: type.type_name }))"
+            required
+          />
       </div>
 
       <div class="form-group">
         <label for="service-status">Service Status</label>
-        <select v-model="serviceData.status_id" required>
+        <!-- <select v-model="serviceData.status_id" required>
           <option v-for="status in serviceStatuses" :key="status.id" :value="status.id">
             {{ status.status }}
           </option>
-        </select>
+        </select> -->
+        <USelect
+            v-model="serviceData.status_id"
+            :options="serviceStatuses.map(status => ({ value: status.id, label: status.status }))"
+            required
+          />
       </div>
 
       <div class="form-group">
         <label for="customer">Customer</label>
-        <select v-model="serviceData.customer_id" required>
+        <!-- <select v-model="serviceData.customer_id" required>
           <option v-for="customer in customers" :key="customer.id" :value="customer.id">
             {{ customer.full_name }}
           </option>
-        </select>
+        </select> -->
+        <USelect
+            v-model="serviceData.customer_id"
+            :options="customers.map(customer => ({ value: customer.id, label: customer.full_name }))"
+            required
+          />
       </div>
 
       <div class="form-group">
@@ -38,9 +53,9 @@
 
       <div class="form-group">
         <label for="description">Description</label>
-        <textarea v-model="serviceData.description" placeholder="Service description"></textarea>
+        <!-- <textarea v-model="serviceData.description" placeholder="Service description"></textarea> -->
+        <UTextarea v-model="serviceData.description" color="gray" variant="outline" />
       </div>
-
       <button type="submit">{{ isEditing ? 'Update' : 'Add' }} Service</button>
       <button type="button" v-if="isEditing" @click="cancelEdit">Cancel</button>
     </form>
@@ -61,15 +76,16 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="srv in services" :key="srv.id">
-          <td>{{ srv.servicetype?.type_name }}</td>
-          <td>{{ srv.servicestatuses?.status }}</td>
-          <td>{{ srv.customers?.full_name }}</td>
-          <td>{{ srv.service_date }}</td>
-          <td>{{ srv.description }}</td>
+        <tr v-for="srv in services" :key="srv?.id">
+          <td>{{ srv?.servicetype?.type_name }}</td>
+          <td>{{ srv?.servicestatuses?.status }}</td>
+          <td>{{ srv?.customers?.full_name }}</td>
+          <td>{{ srv?.service_date }}</td>
+          <td>{{ srv?.description }}</td>
           <td>
             <button @click="editService(srv)">Edit</button>
-            <button @click="handleDeleteService(srv.id)">Delete</button>
+            <button @click="onEditButtonClick(srv.id)">EditLog</button>
+            <button @click="handleDeleteService(srv?.id)">Delete</button>
           </td>
         </tr>
       </tbody>
@@ -85,6 +101,7 @@ const supabase = useSupabaseClient<Database>();
 const {
   services,
   fetchAllServices,
+  fetchServiceById,
   insertService,
   updateService,
   deleteService,
@@ -108,6 +125,7 @@ const editingId = ref<string | null>(null);
 onMounted(async () => {
   await fetchAllServices();
   await fetchRelatedData();
+  await fetchServiceById();
 });
 
 // Fetch related table data for select options
@@ -148,10 +166,11 @@ async function handleDeleteService(id: string) {
 }
 
 // Edit service handler
-function editService(srv: any) {
+async function editService(srv: any) {
   isEditing.value = true;
   editingId.value = srv.id;
-  serviceData.value = { ...srv };
+  await fetchServiceById(srv.id); // Fetch service data
+  serviceData.value = { ...srv }; // Populate form with the service data
 }
 
 // Cancel edit mode
@@ -170,6 +189,12 @@ function resetForm() {
   };
   isEditing.value = false;
   editingId.value = null;
+}
+
+// Assume you have a function that gets called when the edit button is clicked
+function onEditButtonClick(serviceId) {
+  // Fetch the service details to edit
+  fetchServiceById(serviceId);
 }
 </script>
 

@@ -43,7 +43,8 @@ export default defineNuxtConfig({
   alias: {
     '@': '/types',
     '~': '/assets',
-    '@@/': '/'
+    '@@/': '/',
+    'stores': '/stores' // This alias points to your Pinia store directory
   },
 
   compatibilityDate: '2024-07-11'

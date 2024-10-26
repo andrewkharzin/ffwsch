@@ -1,17 +1,15 @@
-import { ref } from 'vue';
+import { ref } from 'vue'
+import type { Database } from '@/types/supabase' // Adjust path if needed
 
-// Define types for service row and insert operations
-import type { Database } from '../types/supabase'; // Adjust path if needed
-
-type ServiceRow = Database['public']['Tables']['services']['Row'];
-type ServiceInsert = Database['public']['Tables']['services']['Insert'];
-type ServiceUpdate = Partial<ServiceInsert>;
+type ServiceRow = Database['public']['Tables']['services']['Row']
+type ServiceInsert = Database['public']['Tables']['services']['Insert']
+type ServiceUpdate = Database['public']['Tables']['services']['Update']
 
 export default function useTestServiceCrud() {
-  const supabase = useSupabaseClient();
-  const services = ref<ServiceRow[]>([]);
-  const service = ref<ServiceRow | null>(null);
-  const error = ref<string | null>(null);
+  const supabase = useSupabaseClient()
+  const services = ref<ServiceRow[]>([])
+  const service = ref<ServiceRow | null>(null)
+  const error = ref<string | null>(null)
 
   // Fetch all services with related data
   async function fetchAllServices() {
@@ -30,12 +28,12 @@ export default function useTestServiceCrud() {
             customer_company(company_name, contact_info)
           )
         `)
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
 
-      if (fetchError) throw fetchError;
-      services.value = data || [];
+      if (fetchError) throw fetchError
+      services.value = data || []
     } catch (err) {
-      error.value = `Error fetching services: ${err.message}`;
+      error.value = `Error fetching services: ${err.message}`
     }
   }
 
@@ -57,12 +55,14 @@ export default function useTestServiceCrud() {
           )
         `)
         .eq('id', serviceId)
-        .single();
+        .single()
 
-      if (fetchError) throw fetchError;
-      service.value = data;
+      if (fetchError) throw fetchError
+
+      service.value = data
+      console.log('Fetched edited service:', data) // Log fetched service details
     } catch (err) {
-      error.value = `Error fetching service by ID: ${err.message}`;
+      error.value = `Error fetching service by ID: ${err.message}`
     }
   }
 
@@ -72,35 +72,47 @@ export default function useTestServiceCrud() {
       const { data, error: insertError } = await supabase
         .from('services')
         .insert(newService)
-        .single();
+        .single()
 
-      if (insertError) throw insertError;
-      services.value.push(data);
-      return data;
+      if (insertError) throw insertError
+      services.value.push(data)
+      return data
     } catch (err) {
-      error.value = `Error inserting service: ${err.message}`;
-      return null;
+      error.value = `Error inserting service: ${err.message}`
+      return null
     }
   }
 
   // Update an existing service by ID
   async function updateService(serviceId: string, updates: ServiceUpdate) {
+    const { customer_id, description, service_date, service_type_id, status } = updates;
+    const updatesData: Partial<ServiceUpdate> = {};
+
+    if (customer_id) updatesData.customer_id = customer_id;
+    if (description) updatesData.description = description;
+    if (service_date) updatesData.service_date = service_date;
+    if (service_type_id) updatesData.service_type_id = service_type_id;
+    if (status) updatesData.status = status;
+
+    console.log('Updates to be sent:', updatesData);
+
     try {
-      const { data, error: updateError } = await supabase
+      const { data, error } = await supabase
         .from('services')
-        .update(updates)
-        .eq('id', serviceId)
-        .single();
+        .update(updatesData)
+        .eq('id', serviceId);
 
-      if (updateError) throw updateError;
+      if (error) {
+        console.error('Update error details:', error.message); // Log the error message
+        console.error('Error code:', error.code); // Log the error code
+        console.error('Error details:', error.details); // Log additional error details
+        return null;
+      }
 
-      // Update the service in the local array
-      const index = services.value.findIndex(s => s.id === serviceId);
-      if (index !== -1 && data) services.value[index] = data;
-
+      console.log('Updated service data:', data);
       return data;
     } catch (err) {
-      error.value = `Error updating service: ${err.message}`;
+      console.error('Unexpected error:', err);
       return null;
     }
   }
@@ -111,14 +123,14 @@ export default function useTestServiceCrud() {
       const { error: deleteError } = await supabase
         .from('services')
         .delete()
-        .eq('id', serviceId);
+        .eq('id', serviceId)
 
-      if (deleteError) throw deleteError;
+      if (deleteError) throw deleteError
 
       // Remove the service from the local array
-      services.value = services.value.filter(s => s.id !== serviceId);
+      services.value = services.value.filter(s => s.id !== serviceId)
     } catch (err) {
-      error.value = `Error deleting service: ${err.message}`;
+      error.value = `Error deleting service: ${err.message}`
     }
   }
 
@@ -130,6 +142,6 @@ export default function useTestServiceCrud() {
     fetchServiceById,
     insertService,
     updateService,
-    deleteService,
-  };
+    deleteService
+  }
 }
