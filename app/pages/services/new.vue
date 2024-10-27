@@ -1,5 +1,6 @@
 <template>
   <div>
+    new
     <AppServicesFormsServiceForm
       :serviceData="serviceData"
       :isEditing="isEditing"
@@ -13,12 +14,11 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
-import { useServiceStore } from '/stores/serviceStore'
+import { useServiceStore } from '../../store/serviceStore'
 
 const serviceStore = useServiceStore()
-
 // Reactive references for form data and editing state
 const serviceData = ref({
   service_type_id: '',

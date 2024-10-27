@@ -6,11 +6,6 @@
     <form @submit.prevent="isEditing ? handleUpdateService() : handleInsertService()">
       <div class="form-group">
         <label for="service-type">Service Type</label>
-        <!-- <select v-model="serviceData.service_type_id" required>
-          <option v-for="type in serviceTypes" :key="type.id" :value="type.id">
-            {{ type.type_name }}
-          </option>
-        </select> -->
         <USelect
             v-model="serviceData.service_type_id"
             :options="serviceTypes.map(type => ({ value: type.id, label: type.type_name }))"
@@ -20,11 +15,6 @@
 
       <div class="form-group">
         <label for="service-status">Service Status</label>
-        <!-- <select v-model="serviceData.status_id" required>
-          <option v-for="status in serviceStatuses" :key="status.id" :value="status.id">
-            {{ status.status }}
-          </option>
-        </select> -->
         <USelect
             v-model="serviceData.status_id"
             :options="serviceStatuses.map(status => ({ value: status.id, label: status.status }))"
@@ -34,11 +24,6 @@
 
       <div class="form-group">
         <label for="customer">Customer</label>
-        <!-- <select v-model="serviceData.customer_id" required>
-          <option v-for="customer in customers" :key="customer.id" :value="customer.id">
-            {{ customer.full_name }}
-          </option>
-        </select> -->
         <USelect
             v-model="serviceData.customer_id"
             :options="customers.map(customer => ({ value: customer.id, label: customer.full_name }))"

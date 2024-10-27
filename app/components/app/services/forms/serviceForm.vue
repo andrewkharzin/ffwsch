@@ -2,76 +2,89 @@
   <form @submit.prevent="onSubmit">
     <div class="form-group">
       <label for="service-type">Service Type</label>
-      <select v-model="serviceData.service_type_id" required>
-        <option v-for="type in serviceTypes" :key="type.id" :value="type.id">
-          {{ type.type_name }}
-        </option>
-      </select>
+      <USelect
+        v-model="serviceData.service_type_id"
+        :options="serviceTypes.map(type => ({ label: type.type_name, value: type.id }))"
+        placeholder="Select Service Type"
+        required
+      />
     </div>
 
     <div class="form-group">
       <label for="service-status">Service Status</label>
-      <select v-model="serviceData.status_id" required>
-        <option v-for="status in serviceStatuses" :key="status.id" :value="status.id">
-          {{ status.status }}
-        </option>
-      </select>
+      <USelect
+        v-model="serviceData.status_id"
+        :options="serviceStatuses.map(status => ({ label: status.status, value: status.id }))"
+        placeholder="Select Service Status"
+        required
+      />
     </div>
 
     <div class="form-group">
       <label for="customer">Customer</label>
-      <select v-model="serviceData.customer_id" required>
-        <option v-for="customer in customers" :key="customer.id" :value="customer.id">
-          {{ customer.full_name }}
-        </option>
-      </select>
+      <USelect
+        v-model="serviceData.customer_id"
+        :options="customers.map(customer => ({ label: customer.full_name, value: customer.id }))"
+        placeholder="Select Customer"
+        required
+      />
     </div>
 
-    <button type="submit">{{ isEditing ? 'Update' : 'Add' }}</button>
-    <button type="button" @click="handleSendService">Send</button>
-    <button type="button" @click="handleCancelService">Cancel</button>
+    <UButton type="submit" color="primary">
+      {{ isEditing ? 'Update' : 'Add' }}
+    </UButton>
+    <UButton color="secondary" @click="handleSendService">
+      Send
+    </UButton>
+    <UButton color="error" @click="handleCancelService">
+      Cancel
+    </UButton>
   </form>
 </template>
 
-<script>
-export default {
-  props: {
-    serviceData: {
-      type: Object,
-      required: true
-    },
-    isEditing: {
-      type: Boolean,
-      default: false
-    },
-    serviceTypes: {
-      type: Array,
-      default: () => []
-    },
-    serviceStatuses: {
-      type: Array,
-      default: () => []
-    },
-    customers: {
-      type: Array,
-      default: () => []
-    }
+<script setup lang="ts">
+import { defineProps, defineEmits } from 'vue'
+
+const props = defineProps({
+  serviceData: {
+    type: Object,
+    required: true
   },
-  emits: ['submit', 'sendService', 'cancelService'],
-  methods: {
-    onSubmit() {
-      this.$emit('submit')
-    },
-    handleSendService() {
-      this.$emit('sendService')
-    },
-    handleCancelService() {
-      this.$emit('cancelService')
-    }
+  isEditing: {
+    type: Boolean,
+    default: false
+  },
+  serviceTypes: {
+    type: Array,
+    default: () => []
+  },
+  serviceStatuses: {
+    type: Array,
+    default: () => []
+  },
+  customers: {
+    type: Array,
+    default: () => []
   }
+})
+
+const emit = defineEmits(['submit', 'sendService', 'cancelService'])
+
+const onSubmit = () => {
+  emit('submit')
+}
+
+const handleSendService = () => {
+  emit('sendService')
+}
+
+const handleCancelService = () => {
+  emit('cancelService')
 }
 </script>
 
 <style scoped>
-/* Add any specific styling here */
+.form-group {
+  margin-bottom: 1rem;
+}
 </style>

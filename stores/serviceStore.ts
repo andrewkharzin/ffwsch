@@ -1,7 +1,6 @@
 // stores/useServiceStore.js
 import { defineStore } from 'pinia'
 
-const supabase = useSupabaseClient()
 export const useServiceStore = defineStore('service', {
   state: () => ({
     services: [],
@@ -9,6 +8,7 @@ export const useServiceStore = defineStore('service', {
   }),
   actions: {
     async fetchServices() {
+      const supabase = useSupabaseClient()  // Call within each action
       const { data, error } = await supabase
         .from('services')
         .select('*')
@@ -22,7 +22,7 @@ export const useServiceStore = defineStore('service', {
     },
 
     async addService(serviceData) {
-      // Set the status to "Draft" on creation
+      const supabase = useSupabaseClient()
       serviceData.status_id = await this.getStatusIdByName('Draft')
 
       const { data, error } = await supabase
@@ -37,6 +37,7 @@ export const useServiceStore = defineStore('service', {
     },
 
     async updateService(serviceData) {
+      const supabase = useSupabaseClient()
       const { data, error } = await supabase
         .from('services')
         .update(serviceData)
@@ -54,12 +55,14 @@ export const useServiceStore = defineStore('service', {
     },
 
     async changeStatus(serviceId, newStatus) {
+      const supabase = useSupabaseClient()
       const statusId = await this.getStatusIdByName(newStatus)
 
       await this.updateService({ id: serviceId, status_id: statusId })
     },
 
     async getStatusIdByName(statusName) {
+      const supabase = useSupabaseClient()
       const { data, error } = await supabase
         .from('servicestatuses')
         .select('id')

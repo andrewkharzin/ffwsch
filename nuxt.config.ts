@@ -5,7 +5,7 @@ export default defineNuxtConfig({
     redirect: true
   },
 
-  modules: ['@pinia/nuxt', '@nuxtjs/supabase', '@nuxt/eslint', '@nuxt/fonts', '@nuxt/ui', '@vueuse/nuxt', '@nuxt/image'],
+  modules: ['@pinia/nuxt', 'pinia-plugin-persistedstate/nuxt', '@nuxtjs/supabase', '@nuxt/eslint', '@nuxt/fonts', '@nuxt/ui', '@vueuse/nuxt', '@nuxt/image'],
 
   ui: {
     safelistColors: ['primary', 'red', 'orange', 'green']
