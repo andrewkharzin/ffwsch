@@ -2,29 +2,52 @@
   <form @submit.prevent="submitForm">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div class="flex flex-col space-y-4">
-
-        <!-- Date Field -->
-        <div class="flex-auto w-full">
-          <UFormGroup label="Date" required>
-            <UPopover :popper="{ placement: 'bottom-start' }">
-              <UButton
-                icon="i-heroicons-calendar-days-20-solid"
-                :label="date ? format(new Date(date), 'd MMM, yyyy') : format(new Date(), 'd MMM, yyyy')"
-              />
-              <template #panel="{ close }">
-                <DatePicker
-                  v-model="date"
-                  :default-date="new Date()"
-                  is-required
-                  @close="close"
-                  @dayclick="handleDayClick"
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="flex-auto w-full">
+            <UFormGroup label="Date" required>
+              <UPopover :popper="{ placement: 'bottom-start' }">
+                <UButton
+                  icon="i-heroicons-calendar-days-20-solid"
+                  :label="
+                    date
+                      ? format(new Date(date), 'd MMM, yyyy')
+                      : format(new Date(), 'd MMM, yyyy')
+                  "
                 />
-              </template>
-            </UPopover>
+                <template #panel="{ close }">
+                  <DatePicker
+                    v-model="date"
+                    :default-date="new Date()"
+                    is-required
+                    @close="close"
+                    @dayclick="handleDayClick"
+                  />
+                </template>
+              </UPopover>
+            </UFormGroup>
+          </div>
+
+          <div class="flex-auto w-full">
+            <UFormGroup label="Time">
+              <!-- <UiTimePicker
+                v-model="form.service_time"
+                @change="handleTimeChange"
+              /> -->
+              <UInput v-model="form.service_time" />
+            </UFormGroup>
+          </div>
+        </div>
+
+        <div class="w-full col-span-2 sm:col-span-1">
+          <UFormGroup label="Description">
+            <UTextarea
+              v-model="form.description"
+              color="gray"
+              variant="outline"
+            />
           </UFormGroup>
         </div>
 
-        <!-- Service Type Field -->
         <UFormGroup label="Service Type" required>
           <USelect
             v-model="form.service_type_id"
@@ -33,31 +56,28 @@
             :options="formattedServiceTypes"
             placeholder="Select Service Type"
             required
+            @change="(value) => console.log('Selected Service Type ID:', value)"
           />
         </UFormGroup>
 
-        <!-- Conditionally Rendered Fields for Editing Mode -->
-        <template v-if="isEditMode">
-          <!-- Time Field -->
-          <UFormGroup label="Time">
-            <UInput v-model="form.service_time" />
-          </UFormGroup>
+        <UFormGroup label="Status">
+          <UInput
+            v-model="form.status_id"
+            color="primary"
+            variant="outline"
+            :disabled="true"
+          />
+        </UFormGroup>
 
-          <!-- Description Field -->
-          <UFormGroup label="Description">
-            <UTextarea v-model="form.description" color="gray" variant="outline" />
-          </UFormGroup>
-
-          <!-- Status Field (Read-only) -->
-          <UFormGroup label="Status">
-            <UInput v-model="form.status_id" color="primary" variant="outline" disabled />
-          </UFormGroup>
-        </template>
-
-        <!-- Submit Button with Dynamic Label -->
         <div class="w-full">
-          <UButton type="submit" color="primary" variant="soft" class="w-full sm:w-auto">
+          <UButton
+            type="submit"
+            color="primary"
+            variant="soft"
+            class="w-full sm:w-auto"
+          >
             {{ isEditMode ? 'Send' : 'Submit' }}
+            <!-- Dynamic button label -->
           </UButton>
         </div>
       </div>
@@ -70,6 +90,7 @@ import { ref, computed, watch } from 'vue'
 import { format } from 'date-fns'
 import { useServiceStore } from '../../../../stores/serviceStore' // Ensure correct path
 
+
 const props = defineProps({
   serviceTypes: {
     type: Array,
@@ -81,7 +102,11 @@ const props = defineProps({
   }
 })
 
-const { customer, error, loading, fetchCustomerByUserId } = useCustomerByUserId()
+
+const { customer, error, loading, fetchCustomerByUserId } =
+  useCustomerByUserId()
+
+
 const emit = defineEmits(['serviceCreated'])
 const date = ref(new Date())
 const serviceStore = useServiceStore() // Using Pinia store
@@ -94,6 +119,8 @@ const form = ref({
   status_id: '138261c0-235e-4a19-9b1f-c4ef8afe8529', // Default status for new entries
   user_id: ''
 })
+
+
 
 const user = useSupabaseUser()
 
@@ -130,6 +157,7 @@ watch(() => form.value.service_type_id, (newValue) => {
   console.log('Updated Service Type ID:', newValue);
 });
 
+
 // Submit form logic
 const submitForm = async () => {
   if (!user.value) {
@@ -144,20 +172,21 @@ const submitForm = async () => {
     return;
   }
 
-  // Set up new service data for creation or update
+  // Ensure all required fields are valid
+  if (!form.value.service_type_id || !customerData.id || !user.value.id) {
+    console.error("Missing required fields. Please check your form.");
+    return;
+  }
+
   const newService = {
     service_type_id: form.value.service_type_id,
     user_id: user.value.id,
     customer_id: customerData.id,
     service_date: new Date(date.value).toISOString().split('T')[0],
+    service_time: form.value.service_time,
+    description: form.value.description,
     status_id: isEditMode.value ? serviceStore.statusIds.new : serviceStore.statusIds.draft,
   };
-
-  // Add additional fields only if editing
-  if (isEditMode.value) {
-    newService.service_time = form.value.service_time;
-    newService.description = form.value.description;
-  }
 
   console.log("New Service before submission:", newService);
 
@@ -173,4 +202,5 @@ const submitForm = async () => {
     alert('An unexpected error occurred. Please try again later.');
   }
 };
+
 </script>
