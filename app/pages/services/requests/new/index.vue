@@ -39,6 +39,7 @@ definePageMeta({
   middleware: 'auth'
 })
 
+
 const router = useRouter()
 const q = ref('') // Assuming you have a filter value
 
@@ -84,15 +85,7 @@ const links = [
       label: 'Requests',
       icon: 'i-heroicons-queue-list',
       component: 'NuxtLink',
-      to: `/services/requests/list`
-    }
-  ],
-  [
-    {
-      label: 'Documentation',
-      icon: 'i-heroicons-book-open',
-      to: 'https://ui.nuxt.com/pro',
-      target: '_blank'
+      to: `/services/customers/requests/list`
     }
   ]
 ]
