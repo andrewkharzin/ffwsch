@@ -9,12 +9,12 @@ const links = [
       component: 'NuxtLink',
       to: `/`,
     },
-    {
-      label: "My Requests",
-      icon: "i-heroicons-queue-list",
-      component: "NuxtLink",
-      to: `/services/requests/`,
-    },
+    // {
+    //   label: "My Requests",
+    //   icon: "i-heroicons-queue-list",
+    //   component: "NuxtLink",
+    //   to: `/services/requests/`,
+    // },
   ],
 ];
 console.log('Services from composable:', services) // Add this line to check the data

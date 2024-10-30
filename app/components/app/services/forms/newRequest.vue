@@ -70,6 +70,9 @@ import { ref, computed, watch } from 'vue'
 import { format } from 'date-fns'
 import { useServiceStore } from '../../../../stores/serviceStore' // Ensure correct path
 
+const toast = useToast()
+const router = useRouter()
+
 const props = defineProps({
   serviceTypes: {
     type: Array,
@@ -133,44 +136,80 @@ watch(() => form.value.service_type_id, (newValue) => {
 // Submit form logic
 const submitForm = async () => {
   if (!user.value) {
-    alert('You must be logged in to create a service request.');
-    return;
+    console.log('User not logged in')
+    toast.add({
+      title: 'Error',
+      description: 'You must be logged in to create a service request.',
+      color: 'error'
+    })
+    return
   }
 
-  const customerData = await fetchCustomerByUserId();
+  const customerData = await fetchCustomerByUserId()
+  console.log('Fetched Customer Data:', customerData)
 
   if (!customerData || !customerData.id) {
-    alert('Customer not found. Please ensure your account is set up correctly.');
-    return;
+    console.log('Customer not found')
+    toast.add({
+      title: 'Error',
+      description: 'Customer not found. Please ensure your account is set up correctly.',
+      color: 'error'
+    })
+    return
   }
 
-  // Set up new service data for creation or update
   const newService = {
     service_type_id: form.value.service_type_id,
     user_id: user.value.id,
     customer_id: customerData.id,
     service_date: new Date(date.value).toISOString().split('T')[0],
     status_id: isEditMode.value ? serviceStore.statusIds.new : serviceStore.statusIds.draft,
-  };
-
-  // Add additional fields only if editing
-  if (isEditMode.value) {
-    newService.service_time = form.value.service_time;
-    newService.description = form.value.description;
   }
 
-  console.log("New Service before submission:", newService);
+  if (isEditMode.value) {
+    newService.service_time = form.value.service_time
+    newService.description = form.value.description
+  }
+
+  console.log("New Service data prepared:", newService)
 
   try {
-    const response = await serviceStore.insertService(newService);
+    const response = await serviceStore.insertService(newService)
+    console.log("Service insertion response:", response)
+
     if (response) {
-      emit('serviceCreated', response.id);
-      serviceStore.resetService();
-      alert('Service request created successfully!');
+      console.log('Service successfully created')
+      emit('serviceCreated', response.id)
+      serviceStore.resetService()
+
+      toast.add({
+        title: 'Success',
+        description: 'Service request created successfully!',
+        color: 'success',
+        duration: 10000,
+        actions: [
+          {
+            label: 'OK',
+            onClick: (toastInstance) => toastInstance.dismiss()
+          },
+          {
+            label: 'Add Details',
+            onClick: () => router.push(`/services/customize/${response.id}`)
+          }
+        ]
+      })
+    } else {
+      console.log("No response received from insertService")
     }
   } catch (error) {
-    console.error('Unexpected error:', error);
-    alert('An unexpected error occurred. Please try again later.');
+    console.error('Unexpected error in insertService:', error)
+    toast.add({
+      title: 'Error',
+      description: 'An unexpected error occurred. Please try again later.',
+      color: 'error'
+    })
   }
-};
+}
+
+
 </script>
