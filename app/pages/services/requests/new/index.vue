@@ -70,7 +70,7 @@ const formattedStatuses = computed(() => {
 
 const handleServiceCreated = (newServiceId: string) => {
   alert(`Service created with ID: ${newServiceId}`)
-  router.push(`/services/${newServiceId}`)
+  router.push(`/services/requests/${newServiceId}`)
 }
 
 const links = [

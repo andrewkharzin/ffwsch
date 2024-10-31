@@ -75,5 +75,10 @@ export default defineNuxtConfig({
     'stores': '/stores', // This alias points to your Pinia store directory
     'plugins': '/plugins'
   },
+  watchers: {
+    webpack: {
+      ignored: ['**/node_modules/**', '**/dist/**', '**/.nuxt/**']
+    }
+  },
   compatibilityDate: '2024-07-11'
 })

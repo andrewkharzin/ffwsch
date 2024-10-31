@@ -186,7 +186,7 @@ const submitForm = async () => {
         title: 'Success',
         description: 'Service request created successfully!',
         color: 'success',
-        duration: 10000,
+        duration: 20000,
         actions: [
           {
             label: 'OK',
@@ -194,7 +194,7 @@ const submitForm = async () => {
           },
           {
             label: 'Add Details',
-            onClick: () => router.push(`/services/customize/${response.id}`)
+            onClick: () => router.push(`/services/requests/${response.id}`)
           }
         ]
       })
@@ -210,6 +210,4 @@ const submitForm = async () => {
     })
   }
 }
-
-
 </script>
