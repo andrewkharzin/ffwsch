@@ -22,9 +22,11 @@ export const useServiceById = (serviceId) => {
         .from('services')
         .select(`
           id,
+          title,
           description,
           service_date,
           service_time,
+          servicetype (type_name),
           servicestatuses(status),
           customers(full_name, company_id(company_name)),
           service_orders(serial_number)

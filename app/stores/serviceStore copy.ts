@@ -6,6 +6,8 @@ type ServiceRow = Database['public']['Tables']['services']['Row']
 type ServiceInsert = Database['public']['Tables']['services']['Insert']
 type ServiceUpdate = Database['public']['Tables']['services']['Update']
 
+// const toast = useToast()
+
 export const useServiceStore = defineStore('serviceStore', {
   state: () => ({
     service: {
@@ -16,21 +18,12 @@ export const useServiceStore = defineStore('serviceStore', {
       description: '',
       status_id: null,
       user_id: '',
-      customer_id: '',
-      flight: '',
-      flight_date_time: ''
+      customer_id: ''
     } as ServiceRow,
     isEditMode: false,
-    isSending: false, // Новое состояние для отслеживания отправки
     statusIds: {
       draft: '138261c0-235e-4a19-9b1f-c4ef8afe8529',
       new: 'b3d9ebe7-f348-4fc2-924e-f61256bf13fc'
-    },
-    resetForm() {
-      this.service.service_type_id = null
-      this.service.description = ''
-      this.service.status_id = null
-      // Reset other fields to their default values...
     }
   }),
 
@@ -44,9 +37,7 @@ export const useServiceStore = defineStore('serviceStore', {
         description: '',
         status_id: this.statusIds.draft,
         user_id: '',
-        customer_id: '',
-        flight: '',
-        flight_date_time: ''
+        customer_id: ''
       } as ServiceRow
       this.isEditMode = false
       console.log('Service reset with draft status:', this.service.status_id)
@@ -99,7 +90,6 @@ export const useServiceStore = defineStore('serviceStore', {
         return null // Prevent submission if the status_id is invalid
       }
 
-      this.isSending = true; // Устанавливаем состояние отправки в true
       try {
         const response = await this.insertService(this.service)
         if (!response) {
@@ -111,8 +101,6 @@ export const useServiceStore = defineStore('serviceStore', {
       } catch (error) {
         console.error('Error saving service:', error)
         return null
-      } finally {
-        this.isSending = false; // Останавливаем состояние отправки в любом случае
       }
     },
 
@@ -139,7 +127,6 @@ export const useServiceStore = defineStore('serviceStore', {
         return null
       }
     },
-
     async updateService(updatedService: ServiceUpdate): Promise<ServiceRow | null> {
       const supabase = useSupabaseClient()
       try {
@@ -165,5 +152,6 @@ export const useServiceStore = defineStore('serviceStore', {
         return null
       }
     }
+
   }
 })

@@ -10,39 +10,40 @@ const selectedStatus = ref<string>('All')
 const columns = [
   { key: 'index', label: '#', sortable: true },
   { key: 'service_date', label: 'Date', sortable: true },
-  { key: 'status', label: 'Status', sortable: true },
-  { key: 'description', label: 'Description', sortable: false }
+  { key: 'service_type', label: 'Service Type', sortable: true }, // Add service type column
+  { key: 'flight', label: 'Flight', sortable: false }, // Add service type column
+  { key: 'status', label: 'Status', sortable: true }
+  // { key: 'description', label: 'Description', sortable: false }
 ]
 
 const statusMap = reactive({
-  '138261c0-235e-4a19-9c2c-550674045e04': { label: 'Draft', colorClass: 'bg-gray-400' },
+  '138261c0-235e-4a19-9b1f-c4ef8afe8529': { label: 'Draft', colorClass: 'bg-gray-400' },
   '656d0181-1aa8-46a0-83d8-651bfd1a4742': { label: 'Completed', colorClass: 'bg-green-500' },
   '681d9cb6-55e4-47a0-9c2c-550674045e04': { label: 'Pending', colorClass: 'bg-yellow-500' },
   '68bd4999-011a-47e3-833d-0f600db5eb48': { label: 'Confirmed', colorClass: 'bg-blue-500' },
   'b3d9ebe7-f348-4fc2-924e-f61256bf13fc': { label: 'New', colorClass: 'bg-indigo-500' },
   'b4e826c6-0b7a-43ed-b5e6-c1d7cc395d28': { label: 'Accounted', colorClass: 'bg-purple-500' },
-  'c92998e3-a1b8-43eb-9c8e-74f983db45a9': { label: 'Canceled', colorClass: 'bg-red-500' },
+  'c92998e3-a1b8-43eb-9c8e-74f983db45a9': { label: 'Canceled', colorClass: 'bg-red-500' }
 })
 
 const filterStatusOptions = [
   { value: 'All', label: 'All' },
   ...Object.keys(statusMap).map(key => ({
     value: key,
-    label: statusMap[key].label,
+    label: statusMap[key].label
   }))
 ]
 
 // Функция фильтрации
 const filteredServices = computed(() => {
-  const statusValue = selectedStatus.value?.value || selectedStatus.value; // Получаем значение из выбранного статуса
+  const statusValue = selectedStatus.value?.value || selectedStatus.value // Получаем значение из выбранного статуса
 
-  return props.services.filter(service => {
+  return props.services.filter((service) => {
     const matchesDescription = search.value === '' || service.description?.toLowerCase().includes(search.value.toLowerCase())
     const matchesStatus = statusValue === 'All' || service.status_id === statusValue
     return matchesDescription && matchesStatus
   })
 })
-
 
 // Проверка отфильтрованных данных при изменении фильтра
 watch([search, selectedStatus], () => {
@@ -55,8 +56,17 @@ watch([search, selectedStatus], () => {
 
 <template>
   <div class="flex items-center justify-between gap-3 px-4 py-3">
-    <UInput v-model="search" icon="i-heroicons-magnifying-glass-20-solid" placeholder="Search description..." />
-    <USelectMenu v-model="selectedStatus" :options="filterStatusOptions" placeholder="Status" class="w-40" />
+    <UInput
+      v-model="search"
+      icon="i-heroicons-magnifying-glass-20-solid"
+      placeholder="Search description..."
+    />
+    <USelectMenu
+      v-model="selectedStatus"
+      :options="filterStatusOptions"
+      placeholder="Status"
+      class="w-40"
+    />
     <NuxtLink to="/services/requests/new">
       <UButton
         icon="i-heroicons-plus"
@@ -80,13 +90,33 @@ watch([search, selectedStatus], () => {
     </template>
 
     <template #service_date-data="{ row }">
-      {{ row.service_date ? new Date(row.service_date).toLocaleDateString('en-US') : 'N/A' }}
+      <NuxtLink :to="`/services/requests/${row.id}`">
+        <UButton
+          variant="ghost"
+          size="xs"
+          color="primary"
+          :disabled="!row.service_date"
+          class="text-sm font-bold"
+        >
+          <!-- {{ row.service_date ? new Date(row.service_date).toLocaleDateString('en-US') : 'N/A' }} -->
+          {{ row.service_date ? new Date(row.service_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A' }}
+        </UButton>
+      </NuxtLink>
     </template>
-
+    <template #service_type-data="{ row }">
+      {{ row.servicetype.type_name || 'No Type' }}
+    </template>
+    <template #flight-data="{ row }">
+      <p class="text-sm font-bold dark:text-pink-500">
+        {{ row.flight }}
+        <span class="text-sm font-light">{{ row.flight_date_time }}</span>
+      </p>
+    </template>
     <template #status-data="{ row }">
       <span
         v-if="statusMap[row.status_id]"
-        :class="`inline-flex items-center px-2 py-1 rounded text-white text-xs font-semibold ${statusMap[row.status_id].colorClass}`">
+        :class="`inline-flex items-center px-2 py-1 rounded text-white text-xs font-semibold ${statusMap[row.status_id].colorClass}`"
+      >
         {{ statusMap[row.status_id].label }}
       </span>
       <span v-else>Unknown Status</span>

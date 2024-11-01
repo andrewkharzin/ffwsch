@@ -36,6 +36,8 @@
     "nuxt": "^3.13.2",
     "pinia": "^2.2.4",
     "pinia-plugin-persistedstate": "^4.1.2",
+    "qrcode": "^1.5.4",
+    "qrious": "^4.0.2",
     "v-calendar": "^3.0.0",
     "vue-toasted": "^1.1.28",
     "vue-toastification": "^1.7.14",

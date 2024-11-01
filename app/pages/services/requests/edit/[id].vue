@@ -22,7 +22,7 @@
         <UHorizontalNavigation :links="links" />
       </UDashboardToolbar>
       <div class="p-4 ml-4">
-        <AppServicesFormsNewRequest
+        <AppServicesFormsEditRequest
           :serviceTypes="formattedServiceTypes"
           :statuses="formattedStatuses"
           @serviceCreated="handleServiceCreated"
@@ -36,7 +36,7 @@
 import { ref, computed, onMounted } from 'vue'
 
 definePageMeta({
-  middleware: 'reset-form'
+  middleware: 'auth'
 })
 
 

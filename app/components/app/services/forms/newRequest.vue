@@ -2,10 +2,12 @@
   <form @submit.prevent="submitForm">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div class="flex flex-col space-y-4">
-
         <!-- Date Field -->
         <div class="flex-auto w-full">
-          <UFormGroup label="Date" required>
+          <UFormGroup
+            label="Date"
+            required
+          >
             <UPopover :popper="{ placement: 'bottom-start' }">
               <UButton
                 icon="i-heroicons-calendar-days-20-solid"
@@ -25,7 +27,10 @@
         </div>
 
         <!-- Service Type Field -->
-        <UFormGroup label="Service Type" required>
+        <UFormGroup
+          label="Service Type"
+          required
+        >
           <USelect
             v-model="form.service_type_id"
             color="primary"
@@ -39,25 +44,39 @@
         <!-- Conditionally Rendered Fields for Editing Mode -->
         <template v-if="isEditMode">
           <!-- Time Field -->
-          <UFormGroup label="Time">
+          <!-- <UFormGroup label="Time">
             <UInput v-model="form.service_time" />
-          </UFormGroup>
+          </UFormGroup> -->
 
           <!-- Description Field -->
-          <UFormGroup label="Description">
-            <UTextarea v-model="form.description" color="gray" variant="outline" />
-          </UFormGroup>
+          <!-- <UFormGroup label="Description">
+            <UTextarea
+              v-model="form.description"
+              color="gray"
+              variant="outline"
+            />
+          </UFormGroup> -->
 
           <!-- Status Field (Read-only) -->
           <UFormGroup label="Status">
-            <UInput v-model="form.status_id" color="primary" variant="outline" disabled />
+            <UInput
+              v-model="form.status_id"
+              color="primary"
+              variant="outline"
+              disabled
+            />
           </UFormGroup>
         </template>
 
         <!-- Submit Button with Dynamic Label -->
         <div class="w-full">
-          <UButton type="submit" color="primary" variant="soft" class="w-full sm:w-auto">
-            {{ isEditMode ? 'Send' : 'Submit' }}
+          <UButton
+            type="submit"
+            color="primary"
+            variant="soft"
+            class="w-full sm:w-auto"
+          >
+            {{ isEditMode ? 'Send' : 'Submit' }} <!-- Dynamic button label based on edit mode -->
           </UButton>
         </div>
       </div>
@@ -69,6 +88,7 @@
 import { ref, computed, watch } from 'vue'
 import { format } from 'date-fns'
 import { useServiceStore } from '../../../../stores/serviceStore' // Ensure correct path
+
 
 const toast = useToast()
 const router = useRouter()
@@ -104,6 +124,17 @@ const user = useSupabaseUser()
 const isEditMode = computed(() => serviceStore.isEditMode)
 
 // Watch the service store to update the form when in edit mode
+// watch(
+//   () => serviceStore.service,
+//   (newService) => {
+//     if (newService) {
+//       form.value = { ...newService }
+//       date.value = newService.service_date // Update date
+//     }
+//   },
+//   { immediate: true }
+// )
+// // Watch the service store to update the form when in edit mode
 watch(
   () => serviceStore.service,
   (newService) => {
@@ -112,7 +143,7 @@ watch(
       date.value = newService.service_date // Update date
     }
   },
-  { immediate: true }
+  { immediate: true } // Run immediately when the component is mounted
 )
 
 // Format the service types for USelect component
@@ -124,14 +155,16 @@ watch(
     formattedServiceTypes.value = newServiceTypes.map(type => ({
       label: type.type_name,
       value: type.id
-    }));
+    }))
   },
   { immediate: true } // Ensure it runs immediately on the initial render
-);
+)
 
 watch(() => form.value.service_type_id, (newValue) => {
-  console.log('Updated Service Type ID:', newValue);
-});
+  console.log('Updated Service Type ID:', newValue)
+})
+
+// Submit form logic
 
 // Submit form logic
 const submitForm = async () => {
@@ -145,7 +178,7 @@ const submitForm = async () => {
     return
   }
 
-  const customerData = await fetchCustomerByUserId()
+  const customerData = await fetchCustomerByUserId() // Fetch the customer data
   console.log('Fetched Customer Data:', customerData)
 
   if (!customerData || !customerData.id) {
@@ -158,29 +191,30 @@ const submitForm = async () => {
     return
   }
 
+  // Prepare the new service data
   const newService = {
     service_type_id: form.value.service_type_id,
     user_id: user.value.id,
     customer_id: customerData.id,
     service_date: new Date(date.value).toISOString().split('T')[0],
     status_id: isEditMode.value ? serviceStore.statusIds.new : serviceStore.statusIds.draft,
-  }
+  };
 
   if (isEditMode.value) {
-    newService.service_time = form.value.service_time
-    newService.description = form.value.description
+    newService.service_time = form.value.service_time;
+    newService.description = form.value.description;
   }
 
-  console.log("New Service data prepared:", newService)
+  console.log("New Service data prepared:", newService);
 
   try {
-    const response = await serviceStore.insertService(newService)
-    console.log("Service insertion response:", response)
+    const response = await serviceStore.insertService(newService);
+    console.log("Service insertion response:", response);
 
     if (response) {
-      console.log('Service successfully created')
-      emit('serviceCreated', response.id)
-      serviceStore.resetService()
+      console.log('Service successfully created');
+      emit('serviceCreated', response.id);
+      serviceStore.resetService();
 
       toast.add({
         title: 'Success',
@@ -190,24 +224,28 @@ const submitForm = async () => {
         actions: [
           {
             label: 'OK',
-            onClick: (toastInstance) => toastInstance.dismiss()
+            onClick: (toastInstance) => toastInstance.dismiss() // Close the toast
           },
           {
             label: 'Add Details',
-            onClick: () => router.push(`/services/requests/${response.id}`)
+            onClick: () => {
+              // Log before redirecting to confirm the ID
+              console.log("Redirecting to edit service with ID:", response.id);
+              router.push(`/services/requests/edit/${response.id}`); // Redirect to service edit
+            }
           }
         ]
-      })
+      });
     } else {
-      console.log("No response received from insertService")
+      console.log("No response received from insertService");
     }
   } catch (error) {
-    console.error('Unexpected error in insertService:', error)
+    console.error('Unexpected error in insertService:', error);
     toast.add({
       title: 'Error',
       description: 'An unexpected error occurred. Please try again later.',
       color: 'error'
-    })
+    });
   }
-}
+};
 </script>

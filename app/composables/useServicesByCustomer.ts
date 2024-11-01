@@ -25,7 +25,7 @@ export const useServicesByCustomer = () => {
       loading.value = true
       const { data, error: fetchError } = await supabase
         .from('services')
-        .select('id, user_id, service_date, status_id, description, customers (full_name)')
+        .select('id, user_id, service_date, flight, flight_date_time, status_id, service_type_id, description, customers (full_name), servicestatuses (status), servicetype (type_name)')
         .eq('user_id', user.value?.id) // Filter by user_id
       console.log('Customer services', data)
       if (fetchError) {
