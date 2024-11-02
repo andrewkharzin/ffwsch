@@ -29,7 +29,8 @@ export const useServiceById = (serviceId) => {
           servicetype (type_name),
           servicestatuses(status),
           customers(full_name, company_id(company_name)),
-          service_orders(serial_number)
+          service_orders(serial_number),
+          service_customer_items(item_name, item_description, item_partnumber, item_characteristics)
         `)
         .eq('id', serviceId)
         .single()

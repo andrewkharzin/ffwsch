@@ -45,6 +45,19 @@
           </div>
           <div v-else>
             <div class="flex flex-col space-y-4">
+
+              <div>
+                <div>
+                  <p class="font-light text-gray-500">
+                    <UBadge
+                      class=""
+                      :type="getStatusType(serviceData.servicestatuses.status)"
+                    >
+                      {{ serviceData.servicestatuses.status }}
+                    </UBadge>
+                  </p>
+                </div>
+              </div>
               <UDashboardCard
                 :title="serviceData.servicetype.type_name"
                 :links="isMobile ? [{ label: 'Read more', color: 'gray', size: 'xs', trailingIcon: 'i-heroicons-arrow-right-20-solid', click: openSlideover }] : []"
@@ -80,16 +93,6 @@
                 </p>
               </div>
               <div class="mt-4 flex flex-row space-x-2">
-                <div>
-                  <p class="font-light text-gray-500">
-                    <UBadge
-                      class=""
-                      :type="getStatusType(serviceData.servicestatuses.status)"
-                    >
-                      {{ serviceData.servicestatuses.status }}
-                    </UBadge>
-                  </p>
-                </div>
                 <div>
                   <NuxtLink :to="`/services/requests/edit/${serviceData.id}`">
                     <UButton
@@ -127,6 +130,23 @@
                 {{ serviceData.service_orders[0].serial_number }}
               </p>
             </div> -->
+            <!-- Display Accordion only if service_customer_items exist -->
+            <div v-if="hasCustomerItems" class="mt-4">
+              <UAccordion
+                color="primary"
+                variant="soft"
+                size="sm"
+                :items="serviceCustomerItemsAccordion"
+              />
+              <!-- Total of weight -->
+                <!-- Display total count and weight -->
+            <div class="mt-2">
+              <p class="text-sm font-light">Total items: {{ itemCount }}</p>
+              <p class="text-sm font-light">Total weight:
+                <span class="text-md font-bold font-mono dark:text-red-500">{{ totalWeight }}</span> kg
+              </p>
+            </div>
+            </div>
             <div class="mt-4">
               <div v-if="serviceData && serviceData.service_orders.length > 0">
                 <img
@@ -240,6 +260,33 @@ watch(serviceData, (newData) => {
 const openSlideover = () => {
   isOpen.value = true
 }
+
+// Check if there are any related customer items to show in accordion
+const hasCustomerItems = computed(() => serviceData.value && serviceData.value.service_customer_items.length > 0)
+
+// Prepare items for UAccordion based on service_customer_items
+const serviceCustomerItemsAccordion = computed(() => {
+  return serviceData.value.service_customer_items.map((item) => ({
+    label: item.item_name,
+    content: `
+
+      Part Number: ${item.item_partnumber || 'N/A'} \n
+      Characteristics: ${JSON.stringify(item.item_characteristics, null, 2) || 'N/A'}
+    `
+  }))
+})
+
+const itemCount = computed(() => {
+  return serviceData.value?.service_customer_items?.length || 0
+})
+
+const totalWeight = computed(() => {
+  return serviceData.value?.service_customer_items.reduce((sum, item) => {
+    // Convert item.item_characteristics.weight to a number, defaulting to 0 if it's null or undefined
+    const weight = Number(item.item_characteristics?.weight) || 0
+    return sum + weight
+  }, 0)
+})
 
 // Helper function to get Tailwind CSS classes based on status// Function to get Tailwind CSS classes based on status
 // Function to determine badge type based on status
