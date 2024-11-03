@@ -33,11 +33,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'accountings_order_id_fkey'
-            columns: ['order_id']
+            foreignKeyName: "accountings_order_id_fkey"
+            columns: ["order_id"]
             isOneToOne: false
-            referencedRelation: 'orders'
-            referencedColumns: ['id']
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -45,7 +45,7 @@ export type Database = {
         Row: {
           airline_id: string
           category:
-            | Database['public']['Enums']['airline document category']
+            | Database["public"]["Enums"]["airline document category"]
             | null
           document_url: string | null
           id: string
@@ -54,7 +54,7 @@ export type Database = {
         Insert: {
           airline_id: string
           category?:
-            | Database['public']['Enums']['airline document category']
+            | Database["public"]["Enums"]["airline document category"]
             | null
           document_url?: string | null
           id?: string
@@ -63,7 +63,7 @@ export type Database = {
         Update: {
           airline_id?: string
           category?:
-            | Database['public']['Enums']['airline document category']
+            | Database["public"]["Enums"]["airline document category"]
             | null
           document_url?: string | null
           id?: string
@@ -71,12 +71,12 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'air_manuals_airline_id_fkey'
-            columns: ['airline_id']
+            foreignKeyName: "air_manuals_airline_id_fkey"
+            columns: ["airline_id"]
             isOneToOne: false
-            referencedRelation: 'airlines'
-            referencedColumns: ['id']
-          }
+            referencedRelation: "airlines"
+            referencedColumns: ["id"]
+          },
         ]
       }
       aircrafts_register: {
@@ -112,11 +112,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'aircrafts_register_airline_id_fkey'
-            columns: ['airline_id']
+            foreignKeyName: "aircrafts_register_airline_id_fkey"
+            columns: ["airline_id"]
             isOneToOne: false
-            referencedRelation: 'airlines'
-            referencedColumns: ['id']
+            referencedRelation: "airlines"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -125,7 +125,7 @@ export type Database = {
           aircraft_id: string | null
           awb_code: string | null
           callsign: string | null
-          handling: Database['public']['Enums']['airline_handling'] | null
+          handling: Database["public"]["Enums"]["airline_handling"] | null
           Hubs: string | null
           iata: string | null
           icao: string | null
@@ -138,7 +138,7 @@ export type Database = {
           aircraft_id?: string | null
           awb_code?: string | null
           callsign?: string | null
-          handling?: Database['public']['Enums']['airline_handling'] | null
+          handling?: Database["public"]["Enums"]["airline_handling"] | null
           Hubs?: string | null
           iata?: string | null
           icao?: string | null
@@ -151,7 +151,7 @@ export type Database = {
           aircraft_id?: string | null
           awb_code?: string | null
           callsign?: string | null
-          handling?: Database['public']['Enums']['airline_handling'] | null
+          handling?: Database["public"]["Enums"]["airline_handling"] | null
           Hubs?: string | null
           iata?: string | null
           icao?: string | null
@@ -198,25 +198,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'airlines_realtime_events_user_id_fkey'
-            columns: ['user_id']
+            foreignKeyName: "airlines_realtime_events_user_id_fkey1"
+            columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: 'users'
-            referencedColumns: ['id']
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'airlines_realtime_events_user_id_fkey1'
-            columns: ['user_id']
+            foreignKeyName: "realtime_events_airline_id_fkey"
+            columns: ["airline_id"]
             isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
-          },
-          {
-            foreignKeyName: 'realtime_events_airline_id_fkey'
-            columns: ['airline_id']
-            isOneToOne: false
-            referencedRelation: 'airlines'
-            referencedColumns: ['id']
+            referencedRelation: "airlines"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -245,7 +238,7 @@ export type Database = {
         Row: {
           awb_number: string
           awb_prefix: string
-          book_type: Database['public']['Enums']['book_type'] | null
+          book_type: Database["public"]["Enums"]["book_type"] | null
           consignee_id: string | null
           date_created: string | null
           flight_id: string | null
@@ -257,7 +250,7 @@ export type Database = {
         Insert: {
           awb_number: string
           awb_prefix: string
-          book_type?: Database['public']['Enums']['book_type'] | null
+          book_type?: Database["public"]["Enums"]["book_type"] | null
           consignee_id?: string | null
           date_created?: string | null
           flight_id?: string | null
@@ -269,7 +262,7 @@ export type Database = {
         Update: {
           awb_number?: string
           awb_prefix?: string
-          book_type?: Database['public']['Enums']['book_type'] | null
+          book_type?: Database["public"]["Enums"]["book_type"] | null
           consignee_id?: string | null
           date_created?: string | null
           flight_id?: string | null
@@ -280,39 +273,39 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'public_awb_shipper_id_fkey'
-            columns: ['shipper_id']
+            foreignKeyName: "public_awb_shipper_id_fkey"
+            columns: ["shipper_id"]
             isOneToOne: false
-            referencedRelation: 'shippers'
-            referencedColumns: ['id']
+            referencedRelation: "shippers"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'public_awbs_consignee_id_fkey'
-            columns: ['consignee_id']
+            foreignKeyName: "public_awbs_consignee_id_fkey"
+            columns: ["consignee_id"]
             isOneToOne: false
-            referencedRelation: 'consignees'
-            referencedColumns: ['id']
+            referencedRelation: "consignees"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'public_awbs_flight_id_fkey'
-            columns: ['flight_id']
+            foreignKeyName: "public_awbs_flight_id_fkey"
+            columns: ["flight_id"]
             isOneToOne: false
-            referencedRelation: 'flights'
-            referencedColumns: ['id']
+            referencedRelation: "flights"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'public_awbs_shipment_id_fkey'
-            columns: ['shipment_id']
+            foreignKeyName: "public_awbs_shipment_id_fkey"
+            columns: ["shipment_id"]
             isOneToOne: false
-            referencedRelation: 'shipments'
-            referencedColumns: ['id']
+            referencedRelation: "shipments"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'public_awbs_status_fkey'
-            columns: ['status']
+            foreignKeyName: "public_awbs_status_fkey"
+            columns: ["status"]
             isOneToOne: false
-            referencedRelation: 'bookstatus'
-            referencedColumns: ['id']
+            referencedRelation: "bookstatus"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -448,51 +441,53 @@ export type Database = {
       customers: {
         Row: {
           address: string | null
+          ccode: string | null
           company_id: string | null
-          contact_info: string | null
           created_at: string
+          department: string | null
           email: string | null
           full_name: string
           id: string
+          number_id: string | null
           phone: string | null
+          position: string | null
           user_id: string
         }
         Insert: {
           address?: string | null
+          ccode?: string | null
           company_id?: string | null
-          contact_info?: string | null
           created_at?: string
+          department?: string | null
           email?: string | null
           full_name: string
           id?: string
+          number_id?: string | null
           phone?: string | null
+          position?: string | null
           user_id: string
         }
         Update: {
           address?: string | null
+          ccode?: string | null
           company_id?: string | null
-          contact_info?: string | null
           created_at?: string
+          department?: string | null
           email?: string | null
           full_name?: string
           id?: string
+          number_id?: string | null
           phone?: string | null
+          position?: string | null
           user_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: 'customers_company_id_fkey'
-            columns: ['company_id']
+            foreignKeyName: "customers_company_id_fkey"
+            columns: ["company_id"]
             isOneToOne: false
-            referencedRelation: 'customer_company'
-            referencedColumns: ['id']
-          },
-          {
-            foreignKeyName: 'customers_user_id_fkey'
-            columns: ['user_id']
-            isOneToOne: false
-            referencedRelation: 'users'
-            referencedColumns: ['id']
+            referencedRelation: "customer_company"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -607,18 +602,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'flights_aircraft_reg_id_fkey'
-            columns: ['aircraft_reg_id']
+            foreignKeyName: "flights_aircraft_reg_id_fkey"
+            columns: ["aircraft_reg_id"]
             isOneToOne: false
-            referencedRelation: 'aircrafts_register'
-            referencedColumns: ['id']
+            referencedRelation: "aircrafts_register"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'flights_airline_id_fkey'
-            columns: ['airline_id']
+            foreignKeyName: "flights_airline_id_fkey"
+            columns: ["airline_id"]
             isOneToOne: false
-            referencedRelation: 'airlines'
-            referencedColumns: ['id']
+            referencedRelation: "airlines"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -628,7 +623,7 @@ export type Database = {
           date_updated: string | null
           freighter_id: string | null
           id: string
-          message_type: Database['public']['Enums']['flt_msg_types'] | null
+          message_type: Database["public"]["Enums"]["flt_msg_types"] | null
           messages_id: string | null
           msg_body: string | null
           version: string | null
@@ -638,7 +633,7 @@ export type Database = {
           date_updated?: string | null
           freighter_id?: string | null
           id?: string
-          message_type?: Database['public']['Enums']['flt_msg_types'] | null
+          message_type?: Database["public"]["Enums"]["flt_msg_types"] | null
           messages_id?: string | null
           msg_body?: string | null
           version?: string | null
@@ -648,25 +643,25 @@ export type Database = {
           date_updated?: string | null
           freighter_id?: string | null
           id?: string
-          message_type?: Database['public']['Enums']['flt_msg_types'] | null
+          message_type?: Database["public"]["Enums"]["flt_msg_types"] | null
           messages_id?: string | null
           msg_body?: string | null
           version?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: 'flt_messages_freighter_id_fkey'
-            columns: ['freighter_id']
+            foreignKeyName: "flt_messages_freighter_id_fkey"
+            columns: ["freighter_id"]
             isOneToOne: false
-            referencedRelation: 'freight_schedules'
-            referencedColumns: ['id']
+            referencedRelation: "freight_schedules"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'public_flt_messages_messages_id_fkey'
-            columns: ['messages_id']
+            foreignKeyName: "public_flt_messages_messages_id_fkey"
+            columns: ["messages_id"]
             isOneToOne: false
-            referencedRelation: 'messages'
-            referencedColumns: ['id']
+            referencedRelation: "messages"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -688,18 +683,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'followers_followed_id_fkey'
-            columns: ['followed_id']
+            foreignKeyName: "followers_followed_id_fkey"
+            columns: ["followed_id"]
             isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'followers_follower_id_fkey'
-            columns: ['follower_id']
+            foreignKeyName: "followers_follower_id_fkey"
+            columns: ["follower_id"]
             isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -711,13 +706,13 @@ export type Database = {
           created_at: string
           description: string | null
           flight_estgt: string | null
-          flight_handling_status: Database['public']['Enums']['schedule_freight_handling_status']
+          flight_handling_status: Database["public"]["Enums"]["schedule_freight_handling_status"]
           flight_number: string | null
           flight_payload: string | null
           flight_psd: string | null
           flight_pst: string | null
           flight_route: string
-          flight_type: Database['public']['Enums']['schedule_freight_flight_type']
+          flight_type: Database["public"]["Enums"]["schedule_freight_flight_type"]
           ground_time_interval_minutes: number | null
           id: string
           updated_at: string | null
@@ -729,13 +724,13 @@ export type Database = {
           created_at?: string
           description?: string | null
           flight_estgt?: string | null
-          flight_handling_status?: Database['public']['Enums']['schedule_freight_handling_status']
+          flight_handling_status?: Database["public"]["Enums"]["schedule_freight_handling_status"]
           flight_number?: string | null
           flight_payload?: string | null
           flight_psd?: string | null
           flight_pst?: string | null
           flight_route: string
-          flight_type: Database['public']['Enums']['schedule_freight_flight_type']
+          flight_type: Database["public"]["Enums"]["schedule_freight_flight_type"]
           ground_time_interval_minutes?: number | null
           id?: string
           updated_at?: string | null
@@ -747,45 +742,45 @@ export type Database = {
           created_at?: string
           description?: string | null
           flight_estgt?: string | null
-          flight_handling_status?: Database['public']['Enums']['schedule_freight_handling_status']
+          flight_handling_status?: Database["public"]["Enums"]["schedule_freight_handling_status"]
           flight_number?: string | null
           flight_payload?: string | null
           flight_psd?: string | null
           flight_pst?: string | null
           flight_route?: string
-          flight_type?: Database['public']['Enums']['schedule_freight_flight_type']
+          flight_type?: Database["public"]["Enums"]["schedule_freight_flight_type"]
           ground_time_interval_minutes?: number | null
           id?: string
           updated_at?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: 'freight_schedules_connection_id_fkey'
-            columns: ['connection_id']
+            foreignKeyName: "freight_schedules_connection_id_fkey"
+            columns: ["connection_id"]
             isOneToOne: false
-            referencedRelation: 'freight_schedules'
-            referencedColumns: ['id']
+            referencedRelation: "freight_schedules"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'freight_schedules_flight_route_fkey'
-            columns: ['flight_route']
+            foreignKeyName: "freight_schedules_flight_route_fkey"
+            columns: ["flight_route"]
             isOneToOne: false
-            referencedRelation: 'airports'
-            referencedColumns: ['id']
+            referencedRelation: "airports"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'public_freight_schedules_ac_register_fkey'
-            columns: ['ac_register']
+            foreignKeyName: "public_freight_schedules_ac_register_fkey"
+            columns: ["ac_register"]
             isOneToOne: false
-            referencedRelation: 'aircrafts_register'
-            referencedColumns: ['id']
+            referencedRelation: "aircrafts_register"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'public_freight_schedules_airline_fkey'
-            columns: ['airline']
+            foreignKeyName: "public_freight_schedules_airline_fkey"
+            columns: ["airline"]
             isOneToOne: false
-            referencedRelation: 'airlines'
-            referencedColumns: ['id']
+            referencedRelation: "airlines"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -811,15 +806,7 @@ export type Database = {
           nickName?: string | null
           user_id?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: 'messages_user_id_fkey'
-            columns: ['user_id']
-            isOneToOne: false
-            referencedRelation: 'users'
-            referencedColumns: ['id']
-          },
-        ]
+        Relationships: []
       }
       orders: {
         Row: {
@@ -843,15 +830,7 @@ export type Database = {
           status?: string
           total_amount?: number
         }
-        Relationships: [
-          {
-            foreignKeyName: 'orders_service_id_fkey'
-            columns: ['service_id']
-            isOneToOne: false
-            referencedRelation: 'services'
-            referencedColumns: ['id']
-          },
-        ]
+        Relationships: []
       }
       profiles: {
         Row: {
@@ -887,15 +866,7 @@ export type Database = {
           username?: string | null
           website?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: 'profiles_id_fkey'
-            columns: ['id']
-            isOneToOne: true
-            referencedRelation: 'users'
-            referencedColumns: ['id']
-          },
-        ]
+        Relationships: []
       }
       ramp_check: {
         Row: {
@@ -904,7 +875,7 @@ export type Database = {
           id: string
           inbound_flight_id: string | null
           outbound_flight_id: string | null
-          status: Database['public']['Enums']['ramp_check_status'] | null
+          status: Database["public"]["Enums"]["ramp_check_status"] | null
           user_id: string | null
         }
         Insert: {
@@ -913,7 +884,7 @@ export type Database = {
           id?: string
           inbound_flight_id?: string | null
           outbound_flight_id?: string | null
-          status?: Database['public']['Enums']['ramp_check_status'] | null
+          status?: Database["public"]["Enums"]["ramp_check_status"] | null
           user_id?: string | null
         }
         Update: {
@@ -922,30 +893,30 @@ export type Database = {
           id?: string
           inbound_flight_id?: string | null
           outbound_flight_id?: string | null
-          status?: Database['public']['Enums']['ramp_check_status'] | null
+          status?: Database["public"]["Enums"]["ramp_check_status"] | null
           user_id?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: 'ramp_check_inbound_flight_id_fkey'
-            columns: ['inbound_flight_id']
+            foreignKeyName: "ramp_check_inbound_flight_id_fkey"
+            columns: ["inbound_flight_id"]
             isOneToOne: false
-            referencedRelation: 'flights'
-            referencedColumns: ['id']
+            referencedRelation: "flights"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'ramp_check_outbound_flight_id_fkey'
-            columns: ['outbound_flight_id']
+            foreignKeyName: "ramp_check_outbound_flight_id_fkey"
+            columns: ["outbound_flight_id"]
             isOneToOne: false
-            referencedRelation: 'flights'
-            referencedColumns: ['id']
+            referencedRelation: "flights"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'ramp_check_user_id_fkey'
-            columns: ['user_id']
+            foreignKeyName: "ramp_check_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -997,11 +968,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'ramp_check_arrival_ramp_check_id_fkey'
-            columns: ['ramp_check_id']
+            foreignKeyName: "ramp_check_arrival_ramp_check_id_fkey"
+            columns: ["ramp_check_id"]
             isOneToOne: false
-            referencedRelation: 'ramp_check'
-            referencedColumns: ['id']
+            referencedRelation: "ramp_check"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -1035,11 +1006,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'ramp_check_control_points_ramp_check_id_fkey'
-            columns: ['ramp_check_id']
+            foreignKeyName: "ramp_check_control_points_ramp_check_id_fkey"
+            columns: ["ramp_check_id"]
             isOneToOne: false
-            referencedRelation: 'ramp_check'
-            referencedColumns: ['id']
+            referencedRelation: "ramp_check"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -1094,11 +1065,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'ramp_check_departure_ramp_check_id_fkey'
-            columns: ['ramp_check_id']
+            foreignKeyName: "ramp_check_departure_ramp_check_id_fkey"
+            columns: ["ramp_check_id"]
             isOneToOne: false
-            referencedRelation: 'ramp_check'
-            referencedColumns: ['id']
+            referencedRelation: "ramp_check"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -1141,56 +1112,377 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'ramp_check_finalize_ramp_check_id_fkey'
-            columns: ['ramp_check_id']
+            foreignKeyName: "ramp_check_finalize_ramp_check_id_fkey"
+            columns: ["ramp_check_id"]
             isOneToOne: false
-            referencedRelation: 'ramp_check'
-            referencedColumns: ['id']
+            referencedRelation: "ramp_check"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      service_customer_flights: {
+        Row: {
+          created_at: string
+          flight_number: string | null
+          flight_pst: string | null
+          flight_route: string | null
+          flight_type:
+            | Database["public"]["Enums"]["schedule_freight_flight_type"]
+            | null
+          id: number
+        }
+        Insert: {
+          created_at?: string
+          flight_number?: string | null
+          flight_pst?: string | null
+          flight_route?: string | null
+          flight_type?:
+            | Database["public"]["Enums"]["schedule_freight_flight_type"]
+            | null
+          id?: number
+        }
+        Update: {
+          created_at?: string
+          flight_number?: string | null
+          flight_pst?: string | null
+          flight_route?: string | null
+          flight_type?:
+            | Database["public"]["Enums"]["schedule_freight_flight_type"]
+            | null
+          id?: number
+        }
+        Relationships: []
+      }
+      service_customer_item_services: {
+        Row: {
+          service_customer_item_id: string
+          service_id: string
+          user_id: string | null
+        }
+        Insert: {
+          service_customer_item_id: string
+          service_id: string
+          user_id?: string | null
+        }
+        Update: {
+          service_customer_item_id?: string
+          service_id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_customer_item_services_service_customer_item_id_fkey"
+            columns: ["service_customer_item_id"]
+            isOneToOne: false
+            referencedRelation: "service_customer_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_customer_item_services_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      service_customer_items: {
+        Row: {
+          created_at: string
+          id: string
+          item_characteristics: Json | null
+          item_description: string | null
+          item_name: string
+          item_partnumber: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          item_characteristics?: Json | null
+          item_description?: string | null
+          item_name: string
+          item_partnumber?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          item_characteristics?: Json | null
+          item_description?: string | null
+          item_name?: string
+          item_partnumber?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      service_equipment: {
+        Row: {
+          created_at: string
+          date_in: string | null
+          date_out: string | null
+          descriptions: string | null
+          id: number
+          number: string | null
+          service_id: string
+          time_in: string | null
+          time_out: string | null
+          type: Database["public"]["Enums"]["service_equip_type"]
+        }
+        Insert: {
+          created_at?: string
+          date_in?: string | null
+          date_out?: string | null
+          descriptions?: string | null
+          id?: number
+          number?: string | null
+          service_id: string
+          time_in?: string | null
+          time_out?: string | null
+          type: Database["public"]["Enums"]["service_equip_type"]
+        }
+        Update: {
+          created_at?: string
+          date_in?: string | null
+          date_out?: string | null
+          descriptions?: string | null
+          id?: number
+          number?: string | null
+          service_id?: string
+          time_in?: string | null
+          time_out?: string | null
+          type?: Database["public"]["Enums"]["service_equip_type"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_equipment_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      service_files: {
+        Row: {
+          file_data: string
+          file_name: string | null
+          file_type: string
+          id: string
+          service_id: string
+          uploaded_at: string
+        }
+        Insert: {
+          file_data: string
+          file_name?: string | null
+          file_type: string
+          id?: string
+          service_id: string
+          uploaded_at?: string
+        }
+        Update: {
+          file_data?: string
+          file_name?: string | null
+          file_type?: string
+          id?: string
+          service_id?: string
+          uploaded_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_files_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      service_notifications: {
+        Row: {
+          created_at: string
+          id: string
+          is_enabled: boolean
+          message: string
+          service_order_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_enabled?: boolean
+          message: string
+          service_order_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_enabled?: boolean
+          message?: string
+          service_order_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_notifications_service_order_id_fkey"
+            columns: ["service_order_id"]
+            isOneToOne: false
+            referencedRelation: "service_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      service_orders: {
+        Row: {
+          id: string
+          order_date: string
+          serial_number: string
+          service_id: string
+          status: string
+          total_amount: number | null
+        }
+        Insert: {
+          id?: string
+          order_date?: string
+          serial_number: string
+          service_id: string
+          status?: string
+          total_amount?: number | null
+        }
+        Update: {
+          id?: string
+          order_date?: string
+          serial_number?: string
+          service_id?: string
+          status?: string
+          total_amount?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_orders_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      service_requests: {
+        Row: {
+          created_at: string
+          id: number
+          service_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          service_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          service_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_requests_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
           },
         ]
       }
       services: {
         Row: {
+          auto_update_at: string | null
+          context_tags: string | null
           created_at: string
-          customer_id: string
+          customer_flight: number | null
+          customer_id: string | null
           description: string | null
+          flight: string | null
+          flight_date_time: string | null
           id: string
-          service_date: string
+          order_now: boolean
+          reason: string | null
+          service_date: string | null
+          service_time: string | null
           service_type_id: string
-          status: Database['public']['Enums']['ground_service_status'] | null
+          status_id: string | null
+          title: string | null
+          updated_at: string
+          updated_by: string | null
+          user_id: string | null
         }
         Insert: {
+          auto_update_at?: string | null
+          context_tags?: string | null
           created_at?: string
-          customer_id: string
+          customer_flight?: number | null
+          customer_id?: string | null
           description?: string | null
+          flight?: string | null
+          flight_date_time?: string | null
           id?: string
-          service_date: string
+          order_now?: boolean
+          reason?: string | null
+          service_date?: string | null
+          service_time?: string | null
           service_type_id: string
-          status?: Database['public']['Enums']['ground_service_status'] | null
+          status_id?: string | null
+          title?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          user_id?: string | null
         }
         Update: {
+          auto_update_at?: string | null
+          context_tags?: string | null
           created_at?: string
-          customer_id?: string
+          customer_flight?: number | null
+          customer_id?: string | null
           description?: string | null
+          flight?: string | null
+          flight_date_time?: string | null
           id?: string
-          service_date?: string
+          order_now?: boolean
+          reason?: string | null
+          service_date?: string | null
+          service_time?: string | null
           service_type_id?: string
-          status?: Database['public']['Enums']['ground_service_status'] | null
+          status_id?: string | null
+          title?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          user_id?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: 'services_customer_id_fkey'
-            columns: ['customer_id']
+            foreignKeyName: "services_customer_flight_fkey"
+            columns: ["customer_flight"]
             isOneToOne: false
-            referencedRelation: 'customers'
-            referencedColumns: ['id']
+            referencedRelation: "service_customer_flights"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'services_service_type_id_fkey'
-            columns: ['service_type_id']
+            foreignKeyName: "services_customer_id_fkey"
+            columns: ["customer_id"]
             isOneToOne: false
-            referencedRelation: 'servicetype'
-            referencedColumns: ['id']
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "services_service_type_id_fkey"
+            columns: ["service_type_id"]
+            isOneToOne: false
+            referencedRelation: "servicetype"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "services_status_id_fkey"
+            columns: ["status_id"]
+            isOneToOne: false
+            referencedRelation: "servicestatuses"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -1213,15 +1505,25 @@ export type Database = {
           report_details?: string | null
           service_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: 'services_reports_service_id_fkey'
-            columns: ['service_id']
-            isOneToOne: false
-            referencedRelation: 'services'
-            referencedColumns: ['id']
-          },
-        ]
+        Relationships: []
+      }
+      servicestatuses: {
+        Row: {
+          created_at: string
+          id: string
+          status: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          status?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          status?: string | null
+        }
+        Relationships: []
       }
       servicetype: {
         Row: {
@@ -1295,25 +1597,25 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'public_shipments_dgr_id_fkey'
-            columns: ['dgr_id']
+            foreignKeyName: "public_shipments_dgr_id_fkey"
+            columns: ["dgr_id"]
             isOneToOne: false
-            referencedRelation: 'dgr_classes'
-            referencedColumns: ['id']
+            referencedRelation: "dgr_classes"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'public_shipments_shc_id_fkey'
-            columns: ['shc_id']
+            foreignKeyName: "public_shipments_shc_id_fkey"
+            columns: ["shc_id"]
             isOneToOne: false
-            referencedRelation: 'shc'
-            referencedColumns: ['id']
+            referencedRelation: "shc"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'public_shipments_un_id_fkey'
-            columns: ['un_id']
+            foreignKeyName: "public_shipments_un_id_fkey"
+            columns: ["un_id"]
             isOneToOne: false
-            referencedRelation: 'dgr_un_list'
-            referencedColumns: ['id']
+            referencedRelation: "dgr_un_list"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -1392,18 +1694,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'todo_shares_shared_to_fkey'
-            columns: ['shared_to']
+            foreignKeyName: "todo_shares_todo_id_fkey"
+            columns: ["todo_id"]
             isOneToOne: false
-            referencedRelation: 'users'
-            referencedColumns: ['id']
-          },
-          {
-            foreignKeyName: 'todo_shares_todo_id_fkey'
-            columns: ['todo_id']
-            isOneToOne: false
-            referencedRelation: 'todos'
-            referencedColumns: ['id']
+            referencedRelation: "todos"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -1441,21 +1736,25 @@ export type Database = {
           title?: string | null
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: 'todos_user_id_fkey'
-            columns: ['user_id']
-            isOneToOne: false
-            referencedRelation: 'users'
-            referencedColumns: ['id']
-          },
-        ]
+        Relationships: []
       }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      extract_service_details: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      get_pending_status_id: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      parse_service_description: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       share: {
         Args: {
           todo_id: string
@@ -1473,39 +1772,52 @@ export type Database = {
       }
     }
     Enums: {
-      'airline document category':
-        | 'GOPM'
-        | 'GOCHM'
-        | 'GOSQM'
-        | 'SLM'
-        | 'РОНО'
-        | 'AHM'
-        | 'GOM'
-        | 'TELEXES'
-        | 'ULD'
-        | 'COMMON'
-      airline_handling: 'scheduled' | 'charter'
-      'book status': 'KK' | 'CC' | 'NR'
-      book_type: 'TRANSFER' | 'ONE_LEG'
-      flt_msg_types: 'FFM' | 'CPM' | 'LDM' | 'FWB'
+      "airline document category":
+        | "GOPM"
+        | "GOCHM"
+        | "GOSQM"
+        | "SLM"
+        | "РОНО"
+        | "AHM"
+        | "GOM"
+        | "TELEXES"
+        | "ULD"
+        | "COMMON"
+      airline_handling: "scheduled" | "charter"
+      "book status": "KK" | "CC" | "NR"
+      book_type: "TRANSFER" | "ONE_LEG"
+      flt_msg_types: "FFM" | "CPM" | "LDM" | "FWB"
       ground_service_status:
-        | 'New'
-        | 'Pending'
-        | 'Accept'
-        | 'Confirmed'
-        | 'Completed'
-        | 'Approved'
-        | 'Accounted'
-        | 'Reject'
-        | 'Canceled'
-      note_category: 'URGENT' | 'COMMON' | 'SHIFT' | 'REMINDER'
-      ramp_check_status: 'new' | 'approved'
-      schedule_freight_flight_type: 'Inbound' | 'Outbound'
+        | "New"
+        | "Pending"
+        | "Accept"
+        | "Confirmed"
+        | "Completed"
+        | "Approved"
+        | "Accounted"
+        | "Reject"
+        | "Canceled"
+        | "Draft"
+      note_category: "URGENT" | "COMMON" | "SHIFT" | "REMINDER"
+      ramp_check_status: "new" | "approved"
+      schedule_freight_flight_type: "Inbound" | "Outbound"
       schedule_freight_handling_status:
-        | 'New'
-        | 'InPlan'
-        | 'Canceled'
-        | 'Completed'
+        | "New"
+        | "InPlan"
+        | "Canceled"
+        | "Completed"
+      service_equip_type:
+        | "Ленточный транспортер"
+        | "Погрузчик вилочный"
+        | "Паллетопогрузчик"
+        | "Паллетотранспортер"
+        | "Телега роликовая ( 10ft)"
+        | "Телега роликовая ( 20ft)"
+        | "Телега платформенная"
+        | "Тягач перонный"
+        | "Телега почтовая ( ТП )"
+        | "Вагон грузовой (DAV)"
+      service_orders_status: "Pending" | "Estimate" | "Accounted"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1513,27 +1825,27 @@ export type Database = {
   }
 }
 
-type PublicSchema = Database[Extract<keyof Database, 'public'>]
+type PublicSchema = Database[Extract<keyof Database, "public">]
 
 export type Tables<
   PublicTableNameOrOptions extends
-    | keyof (PublicSchema['Tables'] & PublicSchema['Views'])
+    | keyof (PublicSchema["Tables"] & PublicSchema["Views"])
     | { schema: keyof Database },
   TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof (Database[PublicTableNameOrOptions['schema']]['Tables'] &
-        Database[PublicTableNameOrOptions['schema']]['Views'])
+    ? keyof (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
+        Database[PublicTableNameOrOptions["schema"]]["Views"])
     : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? (Database[PublicTableNameOrOptions['schema']]['Tables'] &
-      Database[PublicTableNameOrOptions['schema']]['Views'])[TableName] extends {
+  ? (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
+      Database[PublicTableNameOrOptions["schema"]]["Views"])[TableName] extends {
       Row: infer R
     }
     ? R
     : never
-  : PublicTableNameOrOptions extends keyof (PublicSchema['Tables'] &
-        PublicSchema['Views'])
-    ? (PublicSchema['Tables'] &
-        PublicSchema['Views'])[PublicTableNameOrOptions] extends {
+  : PublicTableNameOrOptions extends keyof (PublicSchema["Tables"] &
+        PublicSchema["Views"])
+    ? (PublicSchema["Tables"] &
+        PublicSchema["Views"])[PublicTableNameOrOptions] extends {
         Row: infer R
       }
       ? R
@@ -1542,19 +1854,19 @@ export type Tables<
 
 export type TablesInsert<
   PublicTableNameOrOptions extends
-    | keyof PublicSchema['Tables']
+    | keyof PublicSchema["Tables"]
     | { schema: keyof Database },
   TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicTableNameOrOptions['schema']]['Tables']
+    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
     : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicTableNameOrOptions['schema']]['Tables'][TableName] extends {
+  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Insert: infer I
     }
     ? I
     : never
-  : PublicTableNameOrOptions extends keyof PublicSchema['Tables']
-    ? PublicSchema['Tables'][PublicTableNameOrOptions] extends {
+  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
+    ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
         Insert: infer I
       }
       ? I
@@ -1563,19 +1875,19 @@ export type TablesInsert<
 
 export type TablesUpdate<
   PublicTableNameOrOptions extends
-    | keyof PublicSchema['Tables']
+    | keyof PublicSchema["Tables"]
     | { schema: keyof Database },
   TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicTableNameOrOptions['schema']]['Tables']
+    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
     : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicTableNameOrOptions['schema']]['Tables'][TableName] extends {
+  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Update: infer U
     }
     ? U
     : never
-  : PublicTableNameOrOptions extends keyof PublicSchema['Tables']
-    ? PublicSchema['Tables'][PublicTableNameOrOptions] extends {
+  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
+    ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
         Update: infer U
       }
       ? U
@@ -1584,13 +1896,28 @@ export type TablesUpdate<
 
 export type Enums<
   PublicEnumNameOrOptions extends
-    | keyof PublicSchema['Enums']
+    | keyof PublicSchema["Enums"]
     | { schema: keyof Database },
   EnumName extends PublicEnumNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicEnumNameOrOptions['schema']]['Enums']
+    ? keyof Database[PublicEnumNameOrOptions["schema"]]["Enums"]
     : never = never,
 > = PublicEnumNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicEnumNameOrOptions['schema']]['Enums'][EnumName]
-  : PublicEnumNameOrOptions extends keyof PublicSchema['Enums']
-    ? PublicSchema['Enums'][PublicEnumNameOrOptions]
+  ? Database[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : PublicEnumNameOrOptions extends keyof PublicSchema["Enums"]
+    ? PublicSchema["Enums"][PublicEnumNameOrOptions]
+    : never
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof PublicSchema["CompositeTypes"]
+    | { schema: keyof Database },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    schema: keyof Database
+  }
+    ? keyof Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never,
+> = PublicCompositeTypeNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof PublicSchema["CompositeTypes"]
+    ? PublicSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never

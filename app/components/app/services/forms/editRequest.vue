@@ -120,9 +120,11 @@
             Items manager
           </UButton>
         </div>
-
-        <!-- Flight Date-Time Field (Conditionally Displayed) -->
-        <UFormGroup
+         <!-- Flight Select Field (conditionally displayed) -->
+      <UFormGroup v-if="showFlightFields" label="Flight">
+        <USelect v-model="form.customer_flight" :options="flightOptions" placeholder="Select Flight" />
+      </UFormGroup>
+        <!-- <UFormGroup
           v-if="showFlightFields"
           label="Flight Date & Time"
         >
@@ -130,7 +132,7 @@
             v-model="form.flight_date_time"
             :default-date="new Date()"
           />
-        </UFormGroup>
+        </UFormGroup> -->
 
         <!-- Status Field (Read-only) -->
         <UFormGroup label="Status">
@@ -212,7 +214,8 @@ const form = ref({
   status_id: '',
   user_id: '',
   flight: '', // New flight field
-  flight_date_time: ''
+  flight_date_time: '',
+  customer_flight: null
 })
 // Computed property to check if selected service type is the specific type
 const showFlightFields = computed(() => form.value.service_type_id === '6ecb91d0-f596-4b44-989c-15814b06f337')

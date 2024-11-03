@@ -90,6 +90,11 @@
                     {{ serviceData.service_time }}
                   </span>
                 </p>
+                <div>
+                  <p>
+                    {{ serviceData.customer_flight }}
+                  </p>
+                </div>
               </div>
               <div class="mt-4 flex flex-row space-x-2">
                 <div>

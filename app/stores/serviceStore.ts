@@ -17,6 +17,7 @@ export const useServiceStore = defineStore('serviceStore', {
       status_id: null,
       user_id: '',
       customer_id: '',
+      customer_flight: '',
       flight: '',
       flight_date_time: ''
     } as ServiceRow,

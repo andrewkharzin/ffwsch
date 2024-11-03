@@ -25,6 +25,7 @@ export const useServiceById = (serviceId) => {
           description,
           service_date,
           service_time,
+          customer_flight,
           servicetype (type_name),
           servicestatuses(status),
           customers(full_name, company_id(company_name)),
@@ -36,7 +37,8 @@ export const useServiceById = (serviceId) => {
               item_partnumber,
               item_characteristics
             )
-          )
+          ),
+          service_customer_flights(flight_number, flight_route, flight_pst)
         `)
         .eq('id', serviceId)
 
