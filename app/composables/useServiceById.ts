@@ -29,7 +29,7 @@ export const useServiceById = (serviceId) => {
           servicestatuses(status),
           customers(full_name, company_id(company_name)),
           service_orders(serial_number),
-          service_customer_item_services!inner (
+          service_customer_item_services (
             service_customer_items (
               item_name,
               item_description,
@@ -39,15 +39,19 @@ export const useServiceById = (serviceId) => {
           )
         `)
         .eq('id', serviceId)
-        .single()
 
       if (fetchError) {
         console.error('Error fetching data:', fetchError)
         throw new Error(fetchError.message || 'Unknown error occurred')
       }
 
+      if (data && data.length === 1) {
+        serviceData.value = data[0] // Возьмите первый элемент, если вернулась одна запись
+      } else {
+        serviceData.value = data // Если возвращается несколько записей, присвойте весь массив
+      }
+
       console.log('Fetched service data:', data)
-      serviceData.value = data
     } catch (fetchError) {
       error.value = fetchError.message
       console.error('Fetch error:', fetchError)

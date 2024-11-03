@@ -1,6 +1,7 @@
 <template>
   <UDashboardPage>
-    <UDashboardPanel grow>
+    <UDashboardPanel grow
+      class="overflow-y-auto max-h-[calc(100vh-4rem)]">
       <UDashboardNavbar title="Requests" class="ml-4">
         <template #right>
           <UInput

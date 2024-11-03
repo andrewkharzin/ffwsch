@@ -48,7 +48,7 @@
         </div>
 
         <!-- Time Field -->
-        <UFormGroup label="Time (HH:MM)">
+        <!-- <UFormGroup label="Time (HH:MM)">
           <div class="flex space-x-2">
             <UInput
               v-model="hours"
@@ -74,7 +74,7 @@
           >
             Please enter a valid time in HH:MM format.
           </span>
-        </UFormGroup>
+        </UFormGroup> -->
 
         <!-- Description Field -->
         <UFormGroup
@@ -88,7 +88,7 @@
           />
         </UFormGroup>
         <!-- Flight Field (Conditionally Displayed) -->
-        <UFormGroup
+        <!-- <UFormGroup
           v-if="showFlightFields"
           label="Flight"
         >
@@ -98,7 +98,7 @@
             variant="outline"
             placeholder="Enter flight details"
           />
-        </UFormGroup>
+        </UFormGroup> -->
         <!-- Checkbox to control "Items manager" button visibility -->
         <UFormGroup label="Items add Required?">
           <UCheckbox
