@@ -7,8 +7,8 @@ export const useServiceById = (serviceId) => {
   const error = ref(null)
 
   if (!serviceId) {
-    console.error("Invalid service ID provided:", serviceId)
-    error.value = "Service ID is required."
+    console.error('Invalid service ID provided:', serviceId)
+    error.value = 'Service ID is required.'
     loading.value = false
     return { serviceData, loading, error }
   }
@@ -16,7 +16,6 @@ export const useServiceById = (serviceId) => {
   const fetchServiceData = async () => {
     try {
       console.log('Fetching service data for ID:', serviceId)
-      console.log('Supabase client:', supabase)  // Log Supabase client to ensure it’s defined
 
       const { data, error: fetchError } = await supabase
         .from('services')
@@ -30,7 +29,14 @@ export const useServiceById = (serviceId) => {
           servicestatuses(status),
           customers(full_name, company_id(company_name)),
           service_orders(serial_number),
-          service_customer_items(item_name, item_description, item_partnumber, item_characteristics)
+          service_customer_item_services!inner (
+            service_customer_items (
+              item_name,
+              item_description,
+              item_partnumber,
+              item_characteristics
+            )
+          )
         `)
         .eq('id', serviceId)
         .single()
@@ -40,14 +46,14 @@ export const useServiceById = (serviceId) => {
         throw new Error(fetchError.message || 'Unknown error occurred')
       }
 
-      console.log('Fetched service data:', data) // Log the fetched data
+      console.log('Fetched service data:', data)
       serviceData.value = data
     } catch (fetchError) {
       error.value = fetchError.message
-      console.error('Fetch error:', fetchError) // Log full error object
+      console.error('Fetch error:', fetchError)
     } finally {
       loading.value = false
-      console.log('Loading state:', loading.value) // Log loading state after fetch attempt
+      console.log('Loading state:', loading.value)
     }
   }
 

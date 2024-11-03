@@ -99,6 +99,27 @@
             placeholder="Enter flight details"
           />
         </UFormGroup>
+        <!-- Checkbox to control "Items manager" button visibility -->
+        <UFormGroup label="Items add Required?">
+          <UCheckbox
+            v-model="isItemsRequired"
+            color="primary"
+          />
+        </UFormGroup>
+
+        <!-- Conditionally render the "Items manager" button -->
+        <div
+          v-if="isItemsRequired"
+          class="flex space-x-4"
+        >
+          <UButton
+            color="primary"
+            variant="soft"
+            @click="openItemsManager"
+          >
+            Items manager
+          </UButton>
+        </div>
 
         <!-- Flight Date-Time Field (Conditionally Displayed) -->
         <UFormGroup
@@ -157,6 +178,7 @@ import { useServiceStore } from '../../../../stores/serviceStore'
 
 const serviceStore = useServiceStore()
 const route = useRoute()
+const router = useRouter() // Get the router instance
 const toast = useToast()
 
 const hours = ref('')
@@ -165,6 +187,7 @@ const isSending = ref(false)
 const isValidTimeFormat = ref(true)
 const isSent = ref(false)
 const cancelStatusId = 'c92998e3-a1b8-43eb-9c8e-74f983db45a9'
+const isItemsRequired = ref(false)
 
 const props = defineProps({
   serviceTypes: {
@@ -173,6 +196,10 @@ const props = defineProps({
   },
   statuses: {
     type: Array,
+    required: true
+  },
+  serviceId: {
+    type: String,
     required: true
   }
 })
@@ -300,6 +327,16 @@ const sendService = async () => {
   } else if (isNew.value) {
     // Logic for cancellation if status is "New"
     // Add cancellation logic here if needed
+  }
+}
+const openItemsManager = () => {
+  // console.log('Opening items manager for service ID:', form.value.service_id) // Debugging log
+  console.log('Opening items manager for service ID:', form.value.id);
+  // Check if service_id is defined
+  if (form.value.id) {
+    router.push({ path: `/services/customers/manager/${form.value.id}` });
+  } else {
+    console.error('Service ID is undefined. Cannot navigate to items manager.')
   }
 }
 </script>

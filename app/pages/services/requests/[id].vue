@@ -45,7 +45,6 @@
           </div>
           <div v-else>
             <div class="flex flex-col space-y-4">
-
               <div>
                 <div>
                   <p class="font-light text-gray-500">
@@ -131,38 +130,44 @@
               </p>
             </div> -->
             <!-- Display Accordion only if service_customer_items exist -->
-            <div v-if="hasCustomerItems" class="mt-4">
+            <div
+              v-if="hasCustomerItems"
+              class="mt-4"
+            >
               <UAccordion
                 color="primary"
                 variant="soft"
                 size="sm"
                 :items="serviceCustomerItemsAccordion"
               />
-              <!-- Total of weight -->
-                <!-- Display total count and weight -->
-            <div class="mt-2">
-              <p class="text-sm font-light">Total items: {{ itemCount }}</p>
-              <p class="text-sm font-light">Total weight:
-                <span class="text-md font-bold font-mono dark:text-red-500">{{ totalWeight }}</span> kg
-              </p>
-            </div>
-            </div>
-            <div class="mt-4">
-              <div v-if="serviceData && serviceData.service_orders.length > 0">
-                <img
-                  v-if="qrCodeUrl"
-                  :src="qrCodeUrl"
-                  alt="QR Code"
-                  class="mt-2"
-                >
-                <p v-else>
-                  Loading QR code...
+              <!-- Display total count and weight -->
+              <div class="mt-2">
+                <p class="text-sm font-light">
+                  Total items:
+                  <span class="text-lg font-bold font-mono dark:text-red-500">{{ itemCount }}</span> pcs
+                </p>
+                <p class="text-sm font-light">
+                  Total weight:
+                  <span class="text-lg font-bold font-mono dark:text-red-500">{{ totalWeight }}</span> kg
                 </p>
               </div>
-              <p v-else-if="serviceData && serviceData.service_orders.length === 0">
-                No service orders available.
+            </div>
+          </div>
+          <div class="mt-4">
+            <div v-if="serviceData && serviceData.service_orders.length > 0">
+              <img
+                v-if="qrCodeUrl"
+                :src="qrCodeUrl"
+                alt="QR Code"
+                class="mt-2"
+              >
+              <p v-else>
+                Loading QR code...
               </p>
             </div>
+            <p v-else-if="serviceData && serviceData.service_orders.length === 0">
+              No service orders available.
+            </p>
           </div>
         </div>
       </UCard>
@@ -261,32 +266,36 @@ const openSlideover = () => {
   isOpen.value = true
 }
 
-// Check if there are any related customer items to show in accordion
-const hasCustomerItems = computed(() => serviceData.value && serviceData.value.service_customer_items.length > 0)
+const hasCustomerItems = computed(() => serviceData.value?.service_customer_item_services?.length > 0)
 
-// Prepare items for UAccordion based on service_customer_items
 const serviceCustomerItemsAccordion = computed(() => {
-  return serviceData.value.service_customer_items.map((item) => ({
-    label: item.item_name,
-    content: `
-
-      Part Number: ${item.item_partnumber || 'N/A'} \n
-      Characteristics: ${JSON.stringify(item.item_characteristics, null, 2) || 'N/A'}
-    `
-  }))
+  return serviceData.value.service_customer_item_services.map((relation) => {
+    const item = relation.service_customer_items
+    return {
+      label: item.item_name,
+      content: `
+        Part Number: ${item.item_partnumber || 'NOT APPLY'}
+      `
+    }
+  })
 })
 
-const itemCount = computed(() => {
-  return serviceData.value?.service_customer_items?.length || 0
-})
+const itemCount = computed(() => serviceData.value?.service_customer_item_services?.length || 0)
 
+// Compute the total weight from the `service_customer_item_services` array
 const totalWeight = computed(() => {
-  return serviceData.value?.service_customer_items.reduce((sum, item) => {
-    // Convert item.item_characteristics.weight to a number, defaulting to 0 if it's null or undefined
-    const weight = Number(item.item_characteristics?.weight) || 0
-    return sum + weight
-  }, 0)
-})
+  // Check if serviceData and service_customer_item_services are defined
+  if (!serviceData.value || !serviceData.value.service_customer_item_services) {
+    return 0;
+  }
+
+  return serviceData.value.service_customer_item_services.reduce((sum, item) => {
+    // Extract weight from service_customer_items.item_characteristics, defaulting to 0 if not available
+    const weight = parseFloat(item.service_customer_items?.item_characteristics?.weight) || 0;
+    return sum + weight;
+  }, 0);
+});
+
 
 // Helper function to get Tailwind CSS classes based on status// Function to get Tailwind CSS classes based on status
 // Function to determine badge type based on status

@@ -26,6 +26,7 @@
           :serviceTypes="formattedServiceTypes"
           :statuses="formattedStatuses"
           @serviceCreated="handleServiceCreated"
+          :serviceId="serviceId"
         />
       </div>
     </UDashboardPanel>
