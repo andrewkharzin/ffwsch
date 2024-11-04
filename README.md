@@ -8,7 +8,7 @@
 ## Quick Start
 
 ```bash [Terminal]
-npx nuxi init -t github:nuxt-ui-pro/dashboard
+clone git repo
 ```
 
 ## Setup
