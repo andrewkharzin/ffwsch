@@ -77,17 +77,17 @@
         </UFormGroup> -->
 
         <!-- Description Field -->
-        <UFormGroup
+        <!-- <UFormGroup
           label="Description"
           required
         >
-          <!-- <UTextarea
+          <UTextarea
             v-model="form.description"
             color="gray"
             variant="outline"
-          /> -->
-        </UFormGroup>
-        <AppUiTiptapEditor v-model="form.description" />
+          />
+
+        </UFormGroup> -->
         <!-- Flight Field (Conditionally Displayed) -->
         <!-- <UFormGroup
           v-if="showFlightFields"
@@ -99,7 +99,9 @@
             variant="outline"
             placeholder="Enter flight details"
           />
+
         </UFormGroup> -->
+        <Tiptap v-model="fotm.description" />
         <!-- Checkbox to control "Items manager" button visibility -->
         <UFormGroup
           v-if="showFlightFields"
