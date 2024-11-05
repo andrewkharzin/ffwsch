@@ -26,9 +26,9 @@ const date = computed({
 })
 
 const attrs = {
-  transparent: true,
-  borderless: true,
-  color: 'primary',
+  'transparent': true,
+  'borderless': true,
+  'color': 'primary',
   'is-dark': { selector: 'html', darkClass: 'dark' },
   'first-day-of-week': 2
 }
@@ -41,7 +41,11 @@ const attrs = {
     :columns="2"
     v-bind="{ ...attrs, ...$attrs }"
   />
-  <VCalendarDatePicker v-else v-model="date" v-bind="{ ...attrs, ...$attrs }" />
+  <VCalendarDatePicker
+    v-else
+    v-model="date"
+    v-bind="{ ...attrs, ...$attrs }"
+  />
 </template>
 
 <style>

@@ -30,13 +30,22 @@
       />
     </div>
 
-    <UButton type="submit" color="primary">
+    <UButton
+      type="submit"
+      color="primary"
+    >
       {{ isEditing ? 'Update' : 'Add' }}
     </UButton>
-    <UButton color="secondary" @click="handleSendService">
+    <UButton
+      color="secondary"
+      @click="handleSendService"
+    >
       Send
     </UButton>
-    <UButton color="error" @click="handleCancelService">
+    <UButton
+      color="error"
+      @click="handleCancelService"
+    >
       Cancel
     </UButton>
   </form>

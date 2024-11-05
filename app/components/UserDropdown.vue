@@ -1,75 +1,75 @@
 <script setup lang="ts">
-const supabase = useSupabaseClient();
-const user = useSupabaseUser();
-const { isHelpSlideoverOpen } = useDashboard();
-const { isDashboardSearchModalOpen } = useUIState();
-const { metaSymbol } = useShortcuts();
-const loading = ref(false);
+const supabase = useSupabaseClient()
+const user = useSupabaseUser()
+const { isHelpSlideoverOpen } = useDashboard()
+const { isDashboardSearchModalOpen } = useUIState()
+const { metaSymbol } = useShortcuts()
+const loading = ref(false)
 
 // Fetch the current user's profile using the composable
 const {
   profile,
   loading: profileLoading,
-  error: profileError,
-} = useCurrentProfile();
+  error: profileError
+} = useCurrentProfile()
 
 const items = computed(() => [
   [
     {
-      slot: "account",
-      label: "",
-      disabled: true,
-    },
+      slot: 'account',
+      label: '',
+      disabled: true
+    }
   ],
   [
     {
-      label: "Settings",
-      icon: "i-heroicons-cog-8-tooth",
-      to: "/settings",
+      label: 'Settings',
+      icon: 'i-heroicons-cog-8-tooth',
+      to: '/settings'
     },
     {
-      label: "Command menu",
-      icon: "i-heroicons-command-line",
-      shortcuts: [metaSymbol.value, "K"],
+      label: 'Command menu',
+      icon: 'i-heroicons-command-line',
+      shortcuts: [metaSymbol.value, 'K'],
       click: () => {
-        isDashboardSearchModalOpen.value = true;
-      },
+        isDashboardSearchModalOpen.value = true
+      }
     },
     {
-      label: "Help & Support",
-      icon: "i-heroicons-question-mark-circle",
-      shortcuts: ["?"],
-      click: () => (isHelpSlideoverOpen.value = true),
-    },
+      label: 'Help & Support',
+      icon: 'i-heroicons-question-mark-circle',
+      shortcuts: ['?'],
+      click: () => (isHelpSlideoverOpen.value = true)
+    }
   ],
   [
     {
-      label: "Documentation",
-      icon: "i-heroicons-book-open",
-      to: "https://ui.nuxt.com/pro/getting-started",
-      target: "_blank",
+      label: 'Documentation',
+      icon: 'i-heroicons-book-open',
+      to: 'https://ui.nuxt.com/pro/getting-started',
+      target: '_blank'
     },
     {
-      label: "GitHub repository",
-      icon: "i-simple-icons-github",
-      to: "https://github.com/nuxt-ui-pro/dashboard",
-      target: "_blank",
+      label: 'GitHub repository',
+      icon: 'i-simple-icons-github',
+      to: 'https://github.com/nuxt-ui-pro/dashboard',
+      target: '_blank'
     },
     {
-      label: "Buy Nuxt UI Pro",
-      icon: "i-heroicons-credit-card",
-      to: "https://ui.nuxt.com/pro/purchase",
-      target: "_blank",
-    },
+      label: 'Buy Nuxt UI Pro',
+      icon: 'i-heroicons-credit-card',
+      to: 'https://ui.nuxt.com/pro/purchase',
+      target: '_blank'
+    }
   ],
   [
     {
-      label: "Sign out",
-      icon: "i-heroicons-arrow-left-on-rectangle",
-      click: async () => await logout(),
-    },
-  ],
-]);
+      label: 'Sign out',
+      icon: 'i-heroicons-arrow-left-on-rectangle',
+      click: async () => await logout()
+    }
+  ]
+])
 
 // const logout = async () => {
 //   loading.value = true;
@@ -81,19 +81,19 @@ const items = computed(() => [
 // };
 
 const logout = async () => {
-  loading.value = true;
-  const { error } = await supabase.auth.signOut();
+  loading.value = true
+  const { error } = await supabase.auth.signOut()
 
   if (error) {
-    loading.value = false;
-    return alert("Something went wrong!");
+    loading.value = false
+    return alert('Something went wrong!')
   }
 
   // Successfully logged out, now redirect to login page
-  const router = useRouter(); // Get the router instance
-  loading.value = false;
-  router.push("/login"); // Redirect to the login page
-};
+  const router = useRouter() // Get the router instance
+  loading.value = false
+  router.push('/login') // Redirect to the login page
+}
 </script>
 
 <template>
@@ -114,11 +114,17 @@ const logout = async () => {
       >
         <template #leading>
           <!-- Use the fetched avatar_url from the profile -->
-          <UAvatar :src="profile?.avatar_url" size="2xs" />
+          <UAvatar
+            :src="profile?.avatar_url"
+            size="2xs"
+          />
         </template>
 
         <template #trailing>
-          <UIcon name="i-heroicons-ellipsis-vertical" class="w-5 h-5 ml-auto" />
+          <UIcon
+            name="i-heroicons-ellipsis-vertical"
+            class="w-5 h-5 ml-auto"
+          />
         </template>
       </UButton>
     </template>

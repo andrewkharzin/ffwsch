@@ -81,12 +81,13 @@
           label="Description"
           required
         >
-          <UTextarea
+          <!-- <UTextarea
             v-model="form.description"
             color="gray"
             variant="outline"
-          />
+          /> -->
         </UFormGroup>
+        <AppUiTiptapEditor v-model="form.description" />
         <!-- Flight Field (Conditionally Displayed) -->
         <!-- <UFormGroup
           v-if="showFlightFields"
@@ -100,7 +101,10 @@
           />
         </UFormGroup> -->
         <!-- Checkbox to control "Items manager" button visibility -->
-        <UFormGroup label="Items add Required?">
+        <UFormGroup
+          v-if="showFlightFields"
+          label="Items add Required?"
+        >
           <UCheckbox
             v-model="isItemsRequired"
             color="primary"
@@ -120,10 +124,22 @@
             Items manager
           </UButton>
         </div>
-         <!-- Flight Select Field (conditionally displayed) -->
-      <UFormGroup v-if="showFlightFields" label="Flight">
-        <USelect v-model="form.customer_flight" :options="flightOptions" placeholder="Select Flight" />
-      </UFormGroup>
+        <!-- Flight Select Field (conditionally displayed) -->
+        <UFormGroup
+          v-if="showFlightFields"
+          label="Flight"
+        >
+          <!-- <USelect
+            v-model="serviceStore.service.customer_flight"
+            :options="serviceStore.flightOptions"
+            placeholder="Select Flight"
+          /> -->
+          <USelect
+            v-model="form.customer_flight"
+            :options="serviceStore.flightOptions"
+            placeholder="Select Flight"
+          />
+        </UFormGroup>
         <!-- <UFormGroup
           v-if="showFlightFields"
           label="Flight Date & Time"
@@ -144,7 +160,6 @@
           />
         </UFormGroup>
 
-        <!-- Submit Button -->
         <!-- Submit Button -->
         <div class="flex space-x-4">
           <!-- "Update" Button: Visible only when `isSent` is false -->
@@ -192,16 +207,16 @@ const cancelStatusId = 'c92998e3-a1b8-43eb-9c8e-74f983db45a9'
 const isItemsRequired = ref(false)
 
 const props = defineProps({
+  serviceId: {
+    type: String, // Используем String для UUID
+    required: true // Если это обязательный пропс
+  },
   serviceTypes: {
     type: Array,
     required: true
   },
   statuses: {
     type: Array,
-    required: true
-  },
-  serviceId: {
-    type: String,
     required: true
   }
 })
@@ -268,6 +283,7 @@ onMounted(async () => {
       position: 'top-center'
     })
   }
+  serviceStore.loadFlightOptions()
 })
 
 const formattedServiceTypes = computed(() => props.serviceTypes)
@@ -334,10 +350,10 @@ const sendService = async () => {
 }
 const openItemsManager = () => {
   // console.log('Opening items manager for service ID:', form.value.service_id) // Debugging log
-  console.log('Opening items manager for service ID:', form.value.id);
+  console.log('Opening items manager for service ID:', form.value.id)
   // Check if service_id is defined
   if (form.value.id) {
-    router.push({ path: `/services/customers/manager/${form.value.id}` });
+    router.push({ path: `/services/customers/manager/${form.value.id}` })
   } else {
     console.error('Service ID is undefined. Cannot navigate to items manager.')
   }

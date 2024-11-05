@@ -1,7 +1,11 @@
 <template>
   <UDashboardPage>
     <UDashboardPanel grow>
-      <UDashboardNavbar title="Users" :badge="customers.length" class="ml-2">
+      <UDashboardNavbar
+        title="Users"
+        :badge="customers.length"
+        class="ml-2"
+      >
         <!-- Input for filtering users -->
         <template #right>
           <UInput
@@ -26,11 +30,17 @@
           v-if="loading"
           class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
         >
-          <AppCustomersCardSkeleton v-for="n in 6" :key="n" />
+          <AppCustomersCardSkeleton
+            v-for="n in 6"
+            :key="n"
+          />
         </div>
 
         <!-- Error message -->
-        <div v-if="error" class="text-center text-red-500">
+        <div
+          v-if="error"
+          class="text-center text-red-500"
+        >
           <span>Error: {{ error }}</span>
         </div>
 
@@ -59,13 +69,13 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from "vue";
+import { onMounted } from 'vue'
 
-const loading = ref(true); // Manage loading state
-const delay = 2000; // 2-second delay for skeletons
+const loading = ref(true) // Manage loading state
+const delay = 2000 // 2-second delay for skeletons
 
 // Fetch customers using the composable
-const { customers, error, fetchCustomers } = useCustomers();
+const { customers, error, fetchCustomers } = useCustomers()
 
 // onMounted(() => {
 //   fetchCustomers();
@@ -78,13 +88,13 @@ onMounted(() => {
     .then(() => {
       // Apply delay to simulate loading
       setTimeout(() => {
-        loading.value = false; // Stop showing skeletons after delay
-      }, delay);
+        loading.value = false // Stop showing skeletons after delay
+      }, delay)
     })
     .catch(() => {
-      loading.value = false; // Stop loading if there's an error
-    });
-});
+      loading.value = false // Stop loading if there's an error
+    })
+})
 </script>
 
 <style scoped>

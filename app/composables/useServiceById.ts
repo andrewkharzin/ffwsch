@@ -26,10 +26,16 @@ export const useServiceById = (serviceId) => {
           service_date,
           service_time,
           customer_flight,
+          service_customer_flights (
+            id,
+            flight_number,
+            flight_route,
+            flight_pst
+          ),
           servicetype (type_name),
-          servicestatuses(status),
-          customers(full_name, company_id(company_name)),
-          service_orders(serial_number),
+          servicestatuses (status),
+          customers (full_name, company_id (company_name)),
+          service_orders (serial_number),
           service_customer_item_services (
             service_customer_items (
               item_name,
@@ -37,8 +43,7 @@ export const useServiceById = (serviceId) => {
               item_partnumber,
               item_characteristics
             )
-          ),
-          service_customer_flights(flight_number, flight_route, flight_pst)
+          )
         `)
         .eq('id', serviceId)
 
@@ -48,9 +53,9 @@ export const useServiceById = (serviceId) => {
       }
 
       if (data && data.length === 1) {
-        serviceData.value = data[0] // Возьмите первый элемент, если вернулась одна запись
+        serviceData.value = data[0]
       } else {
-        serviceData.value = data // Если возвращается несколько записей, присвойте весь массив
+        serviceData.value = data
       }
 
       console.log('Fetched service data:', data)

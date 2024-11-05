@@ -21,8 +21,9 @@ export const useServiceStore = defineStore('serviceStore', {
       flight: '',
       flight_date_time: ''
     } as ServiceRow,
+    flightOptions: [], // Массив для хранения опций рейсов
     isEditMode: false,
-    isSending: false, // Новое состояние для отслеживания отправки
+    isSending: false,
     statusIds: {
       draft: '138261c0-235e-4a19-9b1f-c4ef8afe8529',
       new: 'b3d9ebe7-f348-4fc2-924e-f61256bf13fc'
@@ -36,6 +37,30 @@ export const useServiceStore = defineStore('serviceStore', {
   }),
 
   actions: {
+    async loadFlightOptions() {
+      const supabase = useSupabaseClient()
+      try {
+        // Извлекаем данные из таблицы service_customer_flights
+        const { data, error } = await supabase
+          .from('service_customer_flights')
+          .select('id, flight_number, flight_route')
+
+        if (error) {
+          console.error('Ошибка при загрузке списка рейсов:', error)
+          return
+        }
+
+        // Форматируем данные для списка выбора
+        this.flightOptions = data.map(flight => ({
+          value: flight.id, // ID рейса (UUID)
+          label: `${flight.flight_number} - ${flight.flight_route}` // Описание рейса
+        }))
+        console.log('Загружены опции рейсов:', this.flightOptions)
+      } catch (error) {
+        console.error('Ошибка при загрузке рейсов:', error)
+      }
+    },
+
     resetService() {
       this.service = {
         id: null,
@@ -92,31 +117,37 @@ export const useServiceStore = defineStore('serviceStore', {
     },
 
     async submitService(): Promise<ServiceRow | null> {
+      console.log('Current customer_flight value before submission:', this.service.customer_flight)
+      console.log('Current flight value before submission:', this.service.flight)
+
       this.service.status_id = this.isEditMode ? this.statusIds.new : this.statusIds.draft
       console.log('Service object before submission:', this.service)
 
       if (!this.service.status_id) {
         console.error('Error: Missing valid status_id.')
-        return null // Prevent submission if the status_id is invalid
+        return null
       }
 
-      this.isSending = true; // Устанавливаем состояние отправки в true
+      this.isSending = true
       try {
-        const response = await this.insertService(this.service)
+        const response = this.isEditMode
+          ? await this.updateService(this.service)
+          : await this.insertService(this.service)
+
         if (!response) {
-          console.error('Insert service failed: No response received.')
+          console.error(this.isEditMode ? 'Update service failed.' : 'Insert service failed.')
           return null
         }
-        console.log('Service successfully created:', response) // Log successful creation
+
+        console.log(this.isEditMode ? 'Service successfully updated:' : 'Service successfully created:', response)
         return response
       } catch (error) {
         console.error('Error saving service:', error)
         return null
       } finally {
-        this.isSending = false; // Останавливаем состояние отправки в любом случае
+        this.isSending = false
       }
     },
-
     async insertService(newService: ServiceInsert): Promise<ServiceRow | null> {
       const supabase = useSupabaseClient()
       try {
@@ -144,10 +175,17 @@ export const useServiceStore = defineStore('serviceStore', {
     async updateService(updatedService: ServiceUpdate): Promise<ServiceRow | null> {
       const supabase = useSupabaseClient()
       try {
-        console.log('Updating service with ID:', updatedService.id); // Log the ID
+        console.log('Updating service with ID:', updatedService.id)
+        console.log('Updating service with customer_flight:', updatedService.customer_flight)
+        console.log('Updating service with flight:', updatedService.flight)
+
         const { data, error } = await supabase
           .from('services')
-          .update(updatedService)
+          .update({
+            ...updatedService,
+            customer_flight: updatedService.customer_flight,
+            flight: updatedService.flight,
+          })
           .eq('id', updatedService.id)
           .select()
           .single()
@@ -165,6 +203,23 @@ export const useServiceStore = defineStore('serviceStore', {
         console.error('Failed to update service:', error)
         return null
       }
+    }
+
+  },
+  // Добавляем watcher для отслеживания изменений в поле flight
+  getters: {
+    watchFlight: (state) => {
+      // Следим за изменениями в поле flight
+      watch(
+        () => state.service.flight,
+        (newFlight) => {
+          if (newFlight) {
+            // Обновляем customer_flight, когда flight выбирается
+            state.service.customer_flight = newFlight
+            console.log('customer_flight updated:', state.service.customer_flight)
+          }
+        }
+      )
     }
   }
 })

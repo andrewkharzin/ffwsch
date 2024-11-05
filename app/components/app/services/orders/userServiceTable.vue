@@ -11,7 +11,10 @@
     <!-- Full Name and Company Column -->
     <template #full_name-data="{ row }">
       <div class="flex items-center gap-3">
-        <UAvatar :src="row.customers?.company_id.logo" :size="avatarSize" />
+        <UAvatar
+          :src="row.customers?.company_id.logo"
+          :size="avatarSize"
+        />
         <div class="flex flex-col">
           <p :style="{ fontSize: textSize }">
             {{ shortenFullName(row.customers?.full_name) }}
@@ -33,7 +36,10 @@
           >
             #{{ row.customers.number_id }}
           </p>
-          <p v-if="row.customers.company_id" class="text-md font-light">
+          <p
+            v-if="row.customers.company_id"
+            class="text-md font-light"
+          >
             <span class="text-xs dark:text-teal-300 italic">
               {{ row.service_orders.serial_number }}
             </span>
@@ -66,7 +72,10 @@
 
     <!-- Type Name Column -->
     <template #type_name-data="{ row }">
-      <div class="flex flex-col cursor-pointer" @click="openSlideover(row)">
+      <div
+        class="flex flex-col cursor-pointer"
+        @click="openSlideover(row)"
+      >
         <span class="hover:text-teal-500">
           <div class="flex flex-wrap">
             {{ row.servicetype.type_name }}
@@ -139,7 +148,10 @@
       </div>
 
       <template #footer>
-        <UButton label="Close" @click="isOpen = false" />
+        <UButton
+          label="Close"
+          @click="isOpen = false"
+        />
       </template>
     </UCard>
   </USlideover>
@@ -179,7 +191,7 @@ const selectedColumns = ref([
 
 const filteredServices = computed(() => {
   // Filter services by the userId
-  return props.services.filter((s) => s.customers?.user_id === props.userId)
+  return props.services.filter(s => s.customers?.user_id === props.userId)
 })
 
 const isOpen = ref(false)

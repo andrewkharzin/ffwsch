@@ -1,7 +1,10 @@
 <template>
   <UDashboardPage>
     <UDashboardPanel grow>
-      <UDashboardNavbar title="Requests" class="ml-4">
+      <UDashboardNavbar
+        title="Requests"
+        class="ml-4"
+      >
         <template #right>
           <UInput
             ref="input"
@@ -23,9 +26,9 @@
       </UDashboardToolbar>
       <div class="p-4 ml-4">
         <AppServicesFormsNewRequest
-          :serviceTypes="formattedServiceTypes"
+          :service-types="formattedServiceTypes"
           :statuses="formattedStatuses"
-          @serviceCreated="handleServiceCreated"
+          @service-created="handleServiceCreated"
         />
       </div>
     </UDashboardPanel>
@@ -39,12 +42,11 @@ definePageMeta({
   middleware: 'reset-form'
 })
 
-
 const router = useRouter()
 const q = ref('') // Assuming you have a filter value
 
-const { serviceTypes, statuses, fetchServiceTypes, fetchStatuses } =
-  useNewService()
+const { serviceTypes, statuses, fetchServiceTypes, fetchStatuses }
+  = useNewService()
 
 // Load service types and statuses
 onMounted(() => {
@@ -54,7 +56,7 @@ onMounted(() => {
 
 // Format the service types for USelect component
 const formattedServiceTypes = computed(() => {
-  return serviceTypes.value.map((type) => ({
+  return serviceTypes.value.map(type => ({
     label: type.type_name,
     value: type.id
   }))
@@ -62,7 +64,7 @@ const formattedServiceTypes = computed(() => {
 
 // Format the statuses for USelect component
 const formattedStatuses = computed(() => {
-  return statuses.value.map((status) => ({
+  return statuses.value.map(status => ({
     label: status.status,
     value: status.id
   }))
@@ -79,13 +81,13 @@ const links = [
       label: 'home',
       icon: 'i-heroicons-home',
       component: 'NuxtLink',
-      to: `/`
+      to: '/'
     },
     {
       label: 'Requests',
       icon: 'i-heroicons-queue-list',
       component: 'NuxtLink',
-      to: `/services/customers/requests/list`
+      to: '/services/customers/requests/list'
     }
   ]
 ]

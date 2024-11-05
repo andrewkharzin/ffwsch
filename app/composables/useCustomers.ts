@@ -1,16 +1,16 @@
-import { ref } from 'vue';
-import { Database } from '~/types/database'; // Assuming you have typed your Supabase database
+import { ref } from 'vue'
+import type { Database } from '~/types/database' // Assuming you have typed your Supabase database
 
 export const useCustomers = () => {
-  const supabase = useSupabaseClient<Database>(); // Use your typed database schema
-  const customers = ref<any[]>([]);
-  const loading = ref(false);
-  const error = ref<string | null>(null);
+  const supabase = useSupabaseClient<Database>() // Use your typed database schema
+  const customers = ref<any[]>([])
+  const loading = ref(false)
+  const error = ref<string | null>(null)
 
   // Fetch customers data
   const fetchCustomers = async () => {
-    loading.value = true;
-    error.value = null;
+    loading.value = true
+    error.value = null
 
     try {
       const { data, error: fetchError } = await supabase
@@ -30,16 +30,16 @@ export const useCustomers = () => {
             logo
           ),
           user_id
-        `);
+        `)
 
-      if (fetchError) throw fetchError;
-      customers.value = data;
+      if (fetchError) throw fetchError
+      customers.value = data
     } catch (err: any) {
-      error.value = err.message;
+      error.value = err.message
     } finally {
-      loading.value = false;
+      loading.value = false
     }
-  };
+  }
 
-  return { customers, loading, error, fetchCustomers };
-};
+  return { customers, loading, error, fetchCustomers }
+}

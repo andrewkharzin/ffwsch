@@ -1,9 +1,23 @@
 <template>
   <div class="custom-select">
     <label v-if="label">{{ label }}</label>
-    <select v-model="selectedValue" @change="handleChange" :required="required">
-      <option value="" disabled selected>{{ placeholder }}</option>
-      <option v-for="option in options" :key="option.id" :value="option.id">
+    <select
+      v-model="selectedValue"
+      :required="required"
+      @change="handleChange"
+    >
+      <option
+        value=""
+        disabled
+        selected
+      >
+        {{ placeholder }}
+      </option>
+      <option
+        v-for="option in options"
+        :key="option.id"
+        :value="option.id"
+      >
         {{ option.type_name }}
       </option>
     </select>
@@ -11,8 +25,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
-import { defineProps, defineEmits } from 'vue'
+import { ref, watch, defineProps, defineEmits } from 'vue'
 
 const props = defineProps({
   modelValue: {

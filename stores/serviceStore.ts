@@ -4,11 +4,11 @@ import { defineStore } from 'pinia'
 export const useServiceStore = defineStore('service', {
   state: () => ({
     services: [],
-    userRole: null, // To hold the user role
+    userRole: null // To hold the user role
   }),
   actions: {
     async fetchServices() {
-      const supabase = useSupabaseClient()  // Call within each action
+      const supabase = useSupabaseClient() // Call within each action
       const { data, error } = await supabase
         .from('services')
         .select('*')
@@ -74,6 +74,6 @@ export const useServiceStore = defineStore('service', {
 
     setUserRole(role) {
       this.userRole = role // Set the user role
-    },
-  },
+    }
+  }
 })

@@ -11,7 +11,10 @@
     <!-- Full Name and Company Column -->
     <template #full_name-data="{ row }">
       <div class="flex items-center gap-3">
-        <UAvatar :src="row.customers?.company_id.logo" :size="avatarSize" />
+        <UAvatar
+          :src="row.customers?.company_id.logo"
+          :size="avatarSize"
+        />
         <div class="flex flex-col">
           <p :style="{ fontSize: textSize }">
             {{ shortenFullName(row.customers?.full_name) }}
@@ -37,7 +40,10 @@
           >
             #{{ row.customers.number_id }}
           </p>
-          <p v-if="row.customers.company_id" class="text-md font-light">
+          <p
+            v-if="row.customers.company_id"
+            class="text-md font-light"
+          >
             <span class="text-xs dark:text-teal-300 italic">
               {{ row.service_orders.serial_number }}
             </span>
@@ -70,7 +76,10 @@
 
     <!-- Type Name Column -->
     <template #type_name-data="{ row }">
-      <div class="flex flex-col cursor-pointer" @click="openSlideover(row)">
+      <div
+        class="flex flex-col cursor-pointer"
+        @click="openSlideover(row)"
+      >
         <span class="hover:text-teal-500">
           <div class="flex flex-wrap">
             {{ row.servicetype.type_name }}
@@ -142,7 +151,9 @@
             }}</span>
           </div>
         </div>
-        <p class="text-sm dark:text-gray-600">Service equipments</p>
+        <p class="text-sm dark:text-gray-600">
+          Service equipments
+        </p>
         <div class="flex flex-col space-y-4">
           <template v-if="selectedService.service_equipment?.length">
             <UCard
@@ -161,7 +172,7 @@
                   equipment.type
                 }}</span>
               </div>
-              <div></div>
+              <div />
             </UCard>
           </template>
           <template v-else>
@@ -171,7 +182,10 @@
       </div>
 
       <template #footer>
-        <UButton label="Close" @click="isOpen = false" />
+        <UButton
+          label="Close"
+          @click="isOpen = false"
+        />
       </template>
     </UCard>
   </USlideover>
@@ -231,7 +245,7 @@ const companyNames = computed(() => {
   return [
     ...new Set(
       props.services
-        .map((s) => s.customers?.company_id?.company_name)
+        .map(s => s.customers?.company_id?.company_name)
         .filter(Boolean)
     )
   ]
@@ -240,8 +254,8 @@ const companyNames = computed(() => {
 const filteredServices = computed(() => {
   return props.services.filter((service) => {
     const matchesCompany = selectedCompany.value
-      ? service.customers?.company_id?.company_name ===
-        selectedCompany.value.company_name
+      ? service.customers?.company_id?.company_name
+      === selectedCompany.value.company_name
       : true
     // Apply other filters (statuses, locations, etc.) as needed
     return matchesCompany

@@ -3,7 +3,6 @@
 import crypto from 'crypto'
 import { defineEventHandler, getQuery, setCookie } from 'h3'
 
-
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN
 
 function verifyTelegramLogin(data: any) {

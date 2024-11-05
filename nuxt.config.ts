@@ -5,10 +5,23 @@ export default defineNuxtConfig({
     redirect: true
   },
 
-  modules: ['@pinia/nuxt', 'pinia-plugin-persistedstate/nuxt', '@nuxtjs/supabase', '@nuxt/eslint', '@nuxt/fonts', '@nuxt/ui', '@vueuse/nuxt', '@nuxt/image'],
+  modules: [
+    '@pinia/nuxt',
+    'pinia-plugin-persistedstate/nuxt',
+    '@nuxtjs/supabase',
+    '@nuxt/eslint',
+    '@nuxt/fonts',
+    '@nuxt/ui',
+    '@vueuse/nuxt',
+    '@nuxt/image',
+    'nuxt-tiptap-editor'
+  ],
 
   ui: {
     safelistColors: ['primary', 'red', 'orange', 'green']
+  },
+  tiptap: {
+    prefix: 'Tiptap'
   },
 
   colorMode: {

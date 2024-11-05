@@ -78,7 +78,10 @@ const addToServiceRequest = async () => {
 <template>
   <UDashboardPage>
     <UDashboardPanel grow>
-      <UDashboardNavbar title="Items Manager" class="ml-2">
+      <UDashboardNavbar
+        title="Items Manager"
+        class="ml-2"
+      >
         <template #right>
           <UInput
             ref="input"

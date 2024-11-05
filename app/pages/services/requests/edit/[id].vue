@@ -1,8 +1,13 @@
 <template>
   <UDashboardPage>
-    <UDashboardPanel grow
-      class="overflow-y-auto max-h-[calc(100vh-4rem)]">
-      <UDashboardNavbar title="Requests" class="ml-4">
+    <UDashboardPanel
+      grow
+      class="overflow-y-auto max-h-[calc(100vh-4rem)]"
+    >
+      <UDashboardNavbar
+        title="Requests"
+        class="ml-4"
+      >
         <template #right>
           <UInput
             ref="input"
@@ -24,10 +29,10 @@
       </UDashboardToolbar>
       <div class="p-4 ml-4">
         <AppServicesFormsEditRequest
-          :serviceTypes="formattedServiceTypes"
-          :statuses="formattedStatuses"
-          @serviceCreated="handleServiceCreated"
-          :serviceId="serviceId"
+          :service-types="formattedServiceTypes"
+          :statuses="formattedStatuses.value"
+          :service-id="serviceId"
+          @service-created="handleServiceCreated"
         />
       </div>
     </UDashboardPanel>
@@ -37,26 +42,39 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 
-definePageMeta({
-  middleware: 'auth'
-})
+//
 
 
 const router = useRouter()
 const q = ref('') // Assuming you have a filter value
 
-const { serviceTypes, statuses, fetchServiceTypes, fetchStatuses } =
-  useNewService()
+const { serviceTypes, statuses, fetchServiceTypes, fetchStatuses }
+  = useNewService()
 
 // Load service types and statuses
+// onMounted(() => {
+//   fetchServiceTypes()
+//   fetchStatuses()
+// })
+// Логируем, когда компонент монтируется
 onMounted(() => {
-  fetchServiceTypes()
-  fetchStatuses()
+  console.log('Component mounted. Fetching service types and statuses...');
+  fetchServiceTypes().then(() => {
+    console.log('Service types fetched:', serviceTypes.value);
+  }).catch(error => {
+    console.error('Error fetching service types:', error);
+  });
+
+  fetchStatuses().then(() => {
+    console.log('Statuses fetched:', statuses.value);
+  }).catch(error => {
+    console.error('Error fetching statuses:', error);
+  });
 })
 
 // Format the service types for USelect component
 const formattedServiceTypes = computed(() => {
-  return serviceTypes.value.map((type) => ({
+  return serviceTypes.value.map(type => ({
     label: type.type_name,
     value: type.id
   }))
@@ -64,7 +82,7 @@ const formattedServiceTypes = computed(() => {
 
 // Format the statuses for USelect component
 const formattedStatuses = computed(() => {
-  return statuses.value.map((status) => ({
+  return statuses.value.map(status => ({
     label: status.status,
     value: status.id
   }))
@@ -81,13 +99,13 @@ const links = [
       label: 'home',
       icon: 'i-heroicons-home',
       component: 'NuxtLink',
-      to: `/`
+      to: '/'
     },
     {
       label: 'Requests',
       icon: 'i-heroicons-queue-list',
       component: 'NuxtLink',
-      to: `/services/customers/requests/list`
+      to: '/services/customers/requests/list'
     }
   ]
 ]

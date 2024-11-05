@@ -5,7 +5,7 @@
       :services="services"
       :loading="loading"
       :error="error"
-      :userId="userId"
+      :user-id="userId"
     />
   </div>
 </template>

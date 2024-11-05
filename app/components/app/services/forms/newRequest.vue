@@ -89,7 +89,6 @@ import { ref, computed, watch } from 'vue'
 import { format } from 'date-fns'
 import { useServiceStore } from '../../../../stores/serviceStore' // Ensure correct path
 
-
 const toast = useToast()
 const router = useRouter()
 
@@ -197,24 +196,24 @@ const submitForm = async () => {
     user_id: user.value.id,
     customer_id: customerData.id,
     service_date: new Date(date.value).toISOString().split('T')[0],
-    status_id: isEditMode.value ? serviceStore.statusIds.new : serviceStore.statusIds.draft,
-  };
-
-  if (isEditMode.value) {
-    newService.service_time = form.value.service_time;
-    newService.description = form.value.description;
+    status_id: isEditMode.value ? serviceStore.statusIds.new : serviceStore.statusIds.draft
   }
 
-  console.log("New Service data prepared:", newService);
+  if (isEditMode.value) {
+    newService.service_time = form.value.service_time
+    newService.description = form.value.description
+  }
+
+  console.log('New Service data prepared:', newService)
 
   try {
-    const response = await serviceStore.insertService(newService);
-    console.log("Service insertion response:", response);
+    const response = await serviceStore.insertService(newService)
+    console.log('Service insertion response:', response)
 
     if (response) {
-      console.log('Service successfully created');
-      emit('serviceCreated', response.id);
-      serviceStore.resetService();
+      console.log('Service successfully created')
+      emit('serviceCreated', response.id)
+      serviceStore.resetService()
 
       toast.add({
         title: 'Success',
@@ -224,28 +223,28 @@ const submitForm = async () => {
         actions: [
           {
             label: 'OK',
-            onClick: (toastInstance) => toastInstance.dismiss() // Close the toast
+            onClick: toastInstance => toastInstance.dismiss() // Close the toast
           },
           {
             label: 'Add Details',
             onClick: () => {
               // Log before redirecting to confirm the ID
-              console.log("Redirecting to edit service with ID:", response.id);
-              router.push(`/services/requests/edit/${response.id}`); // Redirect to service edit
+              console.log('Redirecting to edit service with ID:', response.id)
+              router.push(`/services/requests/edit/${response.id}`) // Redirect to service edit
             }
           }
         ]
-      });
+      })
     } else {
-      console.log("No response received from insertService");
+      console.log('No response received from insertService')
     }
   } catch (error) {
-    console.error('Unexpected error in insertService:', error);
+    console.error('Unexpected error in insertService:', error)
     toast.add({
       title: 'Error',
       description: 'An unexpected error occurred. Please try again later.',
       color: 'error'
-    });
+    })
   }
-};
+}
 </script>

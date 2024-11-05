@@ -2,28 +2,28 @@
   <div>
     new
     <AppServicesFormsServiceForm
-      :serviceData="serviceData"
-      :isEditing="isEditing"
-      :serviceTypes="serviceTypes"
-      :serviceStatuses="serviceStatuses"
+      :service-data="serviceData"
+      :is-editing="isEditing"
+      :service-types="serviceTypes"
+      :service-statuses="serviceStatuses"
       :customers="customers"
       @submit="handleInsertOrUpdate"
-      @sendService="handleSendService"
-      @cancelService="handleCancelService"
+      @send-service="handleSendService"
+      @cancel-service="handleCancelService"
     />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useServiceStore } from '../../store/serviceStore'
+import { useServiceStore } from '../../stores/serviceStore'
 
 const serviceStore = useServiceStore()
 // Reactive references for form data and editing state
 const serviceData = ref({
   service_type_id: '',
   customer_id: '',
-  status_id: '', // This will be auto-set to Draft
+  status_id: '' // This will be auto-set to Draft
 })
 const isEditing = ref(false)
 

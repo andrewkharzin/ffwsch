@@ -1,6 +1,8 @@
 <template>
   <div>
-    <h1 class="text-xl font-bold mb-4">Add Service</h1>
+    <h1 class="text-xl font-bold mb-4">
+      Add Service
+    </h1>
     <form @submit.prevent="handleSubmit">
       <UFormGroup label="Service Type ID">
         <UInput
@@ -59,12 +61,22 @@
         />
       </UFormGroup>
 
-      <UFormGroup label="Order Now" class="flex items-center">
-        <input v-model="orderNow" type="checkbox" class="mr-2" />
+      <UFormGroup
+        label="Order Now"
+        class="flex items-center"
+      >
+        <input
+          v-model="orderNow"
+          type="checkbox"
+          class="mr-2"
+        >
         <span>Order Now</span>
       </UFormGroup>
 
-      <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md">
+      <button
+        type="submit"
+        class="px-4 py-2 bg-blue-600 text-white rounded-md"
+      >
         Insert Service
       </button>
     </form>

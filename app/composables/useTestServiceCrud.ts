@@ -85,35 +85,35 @@ export default function useTestServiceCrud() {
 
   // Update an existing service by ID
   async function updateService(serviceId: string, updates: ServiceUpdate) {
-    const { customer_id, description, service_date, service_type_id, status } = updates;
-    const updatesData: Partial<ServiceUpdate> = {};
+    const { customer_id, description, service_date, service_type_id, status } = updates
+    const updatesData: Partial<ServiceUpdate> = {}
 
-    if (customer_id) updatesData.customer_id = customer_id;
-    if (description) updatesData.description = description;
-    if (service_date) updatesData.service_date = service_date;
-    if (service_type_id) updatesData.service_type_id = service_type_id;
-    if (status) updatesData.status = status;
+    if (customer_id) updatesData.customer_id = customer_id
+    if (description) updatesData.description = description
+    if (service_date) updatesData.service_date = service_date
+    if (service_type_id) updatesData.service_type_id = service_type_id
+    if (status) updatesData.status = status
 
-    console.log('Updates to be sent:', updatesData);
+    console.log('Updates to be sent:', updatesData)
 
     try {
       const { data, error } = await supabase
         .from('services')
         .update(updatesData)
-        .eq('id', serviceId);
+        .eq('id', serviceId)
 
       if (error) {
-        console.error('Update error details:', error.message); // Log the error message
-        console.error('Error code:', error.code); // Log the error code
-        console.error('Error details:', error.details); // Log additional error details
-        return null;
+        console.error('Update error details:', error.message) // Log the error message
+        console.error('Error code:', error.code) // Log the error code
+        console.error('Error details:', error.details) // Log additional error details
+        return null
       }
 
-      console.log('Updated service data:', data);
-      return data;
+      console.log('Updated service data:', data)
+      return data
     } catch (err) {
-      console.error('Unexpected error:', err);
-      return null;
+      console.error('Unexpected error:', err)
+      return null
     }
   }
 

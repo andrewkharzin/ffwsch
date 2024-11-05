@@ -8,7 +8,7 @@ export default defineNuxtRouteMiddleware((to, from) => {
 
   // Reset form state
   if (serviceStore) {
-    serviceStore.resetForm(); // Call the method that resets the form
+    serviceStore.resetForm() // Call the method that resets the form
   }
-  console.log('Resetting form...');
+  console.log('Resetting form...')
 })

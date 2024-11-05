@@ -20,7 +20,7 @@ const statusMap = reactive({
   '138261c0-235e-4a19-9b1f-c4ef8afe8529': { label: 'Draft', colorClass: 'bg-gray-400' },
   '656d0181-1aa8-46a0-83d8-651bfd1a4742': { label: 'Completed', colorClass: 'bg-green-500' },
   '681d9cb6-55e4-47a0-9c2c-550674045e04': { label: 'Pending', colorClass: 'bg-yellow-500' },
-  '68bd4999-011a-47e3-833d-0f600db5eb48': { label: 'Confirmed', colorClass: 'bg-blue-500' },
+  '68bd4999-011a-47e3-833d-0f600db5eb48': { label: 'Confirmed', colorClass: 'bg-teal-600' },
   'b3d9ebe7-f348-4fc2-924e-f61256bf13fc': { label: 'New', colorClass: 'bg-indigo-500' },
   'b4e826c6-0b7a-43ed-b5e6-c1d7cc395d28': { label: 'Accounted', colorClass: 'bg-purple-500' },
   'c92998e3-a1b8-43eb-9c8e-74f983db45a9': { label: 'Canceled', colorClass: 'bg-red-500' }
@@ -107,9 +107,9 @@ watch([search, selectedStatus], () => {
       {{ row.servicetype.type_name || 'No Type' }}
     </template>
     <template #flight-data="{ row }">
-      <p class="text-sm font-bold dark:text-pink-500">
-        {{ row.flight }}
-        <span class="text-sm font-light">{{ row.flight_date_time }}</span>
+      <p class="text-sm font-bold dark:text-teal-500">
+        {{ row.service_customer_flights?.flight_number }}{{ " " }}<span class="text-sm font-light dark:text-gray-600">/</span>
+        <span class="text-sm font-ligh dark:text-gray-500">{{ row.service_customer_flights?.flight_pst }}</span>
       </p>
     </template>
     <template #status-data="{ row }">
