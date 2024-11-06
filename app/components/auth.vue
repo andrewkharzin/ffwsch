@@ -1,24 +1,24 @@
 <script setup>
-const supabase = useSupabaseClient();
-const loading = ref(false);
-const email = ref("");
-const password = ref("");
+const supabase = useSupabaseClient()
+const loading = ref(false)
+const email = ref('')
+const password = ref('')
 
 const handleLogin = async () => {
   try {
-    loading.value = true;
+    loading.value = true
     const { error } = await supabase.auth.signInWithPassword({
       email: email.value,
-      password: password.value,
-    });
-    if (error) throw error;
-    alert("Check your email for the login link!");
+      password: password.value
+    })
+    if (error) throw error
+    alert('Check your email for the login link!')
   } catch (error) {
-    alert(error.error_description || error.message);
+    alert(error.error_description || error.message)
   } finally {
-    loading.value = false;
+    loading.value = false
   }
-};
+}
 </script>
 
 <template>
@@ -35,7 +35,7 @@ const handleLogin = async () => {
           name: 'email',
           placeholder: 'Enter your email',
           color: 'gray',
-          vModel: email,
+          vModel: email
         },
         {
           type: 'password',
@@ -43,12 +43,12 @@ const handleLogin = async () => {
           name: 'password',
           placeholder: 'Enter your password',
           color: 'gray',
-          vModel: password,
-        },
+          vModel: password
+        }
       ]"
       :loading="loading"
       :providers="[
-        { label: 'GitHub', icon: 'i-simple-icons-github', color: 'gray' },
+        { label: 'GitHub', icon: 'i-simple-icons-github', color: 'gray' }
       ]"
     />
   </form>

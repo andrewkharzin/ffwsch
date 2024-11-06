@@ -1,6 +1,5 @@
 <script lang="ts" setup>
-import { ref, computed, watch } from 'vue';
-import { defineProps, defineEmits } from 'vue';
+import { ref, computed, watch, defineProps, defineEmits } from 'vue'
 
 // Define props for items and selectedItems
 const props = defineProps({
@@ -12,29 +11,29 @@ const props = defineProps({
     type: Array,
     required: true
   }
-});
+})
 
 // Emit event to parent component
-const emit = defineEmits(['update:selectedItems', 'add-to-service-request']);
+const emit = defineEmits(['update:selectedItems', 'add-to-service-request'])
 
 // Local reference for selected items to track changes in the table
-const localSelectedItems = ref([...props.selectedItems]);
+const localSelectedItems = ref([...props.selectedItems])
 
 // Sync changes from parent component's selectedItems prop
 watch(() => props.selectedItems, (newSelectedItems) => {
-  localSelectedItems.value = [...newSelectedItems];
-});
+  localSelectedItems.value = [...newSelectedItems]
+})
 
 // Emit events to update selected items in the parent component
 const toggleItemSelection = (itemId) => {
-  const index = localSelectedItems.value.indexOf(itemId);
+  const index = localSelectedItems.value.indexOf(itemId)
   if (index === -1) {
-    localSelectedItems.value.push(itemId);
+    localSelectedItems.value.push(itemId)
   } else {
-    localSelectedItems.value.splice(index, 1);
+    localSelectedItems.value.splice(index, 1)
   }
-  emit('update:selectedItems', localSelectedItems.value);
-};
+  emit('update:selectedItems', localSelectedItems.value)
+}
 
 // Columns management
 const columns = ref([
@@ -42,32 +41,32 @@ const columns = ref([
   { key: 'name', label: 'Item Name', sortable: true },
   { key: 'description', label: 'Description', sortable: true },
   { key: 'partnumber', label: 'Part Number', sortable: true },
-  { key: 'completed', label: 'Status', sortable: true }, // Additional column
-]);
+  { key: 'completed', label: 'Status', sortable: true } // Additional column
+])
 
-const selectedColumns = ref(columns.value.map(column => column.key)); // Initialize selected columns
+const selectedColumns = ref(columns.value.map(column => column.key)) // Initialize selected columns
 
 // Computed property to filter columns based on selection
 const columnsTable = computed(() => {
-  return columns.value.filter(column => selectedColumns.value.includes(column.key));
-});
+  return columns.value.filter(column => selectedColumns.value.includes(column.key))
+})
 
 // Function to toggle column visibility
 const toggleColumn = (columnKey) => {
   if (selectedColumns.value.includes(columnKey)) {
-    selectedColumns.value = selectedColumns.value.filter(key => key !== columnKey); // Disable column
+    selectedColumns.value = selectedColumns.value.filter(key => key !== columnKey) // Disable column
   } else {
-    selectedColumns.value.push(columnKey); // Enable column
+    selectedColumns.value.push(columnKey) // Enable column
   }
-};
+}
 
 // Prepare options for column selection
 const columnOptions = computed(() =>
   columns.value.map(column => ({
     value: column.key,
-    label: column.label,
+    label: column.label
   }))
-);
+)
 
 // Selected Rows
 const selectedRows = ref([])
@@ -108,7 +107,7 @@ const pageFrom = computed(() => (page.value - 1) * pageCount.value + 1)
 const pageTo = computed(() => Math.min(page.value * pageCount.value, pageTotal.value))
 
 // Data
-const { data: todos, status } = await useLazyAsyncData('todos', () => ($fetch as any)(`https://jsonplaceholder.typicode.com/todos`, {
+const { data: todos, status } = await useLazyAsyncData('todos', () => ($fetch as any)('https://jsonplaceholder.typicode.com/todos', {
   query: {
     q: search.value,
     _page: page.value,
@@ -121,7 +120,7 @@ const { data: todos, status } = await useLazyAsyncData('todos', () => ($fetch as
   watch: [page, search, pageCount, sort]
 })
 // Computed property to count selected rows
-const selectedCount = computed(() => localSelectedItems.value.length);
+const selectedCount = computed(() => localSelectedItems.value.length)
 </script>
 
 <template>
@@ -133,18 +132,39 @@ const selectedCount = computed(() => localSelectedItems.value.length);
         :options="columnOptions"
         multiple
       >
-        <UButton color="gray" size="xs">Select Columns</UButton>
+        <UButton
+          color="gray"
+          size="xs"
+        >
+          Select Columns
+        </UButton>
       </USelectMenu>
-          <!-- Search and Filters -->
-        <div class="flex items-center justify-between gap-3">
-          <UInput v-model="search" placeholder="Search..." />
-          <USelectMenu v-model="selectedStatus" :options="todoStatus" multiple placeholder="Status" class="w-40" />
-          <UButton @click="resetFilters">Reset</UButton>
-        </div>
+      <!-- Search and Filters -->
+      <div class="flex items-center justify-between gap-3">
+        <UInput
+          v-model="search"
+          placeholder="Search..."
+        />
+        <USelectMenu
+          v-model="selectedStatus"
+          :options="todoStatus"
+          multiple
+          placeholder="Status"
+          class="w-40"
+        />
+        <UButton @click="resetFilters">
+          Reset
+        </UButton>
+      </div>
     </div>
 
     <!-- Table with data rows from items -->
-    <UTable :rows="props.items" :columns="columnsTable" v-model="selectedRows" @select="select">
+    <UTable
+      v-model="selectedRows"
+      :rows="props.items"
+      :columns="columnsTable"
+      @select="select"
+    >
       <template #cell(select)="data">
         <input
           type="checkbox"
@@ -153,7 +173,12 @@ const selectedCount = computed(() => localSelectedItems.value.length);
         >
       </template>
       <template #completed-data="{ row }">
-        <UBadge size="xs" :label="row.completed ? 'Completed' : 'In Progress'" :color="row.completed ? 'emerald' : 'orange'" variant="subtle" />
+        <UBadge
+          size="xs"
+          :label="row.completed ? 'Completed' : 'In Progress'"
+          :color="row.completed ? 'emerald' : 'orange'"
+          variant="subtle"
+        />
       </template>
     </UTable>
     <!-- Pagination -->
@@ -176,8 +201,12 @@ const selectedCount = computed(() => localSelectedItems.value.length);
         :total="pageTotal"
       />
     </div>
-     <!-- Updated Button with Count -->
-     <UButton @click="$emit('add-to-service-request')" class="mt-4" color="blue">
+    <!-- Updated Button with Count -->
+    <UButton
+      class="mt-4"
+      color="blue"
+      @click="$emit('add-to-service-request')"
+    >
       Add to Service Request
       <span class="ml-2">{{ selectedCount }}</span>
     </UButton>

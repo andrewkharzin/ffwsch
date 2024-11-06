@@ -1,62 +1,62 @@
 <script setup lang="ts">
 // Import role-based link configurations
-import { customerLinks } from "../components/links/customersLinks";
-import { managerLinks } from "../components/links/managersLinks";
-import { staffLinks } from "../components/links/staffLinks";
-import { accounterLinks } from "../components/links/accountersLinks";
-import { useUserStore } from "../stores/userStore";
+import { customerLinks } from '../components/links/customersLinks'
+import { managerLinks } from '../components/links/managersLinks'
+import { staffLinks } from '../components/links/staffLinks'
+import { accounterLinks } from '../components/links/accountersLinks'
+import { useUserStore } from '../stores/userStore'
 
-const route = useRoute();
-const appConfig = useAppConfig();
-const { isHelpSlideoverOpen } = useDashboard();
+const route = useRoute()
+const appConfig = useAppConfig()
+const { isHelpSlideoverOpen } = useDashboard()
 
-const { user } = useSupabaseUserrito(); // Call your composable here
-const supabase = useSupabaseClient();
+const { user } = useSupabaseUserrito() // Call your composable here
+const supabase = useSupabaseClient()
 // Define all links
 const allLinks = [
   {
-    id: "home",
-    label: "Home",
-    icon: "i-heroicons-home",
-    to: "/",
+    id: 'home',
+    label: 'Home',
+    icon: 'i-heroicons-home',
+    to: '/',
     tooltip: {
-      text: "Home",
-      shortcuts: ["G", "H"],
-    },
+      text: 'Home',
+      shortcuts: ['G', 'H']
+    }
   },
   {
-    id: "services",
-    label: "Services",
-    icon: "i-heroicons-briefcase",
-    to: "/services",
+    id: 'services',
+    label: 'Services',
+    icon: 'i-heroicons-briefcase',
+    to: '/services',
     children: [
       {
-        label: "Orders",
-        to: "/services/orders",
+        label: 'Orders',
+        to: '/services/orders'
       },
       // {
       //   label: "Accounting",
       //   to: "/services/accounting",
       // },
       {
-        label: "Requests",
-        to: "/services",
+        label: 'Requests',
+        to: '/services'
       },
       // {
       //   label: "Types",
       //   to: "/services/types",
       // },
       {
-        label: "Customers",
-        to: "/services/customers",
-      },
+        label: 'Customers',
+        to: '/services/customers'
+      }
     ],
     tooltip: {
-      text: "Services",
-      shortcuts: ["G", "R"],
-    },
-  },
-];
+      text: 'Services',
+      shortcuts: ['G', 'R']
+    }
+  }
+]
 
 // const customerLinks = [
 //   {
@@ -74,97 +74,97 @@ const allLinks = [
 // Define footer links
 const footerLinks = [
   {
-    label: "Invite people",
-    icon: "i-heroicons-plus",
-    to: "/settings/members",
+    label: 'Invite people',
+    icon: 'i-heroicons-plus',
+    to: '/settings/members'
   },
   {
-    label: "Help & Support",
-    icon: "i-heroicons-question-mark-circle",
-    click: () => (isHelpSlideoverOpen.value = true),
-  },
-];
+    label: 'Help & Support',
+    icon: 'i-heroicons-question-mark-circle',
+    click: () => (isHelpSlideoverOpen.value = true)
+  }
+]
 
 // Initialize user store
-const userStore = useUserStore();
+const userStore = useUserStore()
 
 // Fetch user role when the component is mounted
 onMounted(() => {
   if (!userStore.role) {
-    userStore.fetchUserRole();
+    userStore.fetchUserRole()
   }
-});
+})
 
 // Get links based on user role
 const getLinksByRole = (role: string) => {
   switch (role) {
-    case "customer":
-      return customerLinks;
-    case "staff":
-      return staffLinks;
-    case "manager":
-      return managerLinks;
-    case "accounter":
-      return accounterLinks;
+    case 'customer':
+      return customerLinks
+    case 'staff':
+      return staffLinks
+    case 'manager':
+      return managerLinks
+    case 'accounter':
+      return accounterLinks
     default:
-      return [];
+      return []
   }
-};
+}
 
 // Compute filtered links based on the role
 const filteredLinks = computed(() => {
   if (userStore.isLoading) {
-    return []; // Return empty while loading
+    return [] // Return empty while loading
   }
 
-  return userStore.role ? getLinksByRole(userStore.role) : [];
-});
+  return userStore.role ? getLinksByRole(userStore.role) : []
+})
 
 // Define other dashboard groups like "code" commands
 const groups = [
   {
-    key: "links",
-    label: "Go to",
-    commands: filteredLinks.value.map((link) => ({
+    key: 'links',
+    label: 'Go to',
+    commands: filteredLinks.value.map(link => ({
       ...link,
-      shortcuts: link.tooltip?.shortcuts,
-    })),
+      shortcuts: link.tooltip?.shortcuts
+    }))
   },
   {
-    key: "code",
-    label: "Code",
+    key: 'code',
+    label: 'Code',
     commands: [
       {
-        id: "source",
-        label: "View page source",
-        icon: "i-simple-icons-github",
+        id: 'source',
+        label: 'View page source',
+        icon: 'i-simple-icons-github',
         click: () => {
           window.open(
             `https://github.com/nuxt-ui-pro/dashboard/blob/main/pages${
-              route.path === "/" ? "/index" : route.path
+              route.path === '/' ? '/index' : route.path
             }.vue`,
-            "_blank"
-          );
-        },
-      },
-    ],
-  },
-];
+            '_blank'
+          )
+        }
+      }
+    ]
+  }
+]
 
 // Customize primary color options
 const defaultColors = ref(
-  ["green", "teal", "cyan", "sky", "blue", "indigo", "violet"].map((color) => ({
+  ['green', 'teal', 'cyan', 'sky', 'blue', 'indigo', 'violet'].map(color => ({
     label: color,
     chip: color,
-    click: () => (appConfig.ui.primary = color),
+    click: () => (appConfig.ui.primary = color)
   }))
-);
+)
 const colors = computed(() =>
-  defaultColors.value.map((color) => ({
+  defaultColors.value.map(color => ({
     ...color,
-    active: appConfig.ui.primary === color.label,
+    active: appConfig.ui.primary === color.label
   }))
-);
+)
 </script>
 
 <template>
@@ -174,7 +174,10 @@ const colors = computed(() =>
       :resizable="{ min: 200, max: 300 }"
       collapsible
     >
-      <UDashboardNavbar class="!border-transparent" :ui="{ left: 'flex-1' }">
+      <UDashboardNavbar
+        class="!border-transparent"
+        :ui="{ left: 'flex-1' }"
+      >
         <template #left>
           <TeamsDropdown />
         </template>
@@ -191,7 +194,10 @@ const colors = computed(() =>
         </template>
 
         <!-- Render filtered links after role is fetched -->
-        <UDashboardSidebarLinks v-else :links="filteredLinks" />
+        <UDashboardSidebarLinks
+          v-else
+          :links="filteredLinks"
+        />
 
         <UDivider />
 

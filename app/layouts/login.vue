@@ -11,7 +11,7 @@
       <!-- Background -->
       <div class="absolute inset-0 z-0">
         <div class="background-gradient">
-          <div class="background-gradient-pattern"></div>
+          <div class="background-gradient-pattern" />
         </div>
       </div>
 

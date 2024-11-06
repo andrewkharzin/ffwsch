@@ -130,7 +130,7 @@ export const useServiceStore = defineStore('serviceStore', {
     async updateService(updatedService: ServiceUpdate): Promise<ServiceRow | null> {
       const supabase = useSupabaseClient()
       try {
-        console.log('Updating service with ID:', updatedService.id); // Log the ID
+        console.log('Updating service with ID:', updatedService.id) // Log the ID
         const { data, error } = await supabase
           .from('services')
           .update(updatedService)

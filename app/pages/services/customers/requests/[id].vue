@@ -1,19 +1,37 @@
 <template>
   <UDashboardPage>
     <UDashboardPanel grow>
-      <UDashboardNavbar :title="`Service Details: ${service?.id || ''}`" class="ml-4" />
+      <UDashboardNavbar
+        :title="`Service Details: ${service?.id || ''}`"
+        class="ml-4"
+      />
 
-      <div v-if="loading" class="p-4 text-center">Loading service details...</div>
+      <div
+        v-if="loading"
+        class="p-4 text-center"
+      >
+        Loading service details...
+      </div>
 
-      <div v-else-if="service" class="p-4 space-y-4">
-        <h2 class="text-xl font-semibold">{{ service.full_name }}</h2>
+      <div
+        v-else-if="service"
+        class="p-4 space-y-4"
+      >
+        <h2 class="text-xl font-semibold">
+          {{ service.full_name }}
+        </h2>
         <p><strong>Service Type:</strong> {{ serviceTypeLabel }}</p>
         <p><strong>Date:</strong> {{ formatDate(service.service_date) }}</p>
         <p><strong>Status:</strong> {{ statusLabel }}</p>
         <p><strong>Description:</strong> {{ service.description || 'No description provided' }}</p>
       </div>
 
-      <div v-else class="p-4 text-center text-red-500">Service not found</div>
+      <div
+        v-else
+        class="p-4 text-center text-red-500"
+      >
+        Service not found
+      </div>
     </UDashboardPanel>
   </UDashboardPage>
 </template>
@@ -22,8 +40,8 @@
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useSupabaseClient } from '@supabase/supabase-js'
-import { useServiceStore } from '~/stores/serviceStore'
 import { format } from 'date-fns'
+import { useServiceStore } from '~/stores/serviceStore'
 
 // Route params
 const route = useRoute()

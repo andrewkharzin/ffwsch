@@ -50,7 +50,7 @@ export const useOrders = () => {
       // Listen for DELETE events
       .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'service_orders' }, (payload) => {
         const deletedOrderId = payload.old.id
-        orders.value = orders.value.filter(order => order.id !== deletedOrderId)  // Remove the deleted order
+        orders.value = orders.value.filter(order => order.id !== deletedOrderId) // Remove the deleted order
       })
 
       .subscribe()

@@ -54,71 +54,71 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, defineProps } from "vue";
-import { formatDate } from "../../../utils/date/date"; // Adjust the import path as necessary
+import { ref, computed, defineProps } from 'vue'
+import { formatDate } from '../../../utils/date/date' // Adjust the import path as necessary
 
 // Define props to receive from the parent component
 const props = defineProps<{
   orders: Array<{
-    id: string;
-    service_id: string; // Add service_id to the props for each order
-    order_date: string;
-    serial_number: string;
-    total_amount: number;
-    status: string;
-  }>;
-  loading: boolean;
-}>();
+    id: string
+    service_id: string // Add service_id to the props for each order
+    order_date: string
+    serial_number: string
+    total_amount: number
+    status: string
+  }>
+  loading: boolean
+}>()
 
-const selectedRows = ref([]);
+const selectedRows = ref([])
 
 // Update the items function to pass the service_id for "Details"
-const items = (row) => [
+const items = row => [
   [
     {
-      label: "Details",
-      icon: "i-heroicons-eye",
-      component: "NuxtLink",
-      to: `/services/orders/${row.service_id}`, // Redirect to the order detail page using service_id
+      label: 'Details',
+      icon: 'i-heroicons-eye',
+      component: 'NuxtLink',
+      to: `/services/orders/${row.service_id}` // Redirect to the order detail page using service_id
     },
     {
-      label: "Duplicate",
-      icon: "i-heroicons-document-duplicate-20-solid",
-    },
+      label: 'Duplicate',
+      icon: 'i-heroicons-document-duplicate-20-solid'
+    }
   ],
   [
     {
-      label: "Archive",
-      icon: "i-heroicons-archive-box-20-solid",
+      label: 'Archive',
+      icon: 'i-heroicons-archive-box-20-solid'
     },
     {
-      label: "Move",
-      icon: "i-heroicons-arrow-right-circle-20-solid",
-    },
+      label: 'Move',
+      icon: 'i-heroicons-arrow-right-circle-20-solid'
+    }
   ],
   [
     {
-      label: "Delete",
-      icon: "i-heroicons-trash-20-solid",
-    },
-  ],
-];
+      label: 'Delete',
+      icon: 'i-heroicons-trash-20-solid'
+    }
+  ]
+]
 
 // Computed property to format the orders safely
 const formattedOrders = computed(() => {
   if (!Array.isArray(props.orders)) {
-    return [];
+    return []
   }
-  return props.orders.map((order) => ({
+  return props.orders.map(order => ({
     ...order,
-    order_date: formatDate(order.order_date),
-  }));
-});
+    order_date: formatDate(order.order_date)
+  }))
+})
 
 // Define the columns for the table
 const columns = [
-  { key: "order_date", label: "Order Date", sortable: true },
-  { key: "status", label: "Status", sortable: true },
-  { key: "actions", label: "Actions", sortable: false },
-];
+  { key: 'order_date', label: 'Order Date', sortable: true },
+  { key: 'status', label: 'Status', sortable: true },
+  { key: 'actions', label: 'Actions', sortable: false }
+]
 </script>

@@ -90,10 +90,54 @@
                     {{ serviceData.service_time }}
                   </span>
                 </p>
-                <div>
-                  <p>
-                    {{ serviceData.customer_flight }}
-                  </p>
+              </div>
+              <div class="mt-4 flex flex-row">
+                <div
+                  v-if="serviceData.service_customer_flights"
+                  class="grid grid-cols-3 gap-2"
+                >
+                  <UFormGroup
+                    label="Flight"
+                    required
+                  >
+                    <div class="">
+                      <UIcon
+                        name="i-icon-park-outline:airplane"
+                        class="w-3 h-3"
+                      />
+                      <span class="ml-2 font-black dark:text-sky-400">
+                        {{ serviceData.service_customer_flights.flight_number }}
+                      </span>
+                    </div>
+                  </UFormGroup>
+                  <UFormGroup
+                    label="PST"
+                    required
+                  >
+                    <div class="">
+                      <UIcon
+                        name="i-icon-park-outline:time"
+                        class="w-3 h-3"
+                      />
+                      <span class="ml-2 font-black dark:text-gray-400">
+                        {{ serviceData.service_customer_flights.flight_pst }}
+                      </span>
+                    </div>
+                  </UFormGroup>
+                  <UFormGroup
+                    label="Route"
+                    required
+                  >
+                    <div class="">
+                      <UIcon
+                        name="i-icon-park-outline:local-pin"
+                        class="w-3 h-3"
+                      />
+                      <span class="ml-2 font-black dark:text-gray-400">
+                        {{ serviceData.service_customer_flights.flight_route }}
+                      </span>
+                    </div>
+                  </UFormGroup>
                 </div>
               </div>
               <div class="mt-4 flex flex-row space-x-2">
@@ -291,16 +335,15 @@ const itemCount = computed(() => serviceData.value?.service_customer_item_servic
 const totalWeight = computed(() => {
   // Check if serviceData and service_customer_item_services are defined
   if (!serviceData.value || !serviceData.value.service_customer_item_services) {
-    return 0;
+    return 0
   }
 
   return serviceData.value.service_customer_item_services.reduce((sum, item) => {
     // Extract weight from service_customer_items.item_characteristics, defaulting to 0 if not available
-    const weight = parseFloat(item.service_customer_items?.item_characteristics?.weight) || 0;
-    return sum + weight;
-  }, 0);
-});
-
+    const weight = parseFloat(item.service_customer_items?.item_characteristics?.weight) || 0
+    return sum + weight
+  }, 0)
+})
 
 // Helper function to get Tailwind CSS classes based on status// Function to get Tailwind CSS classes based on status
 // Function to determine badge type based on status

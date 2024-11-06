@@ -21,7 +21,7 @@ const filteredServices = computed(() => {
 
   // Получаем название выбранной компании
   const selectedCompanyName = companyNames.value.find(
-    (company) => company.id === selectedCompanyId.value
+    company => company.id === selectedCompanyId.value
   )?.company_name
 
   console.log('Selected Company Name:', selectedCompanyName) // Логируем имя выбранной компании
@@ -59,7 +59,10 @@ const filteredServices = computed(() => {
 <template>
   <UDashboardPage>
     <UDashboardPanel grow>
-      <UDashboardNavbar title="Services" :badge="services.length" />
+      <UDashboardNavbar
+        title="Services"
+        :badge="services.length"
+      />
 
       <!-- Toolbar with company filter -->
       <UDashboardToolbar>

@@ -1,34 +1,34 @@
 // composables/useProfile.ts
-import { ref } from 'vue';
+import { ref } from 'vue'
 
 export const useProfile = () => {
-  const client = useSupabaseClient();
-  const profile = ref(null);
-  const loading = ref(false);
-  const error = ref(null);
+  const client = useSupabaseClient()
+  const profile = ref(null)
+  const loading = ref(false)
+  const error = ref(null)
 
   const fetchProfile = async (userId: string) => {
-    loading.value = true;
+    loading.value = true
     try {
       const { data, error: fetchError } = await client
         .from('profiles')
         .select('*')
         .eq('id', userId)
-        .single();
+        .single()
 
       if (fetchError) {
-        throw fetchError;
+        throw fetchError
       }
 
-      profile.value = data;
+      profile.value = data
     } catch (err) {
-      error.value = err.message;
+      error.value = err.message
     } finally {
-      loading.value = false;
+      loading.value = false
     }
-  };
+  }
   const updateProfile = async (updatedProfile: any) => {
-    const supabase = useSupabaseClient();
+    const supabase = useSupabaseClient()
     loading.value = true
     const { error } = await supabase
       .from('profiles')
@@ -51,5 +51,5 @@ export const useProfile = () => {
     error,
     fetchProfile,
     updateProfile
-  };
-};
+  }
+}

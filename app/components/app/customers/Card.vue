@@ -22,7 +22,9 @@
 
         <!-- Contact Details -->
         <div class="mt-2 flex flex-col">
-          <p class="text-xs">Email: {{ customer.email || "N/A" }}</p>
+          <p class="text-xs">
+            Email: {{ customer.email || "N/A" }}
+          </p>
           <span class="mt-2 text-xs">Phone: {{ customer.phone || "N/A" }}</span>
         </div>
       </div>
@@ -36,13 +38,18 @@
     <!-- Customer Number ID -->
     <div class="grid grid-cols-2 gap-4">
       <div class="flex flex-col">
-        <p class="mt-2 text-[0.6rem]">Customer ID:</p>
+        <p class="mt-2 text-[0.6rem]">
+          Customer ID:
+        </p>
         <span class="mt-2 text-xs dark:text-teal-600">
           #{{ customer.number_id || "N/A" }}
         </span>
       </div>
       <div class="mt-4 flex flex-row-reverse">
-        <UAvatar :src="customer.company_id?.logo" size="sm" />
+        <UAvatar
+          :src="customer.company_id?.logo"
+          size="sm"
+        />
       </div>
     </div>
   </div>
@@ -52,9 +59,9 @@
 defineProps({
   customer: {
     type: Object,
-    required: true,
-  },
-});
+    required: true
+  }
+})
 </script>
 
 <style scoped>

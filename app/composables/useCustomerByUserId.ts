@@ -42,6 +42,6 @@ export const useCustomerByUserId = () => {
     customer,
     error,
     loading,
-    fetchCustomerByUserId,
+    fetchCustomerByUserId
   }
 }
