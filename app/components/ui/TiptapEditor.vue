@@ -1,35 +1,43 @@
 <template>
   <div>
-    <div v-if="editor">
-      <button
+    <div v-if="editor" class="flex flex-row space-x-1">
+      <UButton
         :disabled="!editor.can().chain().focus().toggleBold().run()"
         :class="{ 'is-active': editor.isActive('bold') }"
+        variant="soft"
+        size="xs"
         @click="editor.chain().focus().toggleBold().run()"
       >
         bold
-      </button>
-      <button
+      </UButton>
+      <UButton
         :disabled="!editor.can().chain().focus().toggleItalic().run()"
         :class="{ 'is-active': editor.isActive('italic') }"
+        variant="soft"
+        size="xs"
         @click="editor.chain().focus().toggleItalic().run()"
       >
         italic
-      </button>
-      <button
+      </UButton>
+      <UButton
         :disabled="!editor.can().chain().focus().toggleStrike().run()"
         :class="{ 'is-active': editor.isActive('strike') }"
         @click="editor.chain().focus().toggleStrike().run()"
+        variant="soft"
+        size="xs"
       >
         strike
-      </button>
-      <button
+      </UButton>
+      <UButton
         :disabled="!editor.can().chain().focus().toggleCode().run()"
         :class="{ 'is-active': editor.isActive('code') }"
         @click="editor.chain().focus().toggleCode().run()"
+        variant="soft"
+        size="xs"
       >
         code
-      </button>
-      <button @click="editor.chain().focus().unsetAllMarks().run()">
+      </UButton>
+      <!-- <button @click="editor.chain().focus().unsetAllMarks().run()">
         clear marks
       </button>
       <button @click="editor.chain().focus().clearNodes().run()">
@@ -118,19 +126,61 @@
         @click="editor.chain().focus().redo().run()"
       >
         redo
-      </button>
+      </button> -->
+      <UButton
+        :disabled="!editor.can().chain().focus().toggleCode().run()"
+        :class="{ 'is-active': editor.isActive('code') }"
+        @click="editor.chain().focus().toggleCode().run()"
+        variant="ghost"
+        size="xs"
+        class="flex-row-reverse"
+      >
+        Шаблоны
+      </UButton>
     </div>
-    <TiptapEditorContent :editor="editor" />
+    <TiptapEditorContent :editor="editor" class="editor-content w-full bg-gray-100 p-2 rounded border border-gray-300 h-48" />
   </div>
 </template>
 
 <script setup>
-const editor = useEditor({
-  content: '<p>I\'m running Tiptap with Vue.js. 🎉</p>',
-  extensions: [TiptapStarterKit]
+import { ref, watch, onBeforeUnmount } from 'vue'
+import { useEditor, EditorContent as TiptapEditorContent } from '@tiptap/vue-3'
+import StarterKit from '@tiptap/starter-kit'
+
+const props = defineProps({
+  modelValue: {
+    type: String,
+    default: '',
+  },
 })
 
+const emit = defineEmits(['update:modelValue'])
+
+const editor = useEditor({
+  content: props.modelValue,
+  extensions: [StarterKit],
+  onUpdate: ({ editor }) => {
+    emit('update:modelValue', editor.getHTML())
+  },
+})
+
+watch(
+  () => props.modelValue,
+  (newValue) => {
+    if (editor.value && editor.value.getHTML() !== newValue) {
+      editor.value.commands.setContent(newValue)
+    }
+  }
+)
+
 onBeforeUnmount(() => {
-  unref(editor).destroy()
+  editor.value.destroy()
 })
 </script>
+
+<style scoped>
+.editor-content {
+  overflow-y: auto;
+  /* additional styles as needed */
+}
+</style>
