@@ -14,12 +14,14 @@ export default defineNuxtConfig({
     '@nuxt/ui',
     '@vueuse/nuxt',
     '@nuxt/image',
-    'nuxt-tiptap-editor'
+    'nuxt-tiptap-editor',
+    '@nuxtjs/leaflet'
   ],
 
   ui: {
     safelistColors: ['primary', 'red', 'orange', 'green']
   },
+  // css: ['leaflet/dist/leaflet.css'],
   tiptap: {
     prefix: 'Tiptap'
   },

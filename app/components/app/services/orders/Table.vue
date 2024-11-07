@@ -58,7 +58,7 @@
       <div class="flex flex-col">
         <div>
           <span class="text-md font-black ordinal slashed-zero tabular-nums tracking-widest">
-            <span class="text-lg dark:text-teal-400">{{ new Date(row.service_date).toLocaleDateString().split('/')[0] }}</span>/
+            <span class="border-2 rounded-lg border-pink-400 dark:border-teal-500 p-[0.3rem] text-lg text-pink-600 dark:text-teal-400">{{ new Date(row.service_date).toLocaleDateString().split('/')[0] }}</span>/
             <span>{{ new Date(row.service_date).toLocaleDateString().split('/')[1] }}</span>/
             <span>{{ new Date(row.service_date).toLocaleDateString().split('/')[2] }}</span>
           </span>
@@ -72,8 +72,8 @@
         class="flex flex-col cursor-pointer"
         @click="openSlideover(row)"
       >
-        <span class="hover:text-teal-500">
-          <div class="flex flex-wrap">
+        <span class="hover:dark:text-teal-500 hover:text-pink-600">
+          <div class="flex flex-wrap"s>
             {{ row.servicetype.type_name }}
           </div>
         </span>
