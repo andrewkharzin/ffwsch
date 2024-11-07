@@ -101,7 +101,7 @@
           />
 
         </UFormGroup> -->
-        <Tiptap v-model="fotm.description" />
+        <Tiptap v-model="form.description" />
         <!-- Checkbox to control "Items manager" button visibility -->
         <UFormGroup
           v-if="showFlightFields"
