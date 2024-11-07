@@ -57,18 +57,10 @@
     <template #service_date-data="{ row }">
       <div class="flex flex-col">
         <div>
-          <span class="text-sm font-bold text-white">
-            {{ new Date(row.service_date).toLocaleDateString() }}
-          </span>
-          <span
-            class="p-[0.2rem] ml-2 text-xs text-white border rounded-md border-gray-400"
-          >
-            {{
-              new Date(row.service_date).toLocaleTimeString([], {
-                hour: '2-digit',
-                minute: '2-digit'
-              })
-            }}
+          <span class="text-md font-black ordinal slashed-zero tabular-nums tracking-widest">
+            <span class="text-lg dark:text-teal-400">{{ new Date(row.service_date).toLocaleDateString().split('/')[0] }}</span>/
+            <span>{{ new Date(row.service_date).toLocaleDateString().split('/')[1] }}</span>/
+            <span>{{ new Date(row.service_date).toLocaleDateString().split('/')[2] }}</span>
           </span>
         </div>
       </div>
@@ -110,6 +102,11 @@
         <h3 class="p-1 text-sm font-bold">
           {{ selectedService?.type_name }}
         </h3>
+        <div>
+          <time class="text-md font-black dark:text-teal-500 ordinal slashed-zero tabular-nums tracking-widest">{{
+            formatDate(selectedService?.service_date)
+          }}</time>
+        </div>
         <UButton
           color="gray"
           variant="ghost"
@@ -124,12 +121,7 @@
 
       <div class="p-2 text-md font-light space-y-4">
         <div>
-          <time class="text-sm text-gray-500">{{
-            formatDate(selectedService?.service_date)
-          }}</time>
-        </div>
-        <div>
-          <div style="max-height: 180px; overflow-y: auto">
+          <div style="max-height: 300px; overflow-y: auto">
             <AppServicesOrdersUiHighlightedText
               :text="selectedService?.description || ''"
             />
@@ -144,7 +136,7 @@
           />
           <div class="flex flex-col">
             <p class="mt-2 text-sm text-gray-300">
-              REQ: {{ selectedService?.customers?.full_name }}
+            {{ selectedService?.customers?.full_name }}
             </p>
             <span class="text-xs text-gray-400">{{
               selectedService?.customers?.company_id?.company_name
@@ -222,7 +214,6 @@ const selectedColumns = ref([
 
   { key: 'full_name', label: 'Customer', sortable: true },
   { key: 'service_date', label: 'Date', width: '30px' },
-  { key: 'service_time', label: 'Time', width: '30px' },
   { key: 'type_name', label: 'Type', sortable: true },
   { key: 'service_status', label: 'Status' }
 ])

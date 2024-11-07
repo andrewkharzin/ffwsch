@@ -1,6 +1,6 @@
 <template>
   <p
-    class="text-xs font-mono"
+    class="text-xs font-sans ordinal slashed-zero tabular-nums tracking-widest"
     style="white-space: pre-line; line-height: 1.5"
   >
     <span
@@ -122,7 +122,7 @@ const parts = computed(() => highlightText(props.text))
 .highlight-dimension {
   background-color: rgba(255, 255, 0, 0.5); /* Yellow with transparency */
   font-weight: bold; /* Bold text */
-  font-size: 1.6em; /* Slightly larger text */
+  font-size: 1.3em; /* Slightly larger text */
 }
 
 .highlight-weight {
@@ -145,7 +145,7 @@ const parts = computed(() => highlightText(props.text))
 .highlight-phone {
   background-color: rgb(157 23 77);
   font-weight: bold; /* Bold text */
-  font-size: 1.6em; /* Slightly larger text */
+  font-size: 1.3em; /* Slightly larger text */
 }
 
 .highlight-service {
