@@ -19,6 +19,8 @@ const statusOptions = ref([
   { label: 'Completed', value: 'Completed' },
 ])
 
+console.log("SelectedRow", selectedRows);
+
 const updateSelectedRows = (rows) => {
   selectedRows.value = rows
 }
@@ -132,13 +134,6 @@ const changeStatus = async () => {
             ]"
             placeholder="Select Company"
           />
-           <!-- Status Actions Button -->
-           <UButton
-            v-if="selectedRows.length > 0"
-            color="primary"
-            @click="openStatusActions"
-            label="Status Actions"
-          />
         </template>
       </UDashboardToolbar>
 
@@ -147,7 +142,7 @@ const changeStatus = async () => {
         :services="filteredServices"
         :loading="loading"
         :error="error"
-        
+        @row-selection="updateSelectedRows"
       />
 
       <!-- Ошибки -->

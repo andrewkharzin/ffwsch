@@ -81,7 +81,10 @@
         @click="openSlideover(row)"
       >
         <span class="hover:dark:text-teal-500 hover:text-pink-600">
-          <div class="flex flex-wrap"s>
+          <div
+            class="flex flex-wrap"
+            s
+          >
             {{ row.servicetype.type_name }}
           </div>
         </span>
@@ -99,7 +102,6 @@
       </div>
     </template>
   </UTable>
-
 
   <!-- Slide-over for service details -->
   <USlideover v-model="isOpen">
@@ -145,7 +147,7 @@
           />
           <div class="flex flex-col">
             <p class="mt-2 text-sm text-gray-300">
-            {{ selectedService?.customers?.full_name }}
+              {{ selectedService?.customers?.full_name }}
             </p>
             <span class="text-xs text-gray-400">{{
               selectedService?.customers?.company_id?.company_name
@@ -186,6 +188,18 @@
         <UButton
           label="Close"
           @click="isOpen = false"
+        />
+        <!-- Status Action Button -->
+        <select v-model="newStatus">
+          <option v-for="(color, status) in statusColors" :key="status" :value="status">
+            {{ status }}
+          </option>
+        </select>
+        <UButton
+          label="Status Action"
+          color="primary"
+          :disabled="!selectedService"
+          @click="handleStatusAction"
         />
       </template>
     </UCard>
@@ -346,26 +360,30 @@ const shortenFullName = (fullName: string) => {
 
   return fullName // Return full name if there's only one part
 }
+// Handle status action to update service status
+const handleStatusAction = async (newStatus: string) => {
+  if (!selectedService.value || !selectedService.value.id) return
 
-// function removeVerticalSpaces(text) {
-//   return text.replace(/^\s*[\r\n]/gm, "").trim();
-// }
-// // Подсветка данных в описании
-// const highlightText = (text: string) => {
-//   return text
-//     .replace(
-//       /\b(\d+x\d+x\d+)\b/g,
-//       '<span class="highlight-dimension">$1</span>'
-//     )
-//     .replace(/\b(\d+\s?(кг|kg))\b/g, '<span class="highlight-weight">$1</span>')
-//     .replace(
-//       /\b(\d{2}.\d{2}.\d{4})\b/g,
-//       '<span class="highlight-date">$1</span>'
-//     )
-//     .replace(/\b(\d{2}:\d{2})\b/g, '<span class="highlight-time">$1</span>')
-//     .replace(
-//       /(\+?\d{1,3}[-\s]?\d{1,3}[-\s]?\d{2,3}[-\s]?\d{2,3}[-\s]?\d{2,3})/g,
-//       '<span class="highlight-phone">$1</span>'
-//     );
-// };
+  try {
+    const { error } = await supabase
+      .from("services")
+      .update({ status: newStatus })
+      .eq("id", selectedService.value.id)
+
+    if (error) {
+      console.error("Error updating status:", error.message)
+      return
+    }
+
+    // Update selectedService with the new status
+    selectedService.value = {
+      ...selectedService.value,
+      status: newStatus
+    }
+
+    console.log("Status updated successfully to", newStatus)
+  } catch (err) {
+    console.error("Error handling status action:", err)
+  }
+}
 </script>
