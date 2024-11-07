@@ -14,7 +14,22 @@ interface Customer {
   id?: string // Add optional company_id
 }
 
-interface ServiceStatus {
+/*************  ✨ Codeium Command ⭐  *************/
+  /**
+   * Composition function to fetch services from the database and subscribe to
+   * real-time updates on the services table.
+   *
+   * @returns An object containing the following properties:
+   *   - services: A reactive reference to an array of services with relations.
+   *   - loading: A reactive reference to a boolean indicating whether the services
+   *     are currently being fetched.
+   *   - error: A reactive reference to a string indicating any error that occurred
+   *     while fetching the services.
+   *   - fetchServices: A function to fetch the services from the database.
+   *   - subscribeToRealtime: A function to subscribe to real-time updates on the
+   *     services table.
+   */
+/******  c544b843-af66-48e7-904b-f8d76700db82  *******/interface ServiceStatus {
   status: string
 }
 

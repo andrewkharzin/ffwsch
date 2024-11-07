@@ -11,6 +11,25 @@ const {
 
 // Переменная для ID выбранной компании
 const selectedCompanyId = ref(null)
+const selectedRows = ref([])
+const newStatus = ref('')
+const statusOptions = ref([
+  { label: 'Confirmed', value: 'Confirmed' },
+  { label: 'Rejected', value: 'Rejected' },
+  { label: 'Completed', value: 'Completed' },
+])
+
+const updateSelectedRows = (rows) => {
+  selectedRows.value = rows
+}
+
+const openStatusActions = () => {
+  isStatusDialogOpen.value = true
+}
+
+const closeStatusDialog = () => {
+  isStatusDialogOpen.value = false
+}
 
 console.log('Company Names:', companyNames)
 console.log('Services:', services)
@@ -54,6 +73,31 @@ const filteredServices = computed(() => {
   console.log('Filtered Services:', filtered) // Лог результатов фильтрации
   return filtered
 })
+const changeStatus = async () => {
+  try {
+    const supabase = useSupabaseClient()
+    const serviceIds = selectedRows.value.map(row => row.id)
+
+    // Update the selected services' status in the database
+    const { data, error } = await supabase
+      .from('services')
+      .update({ service_status: newStatus.value })
+      .in('id', serviceIds)
+
+    if (error) {
+      console.error('Error updating status:', error)
+      return
+    }
+
+    // Close the dialog after updating
+    closeStatusDialog()
+
+    // Optionally, reload services or update the state
+    // to reflect the status change
+  } catch (err) {
+    console.error('Error changing status:', err)
+  }
+}
 </script>
 
 <template>
@@ -88,6 +132,13 @@ const filteredServices = computed(() => {
             ]"
             placeholder="Select Company"
           />
+           <!-- Status Actions Button -->
+           <UButton
+            v-if="selectedRows.length > 0"
+            color="primary"
+            @click="openStatusActions"
+            label="Status Actions"
+          />
         </template>
       </UDashboardToolbar>
 
@@ -96,6 +147,7 @@ const filteredServices = computed(() => {
         :services="filteredServices"
         :loading="loading"
         :error="error"
+        
       />
 
       <!-- Ошибки -->
@@ -105,6 +157,19 @@ const filteredServices = computed(() => {
       <template v-if="companyError">
         <p>Error fetching companies: {{ companyError }}</p>
       </template>
+      <!-- Status Selection Dialog -->
+      <UDialog v-if="isStatusDialogOpen" @close="closeStatusDialog">
+        <template #header>
+          <h3>Select Status</h3>
+        </template>
+        <template #body>
+          <USelect v-model="newStatus" :options="statusOptions" />
+        </template>
+        <template #footer>
+          <UButton label="Cancel" @click="closeStatusDialog" />
+          <UButton label="Confirm" @click="changeStatus" />
+        </template>
+      </UDialog>
     </UDashboardPanel>
   </UDashboardPage>
 </template>

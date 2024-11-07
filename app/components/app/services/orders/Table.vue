@@ -8,6 +8,14 @@
     sort-mode="manual"
     class="w-full"
   >
+    <!-- Checkbox Column for Row Selection -->
+    <template #select-data="{ row }">
+      <UCheckbox
+        v-model="selectedRows"
+        :value="row.id"
+        :label="''"
+      />
+    </template>
     <!-- Full Name and Company Column -->
     <template #full_name-data="{ row }">
       <div class="flex items-center gap-3">
@@ -91,6 +99,7 @@
       </div>
     </template>
   </UTable>
+
 
   <!-- Slide-over for service details -->
   <USlideover v-model="isOpen">
