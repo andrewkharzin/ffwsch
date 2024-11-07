@@ -89,11 +89,16 @@ const footerLinks = [
 const userStore = useUserStore()
 
 // Fetch user role when the component is mounted
-onMounted(() => {
-  if (!userStore.role) {
-    userStore.fetchUserRole()
-  }
+onMounted(async () => {
+  await userStore.fetchUserRole()
 })
+
+// Fetch user role when the component is mounted
+// onMounted(() => {
+//   if (!userStore.role) {
+//     userStore.fetchUserRole()
+//   }
+// })
 
 // Get links based on user role
 const getLinksByRole = (role: string) => {
@@ -112,12 +117,18 @@ const getLinksByRole = (role: string) => {
 }
 
 // Compute filtered links based on the role
-const filteredLinks = computed(() => {
-  if (userStore.isLoading) {
-    return [] // Return empty while loading
-  }
+// const filteredLinks = computed(() => {
+//   if (userStore.isLoading) {
+//     return [] // Return empty while loading
+//   }
 
-  return userStore.role ? getLinksByRole(userStore.role) : []
+//   return userStore.role ? getLinksByRole(userStore.role) : []
+// })
+
+// Use watchEffect to automatically update filteredLinks when role changes
+const filteredLinks = ref([])
+watchEffect(() => {
+  filteredLinks.value = userStore.role ? getLinksByRole(userStore.role) : []
 })
 
 // Define other dashboard groups like "code" commands
