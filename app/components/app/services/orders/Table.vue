@@ -110,14 +110,27 @@
       :ui="{ body: { base: 'flex-1' } }"
     >
       <template #header>
-        <h3 class="p-1 text-sm font-bold">
-          {{ selectedService?.type_name }}
-        </h3>
-        <div>
-          <time class="text-md font-black dark:text-teal-500 ordinal slashed-zero tabular-nums tracking-widest">{{
-            formatDate(selectedService?.service_date)
-          }}</time>
+        <div class="flex flex-row">
+          <div>
+            <h3 class="p-1 text-sm font-bold">
+              {{ selectedService?.type_name }}
+            </h3>
+            <div>
+              <time class="text-md font-black dark:text-teal-500 ordinal slashed-zero tabular-nums tracking-widest">{{
+                formatDate(selectedService?.service_date)
+              }}</time>
+            </div>
+          </div>
+          <div class="ml-4 flex flex-row-reverse">
+            <UBadge
+              variant="soft"
+              class="mt-2"
+            >
+              {{ selectedService.servicestatuses?.status || 'Pending' }}
+            </UBadge>
+          </div>
         </div>
+
         <UButton
           color="gray"
           variant="ghost"
@@ -185,22 +198,31 @@
       </div>
 
       <template #footer>
-        <UButton
-          label="Close"
-          @click="isOpen = false"
-        />
-        <!-- Status Action Button -->
-        <select v-model="newStatus">
-          <option v-for="(color, status) in statusColors" :key="status" :value="status">
-            {{ status }}
-          </option>
-        </select>
-        <UButton
-          label="Status Action"
-          color="primary"
-          :disabled="!selectedService"
-          @click="handleStatusAction"
-        />
+        <div class="flex justify-between items-center w-full space-x-4">
+          <!-- Close button on the left -->
+          <UButton
+            label="Close"
+            @click="isOpen = false"
+          />
+
+          <!-- Confirm and Reject buttons on the right -->
+          <div class="flex space-x-2">
+            <UButton
+              color="primary"
+              variant="solid"
+              @click="handleStatusAction('Confirmed')"
+            >
+              Confirm
+            </UButton>
+            <UButton
+              color="red"
+              variant="ghost"
+              @click="handleStatusAction('Rejected')"
+            >
+              Reject
+            </UButton>
+          </div>
+        </div>
       </template>
     </UCard>
   </USlideover>
@@ -242,7 +264,7 @@ const selectedColumns = ref([
 ])
 
 const statusColors = {
-  New: 'green', // зелёный
+  New: 'text-teal-500', // зелёный
   Confirmed: 'white', // голубой
   Accounted: 'orange', // оранжевый
   Pending: '#9CA3AF', // серый
@@ -296,6 +318,8 @@ const openSlideover = async (service: any) => {
         id, service_type_id, servicetype(type_name), description, service_date, context_tags,
         customers(full_name, company_id:customer_company(company_name, logo), user_id),
         service_orders(serial_number),
+        status_id,
+        servicestatuses (status),
         service_equipment (service_id, type, number, date_in, date_out, time_in, time_out, descriptions)
       `
       )
@@ -360,30 +384,59 @@ const shortenFullName = (fullName: string) => {
 
   return fullName // Return full name if there's only one part
 }
-// Handle status action to update service status
+
+// Function to update the status based on user action
+const statusMapping = ref<{ [key: string]: string }>({})
+
+const fetchStatusMapping = async () => {
+  const { data, error } = await supabase
+    .from('servicestatuses')
+    .select('status, id')
+
+  if (error) {
+    console.error('Error fetching status mapping:', error.message)
+    return
+  }
+
+  statusMapping.value = data.reduce((acc, status) => {
+    acc[status.status] = status.id
+    return acc
+  }, {})
+}
+
+// Fetch status mapping on component mount
+fetchStatusMapping()
 const handleStatusAction = async (newStatus: string) => {
   if (!selectedService.value || !selectedService.value.id) return
 
+  const statusId = statusMapping.value[newStatus]
+  if (!statusId) {
+    console.error(`No status ID found for status: ${newStatus}`)
+    return
+  }
+
   try {
     const { error } = await supabase
-      .from("services")
-      .update({ status: newStatus })
-      .eq("id", selectedService.value.id)
+      .from('services')
+      .update({ status_id: statusId })
+      .eq('id', selectedService.value.id)
 
     if (error) {
-      console.error("Error updating status:", error.message)
+      console.error('Error updating status:', error.message)
       return
     }
 
-    // Update selectedService with the new status
+    // Update selectedService with the new status ID and name
     selectedService.value = {
       ...selectedService.value,
-      status: newStatus
+      status_id: statusId,
+      status: newStatus // Optionally add this for display purposes
+      servicestatuses: { status: newStatus }
     }
 
-    console.log("Status updated successfully to", newStatus)
+    console.log(`Status updated successfully to ${newStatus}`)
   } catch (err) {
-    console.error("Error handling status action:", err)
+    console.error('Error handling status action:', err)
   }
 }
 </script>

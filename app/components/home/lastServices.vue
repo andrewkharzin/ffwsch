@@ -6,7 +6,7 @@ const getStatusColor = (status) => {
     case 'Pending':
       return 'yellow'
     case 'Completed':
-      return 'green'
+      return 'primary'
     case 'New':
       return 'blue'
     default:
