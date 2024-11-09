@@ -13,20 +13,22 @@ const {
 const selectedCompanyId = ref(null)
 const selectedRows = ref([])
 const newStatus = ref('')
+const rejectionReason = ref('') // Reason for rejectio
 const statusOptions = ref([
   { label: 'Confirmed', value: 'Confirmed' },
   { label: 'Rejected', value: 'Rejected' },
   { label: 'Completed', value: 'Completed' },
 ])
 
-console.log("SelectedRow", selectedRows);
+// Computed property to check if rows are selected
+const isRowSelected = computed(() => selectedRows.value.length > 0)
+
+const isStatusDialogOpen = ref(false)
+const isRejectDialogOpen = ref(false) // Manage visibility of reject mo
 
 const updateSelectedRows = (rows) => {
   selectedRows.value = rows
-}
-
-const openStatusActions = () => {
-  isStatusDialogOpen.value = true
+  console.log("Selected Rows:", selectedRows.value) // Check selected rows
 }
 
 const closeStatusDialog = () => {
@@ -100,6 +102,25 @@ const changeStatus = async () => {
     console.error('Error changing status:', err)
   }
 }
+
+// Function to reject selected services with a reason
+const rejectSelectedRequests = async () => {
+  try {
+    const supabase = useSupabaseClient()
+    const serviceIds = selectedRows.value.map(row => row.id)
+    const { error } = await supabase
+      .from('services')
+      .update({ service_status: 'Rejected', reason: rejectionReason.value })
+      .in('id', serviceIds)
+
+    if (!error) {
+      closeRejectDialog()
+      rejectionReason.value = '' // Reset reason after rejection
+    }
+  } catch (err) {
+    console.error('Error rejecting requests:', err)
+  }
+}
 </script>
 
 <template>
@@ -152,7 +173,8 @@ const changeStatus = async () => {
       <template v-if="companyError">
         <p>Error fetching companies: {{ companyError }}</p>
       </template>
-      <!-- Status Selection Dialog -->
+
+      <!-- Status Dialog -->
       <UDialog v-if="isStatusDialogOpen" @close="closeStatusDialog">
         <template #header>
           <h3>Select Status</h3>
@@ -163,6 +185,21 @@ const changeStatus = async () => {
         <template #footer>
           <UButton label="Cancel" @click="closeStatusDialog" />
           <UButton label="Confirm" @click="changeStatus" />
+        </template>
+      </UDialog>
+
+      <!-- Reject Request Dialog -->
+      <UDialog v-if="isRejectDialogOpen" @close="closeRejectDialog">
+        <template #header>
+          <h3>Reject Request</h3>
+        </template>
+        <template #body>
+          <label for="rejection-reason" class="block text-sm">Reason for Rejection:</label>
+          <UInput id="rejection-reason" v-model="rejectionReason" placeholder="Enter reason for rejection" />
+        </template>
+        <template #footer>
+          <UButton label="Cancel" @click="closeRejectDialog" />
+          <UButton label="Confirm" color="red" @click="rejectSelectedRequests" />
         </template>
       </UDialog>
     </UDashboardPanel>

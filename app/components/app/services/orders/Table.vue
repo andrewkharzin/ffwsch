@@ -11,11 +11,12 @@
     <!-- Checkbox Column for Row Selection -->
     <template #select-data="{ row }">
       <UCheckbox
-        v-model="selectedRows"
-        :value="row.id"
+        :value="selectedRows.includes(row.id)"
         :label="''"
+        @update:model-value="(isSelected) => toggleRowSelection(row.id, isSelected)"
       />
     </template>
+
     <!-- Full Name and Company Column -->
     <template #full_name-data="{ row }">
       <div class="flex items-center gap-3">
@@ -27,10 +28,6 @@
           <p :style="{ fontSize: textSize }">
             {{ shortenFullName(row.customers?.full_name) }}
           </p>
-
-          <!-- <p class="font-light text-xs">
-            {{ row.customers?.position }}
-          </p> -->
           <span class="text-xs dark:text-gray-400 text-gray-800">
             {{ row.customers?.company_id.company_name }}
           </span>
@@ -48,10 +45,7 @@
           >
             #{{ row.customers.number_id }}
           </p>
-          <p
-            v-if="row.customers.company_id"
-            class="text-md font-light"
-          >
+          <p v-if="row.customers.company_id" class="text-md font-light">
             <span class="text-xs dark:text-teal-300 italic">
               {{ row.service_orders.serial_number }}
             </span>
@@ -76,15 +70,9 @@
 
     <!-- Type Name Column -->
     <template #type_name-data="{ row }">
-      <div
-        class="flex flex-col cursor-pointer"
-        @click="openSlideover(row)"
-      >
+      <div class="flex flex-col cursor-pointer" @click="openSlideover(row)">
         <span class="hover:dark:text-teal-500 hover:text-pink-600">
-          <div
-            class="flex flex-wrap"
-            s
-          >
+          <div class="flex flex-wrap">
             {{ row.servicetype.type_name }}
           </div>
         </span>
@@ -105,32 +93,23 @@
 
   <!-- Slide-over for service details -->
   <USlideover v-model="isOpen">
-    <UCard
-      class="flex flex-col flex-1 w-[100%] max-w-[700px]"
-      :ui="{ body: { base: 'flex-1' } }"
-    >
+    <UCard class="flex flex-col flex-1 w-[100%] max-w-[700px]" :ui="{ body: { base: 'flex-1' } }">
       <template #header>
         <div class="flex flex-row">
           <div>
-            <h3 class="p-1 text-sm font-bold">
-              {{ selectedService?.type_name }}
-            </h3>
+            <h3 class="p-1 text-sm font-bold">{{ selectedService?.type_name }}</h3>
             <div>
-              <time class="text-md font-black dark:text-teal-500 ordinal slashed-zero tabular-nums tracking-widest">{{
-                formatDate(selectedService?.service_date)
-              }}</time>
+              <time class="text-md font-black dark:text-teal-500 ordinal slashed-zero tabular-nums tracking-widest">
+                {{ formatDate(selectedService?.service_date) }}
+              </time>
             </div>
           </div>
           <div class="ml-4 flex flex-row-reverse">
-            <UBadge
-              variant="soft"
-              class="mt-2"
-            >
+            <UBadge variant="soft" class="mt-2">
               {{ selectedService.servicestatuses?.status || 'Pending' }}
             </UBadge>
           </div>
         </div>
-
         <UButton
           color="gray"
           variant="ghost"
@@ -146,47 +125,26 @@
       <div class="p-2 text-md font-light space-y-4">
         <div>
           <div style="max-height: 300px; overflow-y: auto">
-            <AppServicesOrdersUiHighlightedText
-              :text="selectedService?.description || ''"
-            />
+            <AppServicesOrdersUiHighlightedText :text="selectedService?.description || ''" />
             <span>{{ selectedService?.context_tags }}</span>
           </div>
         </div>
         <div class="mt-4 flex items-center gap-3">
-          <UAvatar
-            v-if="selectedService.customers.profile?.avatar_url"
-            :src="selectedService.customers.profile.avatar_url"
-            size="sm"
-          />
+          <UAvatar v-if="selectedService.customers.profile?.avatar_url" :src="selectedService.customers.profile.avatar_url" size="sm" />
           <div class="flex flex-col">
-            <p class="mt-2 text-sm text-gray-300">
-              {{ selectedService?.customers?.full_name }}
-            </p>
-            <span class="text-xs text-gray-400">{{
-              selectedService?.customers?.company_id?.company_name
-            }}</span>
+            <p class="mt-2 text-sm text-gray-300">{{ selectedService?.customers?.full_name }}</p>
+            <span class="text-xs text-gray-400">{{ selectedService?.customers?.company_id?.company_name }}</span>
           </div>
         </div>
-        <p class="text-sm dark:text-gray-600">
-          Service equipments
-        </p>
+        <p class="text-sm dark:text-gray-600">Service equipments</p>
         <div class="flex flex-col space-y-4">
           <template v-if="selectedService.service_equipment?.length">
-            <UCard
-              v-for="equipment in selectedService.service_equipment"
-              :key="equipment.number"
-              class="pb-2"
-            >
+            <UCard v-for="equipment in selectedService.service_equipment" :key="equipment.number" class="pb-2">
               <div class="flex">
                 <div class="flex-none w-8">
-                  <Icon
-                    icon="material-symbols-light:conveyor-belt-rounded"
-                    style="font-size: 24px"
-                  />
+                  <Icon icon="material-symbols-light:conveyor-belt-rounded" style="font-size: 24px" />
                 </div>
-                <span class="mt-0 text-sm dark:text-gray-100">{{
-                  equipment.type
-                }}</span>
+                <span class="mt-0 text-sm dark:text-gray-100">{{ equipment.type }}</span>
               </div>
               <div />
             </UCard>
@@ -196,27 +154,22 @@
           </template>
         </div>
       </div>
+      <div class="flex justify-end gap-4"></div>
 
       <template #footer>
         <div class="flex justify-between items-center w-full space-x-4">
           <!-- Close button on the left -->
-          <UButton
-            label="Close"
-            @click="isOpen = false"
-          />
+          <UButton label="Close" @click="isOpen = false" />
 
           <!-- Confirm and Reject buttons on the right -->
           <div class="flex space-x-2">
-            <UButton
-              color="primary"
-              variant="solid"
-              @click="handleStatusAction('Confirmed')"
-            >
+            <UButton color="primary" variant="solid" @click="handleStatusAction('Confirmed')">
               Confirm
             </UButton>
             <UButton
-              color="red"
+              :color="'red'"
               variant="ghost"
+              :loading="loadingReject"
               @click="handleStatusAction('Rejected')"
             >
               Reject
@@ -237,133 +190,57 @@ import { ref, computed, watchEffect } from 'vue'
 import { useMediaQuery } from '@vueuse/core'
 import { Icon } from '@iconify/vue'
 
-const isMobile = useMediaQuery('(max-width: 768px)')
+const showReasonModal = ref(false)
+const rejectionReason = ref('')
 
+const loadingReject = ref(false)
+
+
+
+const toast = useToast()
+const isMobile = useMediaQuery('(max-width: 768px)')
 const avatarSize = computed(() => (isMobile.value ? 'xs' : 'sm'))
 const textSize = computed(() => (isMobile.value ? '0.6rem' : 'sm'))
 
 const supabase = useSupabaseClient()
-
 const props = defineProps({
   services: Array,
   loading: Boolean,
   error: String
 })
-
 const emits = defineEmits(['sort-change', 'filter-change'])
 
 const sort = ref({ column: 'service_date', direction: 'asc' as const })
 const selectedCompany = ref(null)
 const selectedColumns = ref([
   { key: 'select', label: '', width: '30px' },
-
   { key: 'full_name', label: 'Customer', sortable: true },
-  { key: 'service_date', label: 'Date', width: '30px' },
-  { key: 'type_name', label: 'Type', sortable: true },
-  { key: 'service_status', label: 'Status' }
+  { key: 'service_orders', label: 'Service Orders', sortable: true },
+  { key: 'service_date', label: 'Service Date', sortable: true },
+  { key: 'type_name', label: 'Type Name', sortable: true },
+  { key: 'service_status', label: 'Status', sortable: true }
 ])
 
-const statusColors = {
-  New: 'text-teal-500', // зелёный
-  Confirmed: 'white', // голубой
-  Accounted: 'orange', // оранжевый
-  Pending: '#9CA3AF', // серый
-  Default: 'black' // красный
-}
-
-const row = ref({}) // Динамически наполняем
-
-const getStatusColor = (status) => {
-  return statusColors[status] || statusColors.Default
-}
-
-const companyNames = computed(() => {
-  return [
-    ...new Set(
-      props.services
-        .map(s => s.customers?.company_id?.company_name)
-        .filter(Boolean)
-    )
-  ]
-})
-
-const filteredServices = computed(() => {
-  return props.services.filter((service) => {
-    const matchesCompany = selectedCompany.value
-      ? service.customers?.company_id?.company_name
-      === selectedCompany.value.company_name
-      : true
-    // Apply other filters (statuses, locations, etc.) as needed
-    return matchesCompany
-  })
-})
-
-watchEffect(() => {
-  emits('sort-change', sort.value)
-})
-
-watchEffect(() => {
-  emits('filter-change', selectedCompany.value)
-})
-
+const selectedRows = ref([])
 const isOpen = ref(false)
-const selectedService = ref([])
+const selectedService = ref(null)
 
-const openSlideover = async (service: any) => {
-  try {
-    const { data: serviceData, error: serviceError } = await supabase
-      .from('services')
-      .select(
-        `
-        id, service_type_id, servicetype(type_name), description, service_date, context_tags,
-        customers(full_name, company_id:customer_company(company_name, logo), user_id),
-        service_orders(serial_number),
-        status_id,
-        servicestatuses (status),
-        service_equipment (service_id, type, number, date_in, date_out, time_in, time_out, descriptions)
-      `
-      )
-      .eq('id', service.id)
-      .single()
-
-    console.log('SelectedService', serviceData)
-    if (serviceError) {
-      console.error('Error fetching service details:', serviceError.message)
-      return
-    }
-
-    const { data: profileData, error: profileError } = await supabase
-      .from('profiles')
-      .select('avatar_url')
-      .eq('id', serviceData.customers.user_id)
-      .single()
-
-    if (profileError) {
-      console.error('Error fetching customer profile:', profileError.message)
-    }
-
-    selectedService.value = {
-      ...serviceData,
-      customers: {
-        ...serviceData.customers,
-        profile: profileData
-      }
-    }
-
-    isOpen.value = true
-  } catch (err) {
-    console.error('Error fetching service details:', err)
+// Define the toggleRowSelection function
+const toggleRowSelection = (rowId, isSelected) => {
+  if (isSelected) {
+    selectedRows.value.push(rowId);
+  } else {
+    selectedRows.value = selectedRows.value.filter(id => id !== rowId);
   }
+};
+
+const openSlideover = (service) => {
+  selectedService.value = service
+  rejectionReason.value = '' // Reset rejection reason
+  isOpen.value = true
+
 }
 
-const formatDate = (dateString: string) => {
-  const date = new Date(dateString)
-  return new Intl.DateTimeFormat('en-GB', {
-    day: '2-digit',
-    month: '2-digit',
-    year: '2-digit'
-  }).format(date)
-}
 
 // Add this method in your <script setup> block
 const shortenFullName = (fullName: string) => {
@@ -385,58 +262,71 @@ const shortenFullName = (fullName: string) => {
   return fullName // Return full name if there's only one part
 }
 
-// Function to update the status based on user action
-const statusMapping = ref<{ [key: string]: string }>({})
+// const handleStatusAction = (status) => {
+//   if (status === 'Rejected') {
+//     rejectionReason.value = '' // Reset reason before showing m
+//     showReasonModal.value = true
+//   } else {
+//     updateStatus(status)
+//   }
+// }
 
-const fetchStatusMapping = async () => {
+const handleStatusAction = async (status) => {
+  if (status === 'Rejected') {
+    loadingReject.value = true // Set loading state to true when Reject is clicked
+  }
+
+  await updateStatus(status)
+
+  if (status === 'Rejected') {
+    loadingReject.value = false // Reset loading state once update is complete
+  }
+}
+
+const getStatusId = async (statusName) => {
+  const { data } = await supabase.from('servicestatuses').select('id').eq('status', statusName).single()
+  return data.id
+}
+
+const updateStatus = async (status) => {
+  const statusId = await getStatusId(status) // Get the correct status ID for "Rejected"
   const { data, error } = await supabase
-    .from('servicestatuses')
-    .select('status, id')
+    .from('services')
+    .update({ status_id: statusId }) // Update only the status_id
+    .eq('id', selectedService.value.id)
 
   if (error) {
-    console.error('Error fetching status mapping:', error.message)
-    return
-  }
-
-  statusMapping.value = data.reduce((acc, status) => {
-    acc[status.status] = status.id
-    return acc
-  }, {})
-}
-
-// Fetch status mapping on component mount
-fetchStatusMapping()
-const handleStatusAction = async (newStatus: string) => {
-  if (!selectedService.value || !selectedService.value.id) return
-
-  const statusId = statusMapping.value[newStatus]
-  if (!statusId) {
-    console.error(`No status ID found for status: ${newStatus}`)
-    return
-  }
-
-  try {
-    const { error } = await supabase
-      .from('services')
-      .update({ status_id: statusId })
-      .eq('id', selectedService.value.id)
-
-    if (error) {
-      console.error('Error updating status:', error.message)
-      return
-    }
-
-    // Update selectedService with the new status ID and name
-    selectedService.value = {
-      ...selectedService.value,
-      status_id: statusId,
-      status: newStatus // Optionally add this for display purposes
-      servicestatuses: { status: newStatus }
-    }
-
-    console.log(`Status updated successfully to ${newStatus}`)
-  } catch (err) {
-    console.error('Error handling status action:', err)
+    console.error("Failed to update status:", error.message)
+    toast.add({
+      title: 'Error',
+      description: 'Failed to update service status.',
+      color: 'red',
+      icon: 'i-heroicons-exclamation-circle',
+    })
+  } else {
+    console.log("Service updated:", data)
+    toast.add({
+      title: 'Status Updated',
+      description: `Service status updated to ${status}.`,
+      color: 'teal',
+      icon: 'i-heroicons-check-circle',
+    })
   }
 }
+
+const formatDate = (dateString) => {
+  const date = new Date(dateString)
+  return new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit' }).format(date)
+}
+
+const filteredServices = computed(() => {
+  if (selectedCompany.value) {
+    return props.services.filter(service => service.customers.company_id === selectedCompany.value)
+  }
+  return props.services
+})
 </script>
+
+<style scoped>
+/* Any scoped styling for specific components here */
+</style>
