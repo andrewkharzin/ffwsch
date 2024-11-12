@@ -44,7 +44,7 @@ import { ref, computed, onMounted } from 'vue'
 
 //
 
-
+const supabase = useSupabaseClient()
 const router = useRouter()
 const q = ref('') // Assuming you have a filter value
 
@@ -70,6 +70,29 @@ onMounted(() => {
   }).catch(error => {
     console.error('Error fetching statuses:', error);
   });
+})
+
+// Define a ref for flights data
+const flights = ref([])
+
+// Function to fetch flights data directly in the component
+const fetchFlights = async () => {
+  const { data, error } = await supabase.from('service_customer_flights').select('*')
+  if (error) {
+    console.error('Error fetching flights:', error.message)
+  } else {
+    flights.value = data || []
+  }
+}
+// Fetch data on component mount
+onMounted(() => {
+  console.log('Component mounted. Fetching service types, statuses, and flights...');
+
+  fetchServiceTypes().catch(error => console.error('Error fetching service types:', error))
+  fetchStatuses().catch(error => console.error('Error fetching statuses:', error))
+
+  // Fetch flights data directly in the component
+  fetchFlights().catch(error => console.error('Error fetching flights:', error))
 })
 
 // Format the service types for USelect component

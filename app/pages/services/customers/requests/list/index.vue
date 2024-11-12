@@ -31,7 +31,7 @@ console.log('Services from composable:', services) // Add this line to check the
       <UDashboardToolbar class="ml-4 py-0 px-1.5 overflow-x-auto">
         <UHorizontalNavigation :links="links" />
       </UDashboardToolbar>
-      <div class="p-6 w-full">
+      <div class="p-6 w-full overflow-y-auto">
         <AppServicesCustomerTable
           v-if="services.length > 0"
           :services="services"

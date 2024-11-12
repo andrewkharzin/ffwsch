@@ -140,17 +140,51 @@
             v-model="form.customer_flight"
             :options="serviceStore.flightOptions"
             placeholder="Select Flight"
+            disabled
+            color="pink"
+            class="text-lg font-black dark:text-teal-500 font-mono"
           />
         </UFormGroup>
-        <!-- <UFormGroup
+        <!-- Flight Search Field (conditionally displayed) -->
+        <UFormGroup
           v-if="showFlightFields"
-          label="Flight Date & Time"
+          label="Flight"
         >
-          <DatePicker
-            v-model="form.flight_date_time"
-            :default-date="new Date()"
-          />
-        </UFormGroup> -->
+          <UInput
+            v-model="flightQuery"
+            placeholder="Enter flight number, e.g., SU1212"
+            @input="handleFlightSearch"
+          >
+            <!-- Display search results as dropdown list -->
+            <ul
+              v-if="filteredFlights.length"
+              class="mt-2 max-h-40 overflow-y-auto"
+            >
+              <li
+                v-for="flight in filteredFlights"
+                :key="flight.id"
+                class="cursor-pointer p-2 hover:bg-gray-100"
+                @click="selectFlight(flight)"
+              >
+                {{ flight.flight_number }}
+              </li>
+            </ul>
+
+            <div
+              v-else-if="flightQuery && !loading"
+              class="text-gray-500 mt-2"
+            >
+              No such flight found.
+            </div>
+             <!-- Display live flight information if available -->
+            <div v-if="liveFlightInfo" class="live-flight-info mt-2 p-2 rounded border border-green-500 bg-green-50">
+              <span class="live-icon">🔴</span> Live
+              <div>Airline: {{ liveFlightInfo.airline.name }}</div>
+              <div>Flight Number: {{ liveFlightInfo.flightNumber }}</div>
+              <div>Status: {{ liveFlightInfo.status }}</div>
+            </div>
+          </UInput>
+        </UFormGroup>
 
         <!-- Status Field (Read-only) -->
         <UFormGroup label="Status">
@@ -200,6 +234,9 @@ const route = useRoute()
 const router = useRouter() // Get the router instance
 const toast = useToast()
 
+// The current flight search query
+const q = ref('')
+
 const hours = ref('')
 const minutes = ref('')
 const isSending = ref(false)
@@ -207,6 +244,7 @@ const isValidTimeFormat = ref(true)
 const isSent = ref(false)
 const cancelStatusId = 'c92998e3-a1b8-43eb-9c8e-74f983db45a9'
 const isItemsRequired = ref(false)
+const flightInfo = ref<any>(null)
 
 const props = defineProps({
   serviceId: {
@@ -234,8 +272,11 @@ const form = ref({
   flight_date_time: '',
   customer_flight: null
 })
+
+// All available flights from the database
+// const flights = ref([])
 // Computed property to check if selected service type is the specific type
-const showFlightFields = computed(() => form.value.service_type_id === '6ecb91d0-f596-4b44-989c-15814b06f337')
+// const showFlightFields = computed(() => form.value.service_type_id === '6ecb91d0-f596-4b44-989c-15814b06f337')
 
 // Проверка на статус
 const isDraft = computed(() => form.value.status_id === '138261c0-235e-4a19-9b1f-c4ef8afe8529')
@@ -360,4 +401,58 @@ const openItemsManager = () => {
     console.error('Service ID is undefined. Cannot navigate to items manager.')
   }
 }
+
+// When the search query changes, this will trigger filtering
+// const onSearchUpdate = (value: string) => {
+//   q.value = value
+// }
+
+// Flight search query
+const flightQuery = ref('')
+const { flights, loading, error, fetchFlights } = useServiceCustomerFlights()
+const { fetchLiveFlightByNumber } = useRapid();
+
+// Watch `flightQuery` and fetch flights whenever it changes
+watch(flightQuery, async (newQuery) => {
+  if (newQuery.trim()) {
+    await fetchFlights(newQuery)
+  }
+})
+// Filter flights based on search query
+const filteredFlights = computed(() => {
+  return flightQuery.value
+    ? flights.value.filter(flight =>
+      flight.flight_number.toLowerCase().includes(flightQuery.value.toLowerCase())
+    )
+    : []
+})
+
+// Show flight fields based on service type
+const showFlightFields = computed(() => form.value.service_type_id === '6ecb91d0-f596-4b44-989c-15814b06f337')
+
+const handleFlightSearch = async () => {
+  if (flightQuery.value) await fetchLiveFlightByNumber(flightQuery.value);
+  const flightNumber = 'N4080';  // Убедитесь, что используется корректный номер
+  await fetchFlightInfoByNumber(flightNumber);
+};
+// Select a flight and set it in the form
+const selectFlight = (flight) => {
+  form.value.customer_flight = flight.id
+  flightQuery.value = `${flight.flight_number}`
+}
 </script>
+
+<style scoped>
+.live-flight-info {
+  border: 1px solid #4caf50;
+  padding: 10px;
+  background-color: #e8f5e9;
+}
+.live-icon {
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
+</style>

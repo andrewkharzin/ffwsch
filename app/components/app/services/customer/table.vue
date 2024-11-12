@@ -1,23 +1,22 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue' // Import your composable
+import { ref, computed, defineProps, reactive, watch } from 'vue'
 import type { ServiceWithRelations } from '@/types/types'
 
-// Use composable to get services
-const { services, loading, error } = useServicesByCustomer()
+const props = defineProps<{ services: ServiceWithRelations[] }>()
 
-// Filters and columns
+// Фильтры и колонки
 const search = ref('')
 const selectedStatus = ref<string>('All')
 const columns = [
   { key: 'index', label: '#', sortable: true },
   { key: 'service_date', label: 'Date', sortable: true },
-  { key: 'service_type', label: 'Service Type', sortable: true },
-  { key: 'flight', label: 'Flight', sortable: false },
+  { key: 'service_type', label: 'Service Type', sortable: true }, // Add service type column
+  { key: 'flight', label: 'Flight', sortable: false }, // Add service type column
   { key: 'status', label: 'Status', sortable: true }
+  // { key: 'description', label: 'Description', sortable: false }
 ]
 
-// Status map definition
-const statusConfig = {
+const statusMap = reactive({
   '138261c0-235e-4a19-9b1f-c4ef8afe8529': { label: 'Draft', colorClass: 'bg-gray-400' },
   '656d0181-1aa8-46a0-83d8-651bfd1a4742': { label: 'Completed', colorClass: 'bg-green-500' },
   '681d9cb6-55e4-47a0-9c2c-550674045e04': { label: 'Pending', colorClass: 'bg-yellow-500' },
@@ -25,47 +24,35 @@ const statusConfig = {
   'b3d9ebe7-f348-4fc2-924e-f61256bf13fc': { label: 'New', colorClass: 'bg-indigo-500' },
   'b4e826c6-0b7a-43ed-b5e6-c1d7cc395d28': { label: 'Accounted', colorClass: 'bg-purple-500' },
   'c92998e3-a1b8-43eb-9c8e-74f983db45a9': { label: 'Canceled', colorClass: 'bg-red-500' },
-  '23fafe3b-0632-4060-8557-3b703ed22186': { label: 'Rejected', colorClass: 'bg-pink-600' }
-}
-
-const computedStatusMap = computed(() => {
-  // Force reactivity by recalculating the map whenever `services` changes
-  return services.value.reduce((map, service) => {
-    map[service.id] = statusConfig[service.status_id] || { label: 'Unknown Status', colorClass: 'bg-gray-200' }
-    return map
-  }, {} as Record<string, { label: string; colorClass: string }>)
+  '23fafe3b-0632-4060-8557-3b703ed22186': { label: 'Rejected', colorClass: 'bg-pink-500' }
 })
 
-// Filter options for statuses
 const filterStatusOptions = [
   { value: 'All', label: 'All' },
-  ...Object.keys(statusConfig).map(key => ({
+  ...Object.keys(statusMap).map(key => ({
     value: key,
-    label: statusConfig[key].label
+    label: statusMap[key].label
   }))
 ]
 
-// Computed filtered services based on search and selected status
+// Функция фильтрации
 const filteredServices = computed(() => {
-  const statusValue = selectedStatus.value || 'All'
-  return services.value.filter((service) => {
+  const statusValue = selectedStatus.value?.value || selectedStatus.value // Получаем значение из выбранного статуса
+
+  return props.services.filter((service) => {
     const matchesDescription = search.value === '' || service.description?.toLowerCase().includes(search.value.toLowerCase())
     const matchesStatus = statusValue === 'All' || service.status_id === statusValue
     return matchesDescription && matchesStatus
   })
 })
 
-// Watch filters and log changes for debugging
+// Проверка отфильтрованных данных при изменении фильтра
 watch([search, selectedStatus], () => {
-  console.log('Filters changed:')
-  console.log('Current search:', search.value)
-  console.log('Selected status:', selectedStatus.value)
-  console.log('Filtered data:', filteredServices.value)
+  console.log('Фильтр изменился:')
+  console.log('Текущий поиск:', search.value)
+  console.log('Выбранный статус:', selectedStatus.value)
+  console.log('Отфильтрованные данные:', filteredServices.value)
 }, { immediate: true })
-
-watch(services, (newVal) => {
-  console.log('Updated services array:', newVal)
-})
 </script>
 
 <template>
@@ -92,7 +79,7 @@ watch(services, (newVal) => {
     </NuxtLink>
   </div>
 
-  <!-- Table with filtered services -->
+  <!-- Таблица -->
   <UTable
     :rows="filteredServices"
     :columns="columns"
@@ -112,31 +99,26 @@ watch(services, (newVal) => {
           :disabled="!row.service_date"
           class="text-sm font-bold"
         >
+          <!-- {{ row.service_date ? new Date(row.service_date).toLocaleDateString('en-US') : 'N/A' }} -->
           {{ row.service_date ? new Date(row.service_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A' }}
         </UButton>
       </NuxtLink>
     </template>
-
     <template #service_type-data="{ row }">
       {{ row.servicetype.type_name || 'No Type' }}
     </template>
-
     <template #flight-data="{ row }">
       <p class="text-sm font-bold dark:text-teal-500">
-        {{ row.service_customer_flights?.flight_number }}{{ " " }}
-        <span class="text-sm font-light dark:text-gray-600">/</span>
-        <span class="text-sm font-light dark:text-gray-500">{{ row.service_customer_flights?.flight_pst }}</span>
+        {{ row.service_customer_flights?.flight_number }}{{ " " }}<span class="text-sm font-light dark:text-gray-600">/</span>
+        <span class="text-sm font-ligh dark:text-gray-500">{{ row.service_customer_flights?.flight_pst }}</span>
       </p>
     </template>
-
-    <!-- Reactive status display -->
     <template #status-data="{ row }">
       <span
-        v-if="computedStatusMap[row.id]"
-        :key="row.id"
-        :class="`inline-flex items-center px-2 py-1 rounded text-white text-xs font-semibold ${computedStatusMap[row.id].colorClass}`"
+        v-if="statusMap[row.status_id]"
+        :class="`inline-flex items-center px-2 py-1 rounded text-white text-xs font-semibold ${statusMap[row.status_id].colorClass}`"
       >
-        {{ computedStatusMap[row.id].label }}
+        {{ statusMap[row.status_id].label }}
       </span>
       <span v-else>Unknown Status</span>
     </template>
@@ -145,4 +127,10 @@ watch(services, (newVal) => {
       {{ row.description || 'No Description' }}
     </template>
   </UTable>
+
+  <!-- Отладка фильтрованных данных -->
+  <!-- <div>
+    <h3>Отладка фильтрованных данных:</h3>
+    <pre>{{ filteredServices }}</pre>
+  </div> -->
 </template>
