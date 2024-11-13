@@ -38,6 +38,7 @@ export function useRapid() {
       flightsData.value.arrivals = result.arrivals || []
       flightsData.value.departures = result.departures || []
       pageTotal.value = flightsData.value.arrivals.length + flightsData.value.departures.length
+      console.log("FlightData Test", flightsData)
     } catch (err) {
       console.error('Error fetching flights data:', err)
       error.value = err.name === 'AbortError' ? 'Request timed out' : 'Failed to fetch flight data. Please try again later.'
@@ -83,39 +84,39 @@ export function useRapid() {
     }
   }
   // New method to fetch live flight information by flight number
-  const fetchLiveFlightByNumber = async (flightNumber: string) => {
-    console.log('Fetching live flight info for flight number:', flightNumber)
+  // const fetchLiveFlightByNumber = async (flightNumber: string) => {
+  //   console.log('Fetching live flight info for flight number:', flightNumber)
 
-    const url = `https://flightera-flight-data.p.rapidapi.com/flight/info?flnr=${flightNumber}`
-    const options = {
-      method: 'GET',
-      headers: {
-        'x-rapidapi-key': '7d1a941f06msh29874c6d06f5f6ep12d1d0jsn2fae8bf64af4', // Replace with your actual RapidAPI key
-        'x-rapidapi-host': 'flightera-flight-data.p.rapidapi.com'
-      }
-    }
+  //   const url = `https://flightera-flight-data.p.rapidapi.com/flight/info?flnr=${flightNumber}`
+  //   const options = {
+  //     method: 'GET',
+  //     headers: {
+  //       'x-rapidapi-key': '7d1a941f06msh29874c6d06f5f6ep12d1d0jsn2fae8bf64af4', // Replace with your actual RapidAPI key
+  //       'x-rapidapi-host': 'flightera-flight-data.p.rapidapi.com'
+  //     }
+  //   }
 
-    loading.value = true
-    error.value = null
+  //   loading.value = true
+  //   error.value = null
 
-    try {
-      const response = await fetch(url, options)
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`)
-      }
+  //   try {
+  //     const response = await fetch(url, options)
+  //     if (!response.ok) {
+  //       throw new Error(`HTTP error! Status: ${response.status}`)
+  //     }
 
-      const result = await response.text()
-      console.log('Live flight info response:', result)
+  //     const result = await response.text()
+  //     console.log('Live flight info response:', result)
 
-      // Parse and handle flight information as needed
-      // Note: Handle any JSON parsing if necessary
-    } catch (err) {
-      console.error('Error fetching live flight info:', err)
-      error.value = 'Failed to fetch live flight information. Please try again later.'
-    } finally {
-      loading.value = false
-    }
-  }
+  //     // Parse and handle flight information as needed
+  //     // Note: Handle any JSON parsing if necessary
+  //   } catch (err) {
+  //     console.error('Error fetching live flight info:', err)
+  //     error.value = 'Failed to fetch live flight information. Please try again later.'
+  //   } finally {
+  //     loading.value = false
+  //   }
+  // }
 
   return {
     flightsData,
@@ -124,6 +125,6 @@ export function useRapid() {
     pageTotal,
     fetchFlights,
     fetchFlightInfoByNumber,
-    fetchLiveFlightByNumber // Export the new method
+    // fetchLiveFlightByNumber // Export the new method
   }
 }

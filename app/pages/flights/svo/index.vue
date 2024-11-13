@@ -5,7 +5,7 @@
         <template #right>
         </template>
       </UDashboardNavbar>
-      <div class="flights-page overflow-auto">
+      <!-- <div class="flights-page overflow-auto">
         <div v-if="loading" class="text-center">Loading...</div>
         <div v-if="error" class="text-center text-red-500">
           {{ error }}
@@ -16,7 +16,7 @@
           :flights-data="flightsData"
           :filter-type="filterType"
         />
-      </div>
+      </div> -->
     </UDashboardPanel>
   </UDashboardPage>
 
@@ -25,8 +25,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 
-const { flightsData, loading, error, fetchFlights } = useRapid()
-const filterType = ref('arrivals')
+// const { flightsData, loading, error, fetchFlights } = useRapid()
+// const filterType = ref('arrivals')
 
 onMounted(() => {
   fetchFlights('SVO')

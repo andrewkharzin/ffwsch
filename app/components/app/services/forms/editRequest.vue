@@ -47,64 +47,10 @@
           </UFormGroup>
         </div>
 
-        <!-- Time Field -->
-        <!-- <UFormGroup label="Time (HH:MM)">
-          <div class="flex space-x-2">
-            <UInput
-              v-model="hours"
-              type="number"
-              min="0"
-              max="23"
-              placeholder="HH"
-              class="w-16 text-center"
-            />
-            <span class="text-gray-500">:</span>
-            <UInput
-              v-model="minutes"
-              type="number"
-              min="0"
-              max="59"
-              placeholder="MM"
-              class="w-16 text-center"
-            />
-          </div>
-          <span
-            v-if="!isValidTimeFormat"
-            class="text-red-500 text-xs"
-          >
-            Please enter a valid time in HH:MM format.
-          </span>
-        </UFormGroup> -->
-
-        <!-- Description Field -->
-        <!-- <UFormGroup
-          label="Description"
-          required
-        >
-          <UTextarea
-            v-model="form.description"
-            color="gray"
-            variant="outline"
-          />
-
-        </UFormGroup> -->
-        <!-- Flight Field (Conditionally Displayed) -->
-        <!-- <UFormGroup
-          v-if="showFlightFields"
-          label="Flight"
-        >
-          <UInput
-            v-model="form.flight"
-            color="primary"
-            variant="outline"
-            placeholder="Enter flight details"
-          />
-
-        </UFormGroup> -->
         <Tiptap v-model="form.description" />
         <!-- Checkbox to control "Items manager" button visibility -->
         <UFormGroup
-          v-if="showFlightFields"
+          v-if="showFlightFields && !isConfirmedOrRejected"
           label="Items add Required?"
         >
           <UCheckbox
@@ -123,82 +69,57 @@
             variant="soft"
             @click="openItemsManager"
           >
-            Items manager
+            FKIT MANAGER
           </UButton>
         </div>
         <!-- Flight Select Field (conditionally displayed) -->
         <UFormGroup
           v-if="showFlightFields"
-          label="Flight"
+          class="text-sm font-light tracking-wider"
         >
-          <!-- <USelect
-            v-model="serviceStore.service.customer_flight"
-            :options="serviceStore.flightOptions"
-            placeholder="Select Flight"
-          /> -->
           <USelect
             v-model="form.customer_flight"
             :options="serviceStore.flightOptions"
             placeholder="Select Flight"
             disabled
-            color="pink"
+            color="gray"
             class="text-lg font-black dark:text-teal-500 font-mono"
           />
         </UFormGroup>
         <!-- Flight Search Field (conditionally displayed) -->
         <UFormGroup
           v-if="showFlightFields"
-          label="Flight"
         >
-          <UInput
-            v-model="flightQuery"
-            placeholder="Enter flight number, e.g., SU1212"
+          <!-- "GetFlightChildComponent" -->
+          <AppServicesFormsGetFlight
+            v-if="!isConfirmedOrRejected"
+            v-model="form.customer_flight"
+            :flight-query="flightQuery"
             @input="handleFlightSearch"
-          >
-            <!-- Display search results as dropdown list -->
-            <ul
-              v-if="filteredFlights.length"
-              class="mt-2 max-h-40 overflow-y-auto"
-            >
-              <li
-                v-for="flight in filteredFlights"
-                :key="flight.id"
-                class="cursor-pointer p-2 hover:bg-gray-100"
-                @click="selectFlight(flight)"
-              >
-                {{ flight.flight_number }}
-              </li>
-            </ul>
+            @select-flight="updateFlightSelection"
+          />
+          <!-- Live current flight -->
 
-            <div
-              v-else-if="flightQuery && !loading"
-              class="text-gray-500 mt-2"
-            >
-              No such flight found.
-            </div>
-             <!-- Display live flight information if available -->
-            <div v-if="liveFlightInfo" class="live-flight-info mt-2 p-2 rounded border border-green-500 bg-green-50">
-              <span class="live-icon">🔴</span> Live
-              <div>Airline: {{ liveFlightInfo.airline.name }}</div>
-              <div>Flight Number: {{ liveFlightInfo.flightNumber }}</div>
-              <div>Status: {{ liveFlightInfo.status }}</div>
-            </div>
-          </UInput>
+          <!-- Display flight data -->
+          <!-- <div v-if="flightsData">
+            <p>Arrival: {{ flightsData.arrivals[0]?.destination }}</p>
+            <p>Departure: {{ flightsData.departures[0]?.origin }}</p>
+          </div> -->
         </UFormGroup>
 
         <!-- Status Field (Read-only) -->
-        <UFormGroup label="Status">
-          <UInput
-            v-model="form.status_id"
-            color="primary"
-            variant="outline"
-            disabled
-          />
-        </UFormGroup>
-
+        <div class="flex flex-row">
+          <div class="flex-row-reverse">
+            <UBadge
+              color="teal"
+              variant="soft"
+            >
+              {{ statusText }}
+            </UBadge>
+          </div>
+        </div>
         <!-- Submit Button -->
-        <div class="flex space-x-4">
-          <!-- "Update" Button: Visible only when `isSent` is false -->
+        <!-- <div class="flex space-x-4">
           <UButton
             v-if="!isNew"
             type="submit"
@@ -208,9 +129,32 @@
           >
             {{ serviceStore.isEditMode ? 'Update' : 'Add' }}
           </UButton>
-
-          <!-- "Send" Button -->
           <UButton
+            color="rose"
+            variant="soft"
+            :loading="serviceStore.isSending"
+            class="w-full sm:w-auto"
+            @click="sendService"
+          >
+            {{ serviceStore.service.status_id === serviceStore.statusIds.new ? 'Cancel' : 'Send' }}
+          </UButton>
+        </div> -->
+        <!-- Submit Button -->
+        <div class="flex space-x-4">
+          <!-- "Update" Button: Visible only when `isSent` is false and not Confirmed/Rejected -->
+          <UButton
+            v-if="!isNew && !isConfirmedOrRejected"
+            type="submit"
+            color="primary"
+            variant="soft"
+            class="w-full sm:w-auto"
+          >
+            {{ serviceStore.isEditMode ? 'Update' : 'Add' }}
+          </UButton>
+
+          <!-- "Send" Button: Hidden when Confirmed/Rejected -->
+          <UButton
+            v-if="!isConfirmedOrRejected"
             color="rose"
             variant="soft"
             :loading="serviceStore.isSending"
@@ -234,6 +178,10 @@ const route = useRoute()
 const router = useRouter() // Get the router instance
 const toast = useToast()
 
+const { flightsData, fetchFlightInfoByNumber } = useRapid()
+const { statuses, fetchStatuses } = useStatuses()
+fetchStatuses()
+
 // The current flight search query
 const q = ref('')
 
@@ -244,7 +192,6 @@ const isValidTimeFormat = ref(true)
 const isSent = ref(false)
 const cancelStatusId = 'c92998e3-a1b8-43eb-9c8e-74f983db45a9'
 const isItemsRequired = ref(false)
-const flightInfo = ref<any>(null)
 
 const props = defineProps({
   serviceId: {
@@ -272,6 +219,45 @@ const form = ref({
   flight_date_time: '',
   customer_flight: null
 })
+
+// Computed property to find the status text by ID
+const statusText = computed(() => {
+  const status = statuses.value.find(s => s.id === form.value.status_id)
+  return status ? status.status : 'Unknown Status'
+})
+
+function debounce<T extends (...args: any[]) => any>(func: T, wait: number) {
+  let timeout: ReturnType<typeof setTimeout> | null
+
+  return function (...args: Parameters<T>) {
+    if (timeout) {
+      clearTimeout(timeout)
+    }
+    timeout = setTimeout(() => {
+      func(...args)
+    }, wait)
+  }
+}
+
+let cachedFlightsData: any = null
+
+const fetchFlightsDebounced = debounce(async (iataCode: string) => {
+  if (cachedFlightsData) {
+    flightsData.value = cachedFlightsData
+    return
+  }
+
+  await fetchFlights(iataCode)
+  cachedFlightsData = flightsData.value // Store result in cache
+}, 500) // Debounce for 500ms
+
+onMounted(() => {
+  fetchFlightsDebounced('SVO')
+})
+
+const updateFlightSelection = (flightId) => {
+  form.value.customer_flight = flightId // Update form with selected flight ID
+}
 
 // All available flights from the database
 // const flights = ref([])
@@ -410,7 +396,6 @@ const openItemsManager = () => {
 // Flight search query
 const flightQuery = ref('')
 const { flights, loading, error, fetchFlights } = useServiceCustomerFlights()
-const { fetchLiveFlightByNumber } = useRapid();
 
 // Watch `flightQuery` and fetch flights whenever it changes
 watch(flightQuery, async (newQuery) => {
@@ -431,15 +416,24 @@ const filteredFlights = computed(() => {
 const showFlightFields = computed(() => form.value.service_type_id === '6ecb91d0-f596-4b44-989c-15814b06f337')
 
 const handleFlightSearch = async () => {
-  if (flightQuery.value) await fetchLiveFlightByNumber(flightQuery.value);
-  const flightNumber = 'N4080';  // Убедитесь, что используется корректный номер
-  await fetchFlightInfoByNumber(flightNumber);
-};
+  if (flightQuery.value) await fetchFlightInfoByNumber(flightQuery.value)
+  const flightNumber = 'N4080' // Убедитесь, что используется корректный номер
+  await fetchFlightInfoByNumber(flightNumber)
+}
 // Select a flight and set it in the form
 const selectFlight = (flight) => {
   form.value.customer_flight = flight.id
   flightQuery.value = `${flight.flight_number}`
 }
+
+
+// Assuming these are the UUIDs for "Confirmed" and "Rejected"
+const confirmedStatusId = '68bd4999-011a-47e3-833d-0f600db5eb48';
+const rejectedStatusId = '23fafe3b-0632-4060-8557-3b703ed22186';
+
+const isConfirmedOrRejected = computed(() => {
+  return form.value.status_id === confirmedStatusId || form.value.status_id === rejectedStatusId;
+});
 </script>
 
 <style scoped>
