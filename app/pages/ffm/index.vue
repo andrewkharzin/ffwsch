@@ -110,34 +110,33 @@
             </RouterLink>
           </template>
           <template #airport_to-data="{ row }">
-            <RouterLink
-              class="dark:text-teal-300 text-pink-500 font-black font-mono"
-            >
+            <p>
+              {{ row.airport_from }}
               <UBadge
                 variant="soft"
                 color="teal"
               >
-
                 {{ row.airport_to }}
               </UBadge>
-            </RouterLink>
+            </p>
           </template>
 
           <template #actions-data="{ row }">
-            <!-- <UButton
-              label="FFM/5"
-              color="gray"
-              variant="solid"
-              @click="generateMessage(row.id)"
-            /> -->
-            <UButton
-              :label="loading ? 'Generating...' : 'FFM/5'"
-              color="gray"
-              variant="solid"
-              :icon="loading ? 'i-heroicons-arrow-path-20-solid animate-spin' : null"
-              :disabled="loading"
-              @click="generateMessage(row.id)"
-            />
+            <UDropdown :items="items(row)">
+              <UButton
+                color="gray"
+                variant="ghost"
+                icon="i-heroicons-ellipsis-horizontal-20-solid"
+              />
+              <!-- <UButton
+                :label="loading ? 'Generating...' : 'FFM/5'"
+                color="gray"
+                variant="solid"
+                :icon="loading ? 'i-heroicons-arrow-path-20-solid animate-spin' : null"
+                :disabled="loading"
+                @click="generateMessage(row.id)"
+              /> -->
+            </UDropdown>
           </template>
         </UTable>
 
@@ -228,8 +227,7 @@ const pageTo = computed(() => Math.min(page.value * pageCount.value, pageTotal.v
 const columns = [
   { key: 'date', label: 'Date', sortable: true },
   { key: 'flight', label: 'Flight', sortable: true },
-  { key: 'airport_from', label: 'From' },
-  { key: 'airport_to', label: 'Destinate' },
+  { key: 'airport_to', label: 'A/D' },
   { key: 'actions', label: 'Actions' }
 ]
 const selectedColumns = ref(columns)
@@ -254,7 +252,7 @@ const { generateFfm5Message } = useFfmMessage()
 const supabase = useSupabaseClient()
 
 const fetchFfmList = async () => {
-  pending.value = true // Start loading
+  pending.value = true // Stop loading after data fetch
   const { data, error } = await supabase
     .from('ffm')
     .select('id, date, flight, airport_from ( iata ), airport_to ( iata )')
@@ -288,6 +286,7 @@ onMounted(() => {
 })
 
 const toast = useToast()
+
 const copyToClipboard = () => {
   navigator.clipboard.writeText(generatedMessage.value)
     .then(() => {
@@ -321,11 +320,43 @@ const links = [
       to: '/'
     },
     {
-      label: 'List',
+      label: 'Flights',
       icon: 'i-heroicons-queue-list',
       component: 'NuxtLink',
       to: '/ffm'
     }
   ]
+]
+
+const items = (row) => [
+  [{
+    label: 'Edit',
+    icon: 'i-heroicons-pencil-square-20-solid',
+    click: () => console.log('Edit', row.id)
+  }, {
+    label: 'Duplicate',
+    icon: 'i-heroicons-document-duplicate-20-solid',
+    click: () => console.log('Duplicate', row.id)
+  }],
+  [{
+    label: loading.value ? 'Generating...' : 'FFM/5',
+    icon: loading.value ? 'i-heroicons-arrow-path-20-solid animate-spin' : null,
+    disabled: loading.value,
+    click: () => generateMessage(row.id)
+  }],
+  [{
+    label: 'Archive',
+    icon: 'i-heroicons-archive-box-20-solid',
+    click: () => console.log('Archive', row.id)
+  }, {
+    label: 'Move',
+    icon: 'i-heroicons-arrow-right-circle-20-solid',
+    click: () => console.log('Move', row.id)
+  }],
+  [{
+    label: 'Delete',
+    icon: 'i-heroicons-trash-20-solid',
+    click: () => console.log('Delete', row.id)
+  }]
 ]
 </script>
