@@ -40,5 +40,17 @@ export const staffLinks = [
         to: '/services/settings'
       }
     ]
+  },
+  {
+    id: 'telexes',
+    label: 'Telexes',
+    icon: 'i-heroicons-briefcase',
+    to: '/telexes',
+    children: [
+      {
+        label: 'List',
+        to: '/ffm'
+      }
+    ]
   }
 ]
