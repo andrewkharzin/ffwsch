@@ -89,9 +89,9 @@
         >
           <template #date-data="{ row }">
             <RouterLink
-              class="dark:text-teal-500 text-pink-500 font-black font-mono text-lg"
+              class="dark:text-teal-500 text-pink-500 font-black font-mono text-sm"
             >
-              {{ row.date }}
+              {{ formatDate2(row.date) }}
             </RouterLink>
           </template>
           <template #flight-data="{ row }">
@@ -108,6 +108,14 @@
             >
               {{ row.airport_from }}
             </RouterLink>
+          </template>
+          <!-- Additional column for totals -->
+          <template #totals-data="{ row }">
+            <div class="flex flex-row text-xs font-mono">
+              <span>{{ totalPcs }}{{ "/" }}</span>
+              <span>{{ totalWeight }}kg{{ "/"}}</span>
+              <span>{{ totalVolume }} m³</span>
+            </div>
           </template>
           <template #airport_to-data="{ row }">
             <p>
@@ -213,6 +221,9 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import { formatDate2 } from "../../utils/date/date"
+
+const { fetchFfmTelexRecords, totalPcs, totalWeight, totalVolume } = useFfmDetail()
 
 const pending = ref(true)
 const loading = ref(false) // Loading state for the button
@@ -227,6 +238,7 @@ const pageTo = computed(() => Math.min(page.value * pageCount.value, pageTotal.v
 const columns = [
   { key: 'date', label: 'Date', sortable: true },
   { key: 'flight', label: 'Flight', sortable: true },
+  { key: 'totals', label: 'Payload', sortable: false },
   { key: 'airport_to', label: 'A/D' },
   { key: 'actions', label: 'Actions' }
 ]
@@ -266,6 +278,11 @@ const fetchFfmList = async () => {
       airport_from: record.airport_from?.iata || 'N/A',
       airport_to: record.airport_to?.iata || 'N/A'
     }))
+
+    // Fetch telex records for each ffm record
+    ffmRecords.value.forEach(ffm => {
+      fetchFfmTelexRecords(ffm.id)
+    })
   }
   pending.value = false // Stop loading after data fetch
 }

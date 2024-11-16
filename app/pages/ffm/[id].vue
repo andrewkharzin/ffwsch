@@ -41,6 +41,11 @@
               <span class="dark:text-gray-400 racking-wide"> {{ row.awb_number }}</span>
             </p>
           </template>
+          <template #dgr_code-data="{ row }">
+            <span class="text-md dark:text-sky-500 font-bold">
+              {{ row.dgr_code }}
+            </span>
+          </template>
         </UTable>
 
         <!-- Loading Indicator -->
@@ -63,13 +68,13 @@ const { ffmTelexRecords, pending, fetchFfmTelexRecords } = useFfmDetail()
 
 // Table columns
 const columns = [
-  { key: 'flight', label: 'Flight' },
   { key: 'awb_carrier', label: 'AWB' },
   { key: 'number_pcs', label: 'Pieces' },
   { key: 'weight', label: 'Weight' },
   { key: 'volume', label: 'Volume' },
   { key: 'shipping_name', label: 'Shipping Name' },
   { key: 'shc', label: 'SHC' },
+  { key: 'dgr_code', label: 'DGR IATA Code' },
   { key: 'actions', label: 'Actions' }
 ]
 
