@@ -1,5 +1,15 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+  imports: {
+    dirs: [
+      // Scan top-level modules
+      'composables',
+      // ... or scan modules nested one level deep with a specific name and file extension
+      'composables/*/index.{ts,js,mjs,mts}',
+      // ... or scan all modules within given directory
+      'composables/**'
+    ]
+  },
   extends: ['@nuxt/ui-pro'],
   supabase: {
     redirect: true
@@ -95,5 +105,6 @@ export default defineNuxtConfig({
       ignored: ['**/node_modules/**', '**/dist/**', '**/.nuxt/**']
     }
   },
+  name: 'awb-availability',
   compatibilityDate: '2024-07-11'
 })

@@ -34,6 +34,12 @@ export const useCustomers = () => {
 
       if (fetchError) throw fetchError
       customers.value = data
+      // Map company logo into customers
+      customers.value = data.map(customer => ({
+        ...customer,
+        avatar: { src: customer.company_id?.logo }, // Add avatar.src field
+      }));
+      console.log('Fetched Customers:', customers.value);
     } catch (err: any) {
       error.value = err.message
     } finally {

@@ -8,7 +8,7 @@ export const staffLinks = [
   {
     id: 'services',
     label: 'Services',
-    icon: 'i-heroicons-briefcase',
+    icon: 'i-eos-icons:service-plan-outlined',
     to: '/services',
     children: [
       {
@@ -25,22 +25,22 @@ export const staffLinks = [
       }
     ]
   },
-  {
-    id: 'customers',
-    label: 'Customers',
-    icon: 'i-heroicons-briefcase',
-    to: '/customers',
-    children: [
-      {
-        label: 'List',
-        to: '/services/customers'
-      },
-      {
-        label: 'Settings',
-        to: '/services/settings'
-      }
-    ]
-  },
+  // {
+  //   id: 'customers',
+  //   label: 'Customers',
+  //   icon: 'i-ix:customer',
+  //   to: '/customers',
+  //   children: [
+  //     {
+  //       label: 'List',
+  //       to: '/services/customers'
+  //     }
+  //     // {
+  //     //   label: 'Settings',
+  //     //   to: '/services/settings'
+  //     // }
+  //   ]
+  // },
   {
     id: 'telexes',
     label: 'Telexes',
@@ -50,6 +50,24 @@ export const staffLinks = [
       {
         label: 'List',
         to: '/ffm'
+      }
+    ]
+  },
+  {
+    id: 'booking',
+    label: 'QBuk',
+    icon: 'i-heroicons-briefcase',
+    to: '/Bookings/stock',
+    children: [
+      {
+        label: 'Bookings',
+        icon: 'i-carbon:show-data-cards',
+        to: '/services/bookings/list'
+      },
+      {
+        label: 'My Data Stock',
+        icon: 'i-material-symbols-light:folder-data-outline-rounded',
+        to: '/services/bookings/datastock'
       }
     ]
   }

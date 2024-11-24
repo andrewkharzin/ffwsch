@@ -1,37 +1,16 @@
 <script setup lang="ts">
+import type { Member } from '~/types'
 
-const { customers, error, fetchCustomers } = useCustomers()
+const { data: members } = await useFetch<Member[]>('/api/members', { default: () => [] })
+
 const q = ref('')
 const isInviteModalOpen = ref(false)
-const loading = ref(true)
-const delay = 500 // Simulated delay for loading effect
-
-// Fetch customers when the component is mounted
-onMounted(() => {
-  fetchCustomers()
-    .then(() => {
-      // Apply delay to simulate loading
-      setTimeout(() => {
-        loading.value = false // Stop showing skeletons after delay
-      }, delay)
-    })
-    .catch(() => {
-      loading.value = false // Stop loading if there's an error
-    })
-})
 
 const filteredMembers = computed(() => {
-  const searchQuery = q.value.toLowerCase();
-  return customers.value.filter((customer) => {
-    const fullName = customer.full_name || '';
-    const email = customer.email || '';
-    return (
-      fullName.toLowerCase().includes(searchQuery) ||
-      email.toLowerCase().includes(searchQuery)
-    );
-  });
-});
-
+  return members.value.filter((member) => {
+    return member.name.search(new RegExp(q.value, 'i')) !== -1 || member.username.search(new RegExp(q.value, 'i')) !== -1
+  })
+})
 </script>
 
 <template>
@@ -64,9 +43,7 @@ const filteredMembers = computed(() => {
         </template>
 
         <!-- ~/components/settings/MembersList.vue -->
-        <!-- <SettingsMembersList :members="filteredMembers" /> -->
-        <!-- <SettingsCustomersList /> -->
-        <SettingsCustomersList :members="filteredMembers" />
+        <SettingsMembersList :members="filteredMembers" />
       </UCard>
     </UDashboardSection>
 
