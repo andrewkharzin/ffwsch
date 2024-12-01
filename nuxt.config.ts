@@ -25,7 +25,8 @@ export default defineNuxtConfig({
     '@vueuse/nuxt',
     '@nuxt/image',
     'nuxt-tiptap-editor',
-    '@nuxtjs/leaflet'
+    '@nuxtjs/leaflet',
+    'nuxt-svgo'
   ],
 
   ui: {

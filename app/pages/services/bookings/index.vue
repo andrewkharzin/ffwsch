@@ -20,11 +20,10 @@ const items = [
 const bookingForm = ref({
   name: '',
   email: '',
-  // Add your other form fields as necessary
 })
 
 function onSubmitBooking() {
-  console.log('Booking form submitted', bookingForm)
+  console.log('Booking form submitted', bookingForm.value)
 }
 </script>
 
@@ -32,7 +31,7 @@ function onSubmitBooking() {
   <UTabs :items="items" class="w-full">
     <!-- New Tab -->
     <template #new="{ item }">
-      <UCard @submit.prevent="onSubmitBooking">
+      <UCard>
         <template #header>
           <p class="text-base font-semibold leading-6 text-gray-900 dark:text-white">
             {{ item.label }}
@@ -46,7 +45,7 @@ function onSubmitBooking() {
         <AppBookingsFormsBookingForm v-model="bookingForm" />
 
         <template #footer>
-          <UButton type="submit" color="black">
+          <UButton type="submit" color="black" @click.prevent="onSubmitBooking">
             Save Booking
           </UButton>
         </template>
@@ -55,14 +54,14 @@ function onSubmitBooking() {
 
     <!-- Aviability Tab (Disabled) -->
     <template #aviability="{ item }">
-      <UCard>
+      <!-- <UCard>
         <template #header>
           <p class="text-base font-semibold leading-6 text-gray-900 dark:text-white">
             {{ item.label }}
           </p>
         </template>
         <p>This tab is currently unavailable.</p>
-      </UCard>
+      </UCard> -->
     </template>
 
     <!-- Tab 3 -->

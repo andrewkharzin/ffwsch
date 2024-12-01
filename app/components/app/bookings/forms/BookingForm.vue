@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'  // Make sure ref is properly imported
 import useAwbsDataByOwner from '../../../../composables/booking/useAwbsByOwner'
 
+const supabase = useSupabaseClient()
 const awbNumberInput = ref('')  // Ref for the AWB input field
 const newBooking = ref({
   awb_number: null,
@@ -126,29 +127,5 @@ onMounted(fetchOptions)
         />
       </div>
     </div>
-
-    <!-- Other Inputs -->
-    <AppBookingsFormsBookingDetails
-      v-model="newBooking"
-      :shippers="shippers"
-      :consignees="consignees"
-      :statuses="statuses"
-      :book-types="bookTypes"
-    />
-
-    <!-- Create Booking Button -->
-    <UButton :loading="isSubmitting" @click="handleCreateBooking">
-      Create Booking
-    </UButton>
-
-    <!-- AWB Selection Modal (Currently commented out) -->
-    <!-- <AWBSelectionModal
-      v-model="isOpen"
-      :pending="pending"
-      :records="awbRecords"
-      :columns="columns"
-      @select="selectAWB"
-      @close="closeAWBModal"
-    /> -->
   </div>
 </template>
